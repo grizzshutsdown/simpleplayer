@@ -61,6 +61,7 @@ const styles = `
     --sp-control-slot-hover-surface: transparent;
     --sp-control-tray-padding: 2px;
     --sp-control-slot-size: calc(var(--sp-control-icon-size) + 4px);
+    --sp-touch-control-hover-offset: -9999px;
     --sp-volume-level: 100%;
 
     position: relative;
@@ -188,38 +189,12 @@ const styles = `
     -webkit-tap-highlight-color: transparent;
   }
 
-  .sp-button::before {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border-radius: 999px;
-    background: rgb(var(--white-rgb) / 0.14);
-    filter: blur(5px);
-    opacity: 0;
-    transform: scale(0.82);
-    transition:
-      opacity 220ms ease,
-      filter 260ms ease,
-      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
   .sp-player.is-pointer-active .sp-button,
   .sp-player.is-controls-visible .sp-button,
   :host(:hover) .sp-button {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
-  }
-
-  .sp-player.is-button-animating .sp-button {
-    animation: sp-button-release 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .sp-player.is-button-animating .sp-button::before,
-  .sp-button:active::before {
-    opacity: 1;
-    filter: blur(7px);
-    transform: scale(1);
   }
 
   .sp-player.is-scrubbing .sp-button,
@@ -453,6 +428,14 @@ const styles = `
       transform 160ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
+  .sp-control-tray-slots:has(.sp-control-button.is-control-tap-active)::before {
+    opacity: var(--sp-control-hover-opacity);
+    transform: translateX(var(--sp-touch-control-hover-offset));
+    transition:
+      opacity 80ms ease,
+      transform 160ms cubic-bezier(0.18, 0.9, 0.22, 1);
+  }
+
   .sp-control-tray-slots:not(:has(.sp-control-button:hover))::before {
     transition:
       opacity 100ms ease,
@@ -493,6 +476,11 @@ const styles = `
   }
 
   .sp-control-button:hover .sp-control-icon {
+    opacity: var(--sp-control-icon-hover-opacity);
+    transform: translateY(0) scale(1);
+  }
+
+  .sp-control-button.is-control-tap-active .sp-control-icon {
     opacity: var(--sp-control-icon-hover-opacity);
     transform: translateY(0) scale(1);
   }
@@ -784,6 +772,52 @@ const styles = `
     .sp-player.is-scrubbing .sp-progress-cluster {
       --sp-progress-height: 14px;
     }
+
+    :host(:hover) .sp-overlay,
+    :host(:hover) .sp-button,
+    :host(:hover) .sp-control-tray {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    :host(:hover) .sp-control-icon {
+      opacity: var(--sp-control-icon-hidden-opacity);
+      transform: var(--sp-control-icon-hidden-transform);
+    }
+
+    .sp-player.is-controls-visible .sp-overlay,
+    .sp-player.is-controls-visible .sp-button,
+    .sp-player.is-controls-visible .sp-control-tray {
+      opacity: 1;
+    }
+
+    .sp-player.is-controls-visible .sp-button,
+    .sp-player.is-controls-visible .sp-control-tray {
+      pointer-events: auto;
+    }
+
+    .sp-player.is-controls-visible .sp-control-icon {
+      opacity: var(--sp-control-icon-opacity);
+      transform: translateY(0) scale(1);
+    }
+
+    .sp-control-tray-slots:has(.sp-control-button:hover)::before {
+      opacity: 0;
+    }
+
+    .sp-control-button:hover .sp-control-icon {
+      opacity: var(--sp-control-icon-opacity);
+      transform: translateY(0) scale(1);
+    }
+
+    .sp-control-tray-slots:has(.sp-control-button.is-control-tap-active)::before {
+      opacity: var(--sp-control-hover-opacity);
+    }
+
+    .sp-control-button.is-control-tap-active .sp-control-icon {
+      opacity: var(--sp-control-icon-hover-opacity);
+      transform: translateY(0) scale(1);
+    }
   }
 
   @keyframes sp-progress-shimmer {
@@ -794,23 +828,6 @@ const styles = `
     58%,
     100% {
       transform: translateX(120%);
-    }
-  }
-
-  @keyframes sp-button-release {
-    0% {
-      filter: blur(0);
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    42% {
-      filter: blur(1.2px);
-      transform: translate(-50%, -50%) scale(0.91);
-    }
-
-    100% {
-      filter: blur(0);
-      transform: translate(-50%, -50%) scale(1);
     }
   }
 
@@ -838,8 +855,6 @@ template.innerHTML = `
   <div class="sp-player is-loading" data-sp-player>
     <video
       class="sp-video sp-asset"
-      autoplay
-      muted
       playsinline
       loop
       preload="none"
@@ -970,7 +985,6 @@ export class SimplePlayer extends HTMLElement {
   #controlsHideTimer = 0;
   #loadingStateTimer = 0;
   #initialProgressSettleTimer = 0;
-  #buttonAnimationTimer = 0;
   #suppressTouchButtonClickUntil = 0;
   #hasDecodedFirstFrame = false;
   #hasPresentedFirstFrame = false;
@@ -996,6 +1010,7 @@ export class SimplePlayer extends HTMLElement {
   #activeVolumePointerId: number | null = null;
   #volumeCloseTimer = 0;
   #volumeIconAnimationTimer = 0;
+  #controlTapTimer = 0;
   #volumeIconState: 'sound' | 'muted' | null = null;
 
   readonly #scrubDragThreshold = 4;
@@ -1124,18 +1139,19 @@ export class SimplePlayer extends HTMLElement {
     this.#clearVideoRetryTimer();
     this.#clearInitialProgressSettleTimer();
     this.#clearScrubLongPressTimer();
-    this.#clearButtonAnimationTimer();
     this.#clearVolumeCloseTimer();
     this.#clearVolumeIconAnimationTimer();
-    this.#player.classList.remove('is-button-animating');
+    this.#clearControlTapTimer();
     this.#player.classList.remove('is-volume-icon-animating');
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
+    this.style.removeProperty('--sp-touch-control-hover-offset');
     this.#clearControlsCollision();
     this.#isVolumeScrubbing = false;
     this.#isVolumeHovering = false;
     this.#isPointerOverControlSurface = false;
     this.#activeVolumePointerId = null;
     this.#volumeControl.classList.remove('is-volume-open');
+    this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
     this.#player.classList.remove('is-pointer-active');
     this.#stopProgressLoop();
   }
@@ -1282,6 +1298,7 @@ export class SimplePlayer extends HTMLElement {
     for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerenter', this.#handleControlButtonPointerEnter);
       this.#listen(control, 'mouseenter', this.#handleControlButtonPointerEnter);
+      this.#listen(control, 'pointerdown', this.#handleControlButtonPointerDown);
     }
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);
     this.#listen(document, 'pointercancel', this.#handleDocumentPointerCancel);
@@ -1480,6 +1497,31 @@ export class SimplePlayer extends HTMLElement {
     this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
   };
 
+  #clearControlTapTimer() {
+    if (!this.#controlTapTimer) return;
+    window.clearTimeout(this.#controlTapTimer);
+    this.#controlTapTimer = 0;
+  }
+
+  #clearControlTapActive = () => {
+    this.#controlTapTimer = 0;
+    this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
+    this.style.removeProperty('--sp-touch-control-hover-offset');
+  };
+
+  #handleControlButtonPointerDown = (event: Event) => {
+    if (!(event instanceof PointerEvent) || event.pointerType !== 'touch') return;
+
+    const target = event.currentTarget as HTMLButtonElement | null;
+    if (!target) return;
+
+    const index = Number(target.dataset.spControlIndex ?? 0);
+    this.#clearControlTapTimer();
+    this.#controlButtons.forEach((button) => button.classList.toggle('is-control-tap-active', button === target));
+    this.style.setProperty('--sp-touch-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
+    this.#controlTapTimer = window.setTimeout(this.#clearControlTapActive, 280);
+  };
+
   #clearLoadingStateTimer() {
     if (!this.#loadingStateTimer) return;
     window.clearTimeout(this.#loadingStateTimer);
@@ -1498,27 +1540,10 @@ export class SimplePlayer extends HTMLElement {
     this.#initialProgressSettleTimer = 0;
   }
 
-  #clearButtonAnimationTimer() {
-    if (!this.#buttonAnimationTimer) return;
-    window.clearTimeout(this.#buttonAnimationTimer);
-    this.#buttonAnimationTimer = 0;
-  }
-
   #clearVolumeIconAnimationTimer() {
     if (!this.#volumeIconAnimationTimer) return;
     window.clearTimeout(this.#volumeIconAnimationTimer);
     this.#volumeIconAnimationTimer = 0;
-  }
-
-  #animateButtonRelease() {
-    this.#clearButtonAnimationTimer();
-    this.#player.classList.remove('is-button-animating');
-    void this.#button.offsetWidth;
-    this.#player.classList.add('is-button-animating');
-    this.#buttonAnimationTimer = window.setTimeout(() => {
-      this.#buttonAnimationTimer = 0;
-      this.#player.classList.remove('is-button-animating');
-    }, 260);
   }
 
   #animateVolumeIconSwap() {
@@ -2285,6 +2310,8 @@ export class SimplePlayer extends HTMLElement {
     this.#isVolumeHovering = false;
     this.#isVolumeScrubbing = false;
     this.#activeVolumePointerId = null;
+    this.#clearControlTapTimer();
+    this.#clearControlTapActive();
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
     this.#volumeControl.classList.remove('is-volume-open');
     this.#volumePopover.classList.remove('is-scrubbing-volume');
@@ -2381,8 +2408,6 @@ export class SimplePlayer extends HTMLElement {
     if (performance.now() < this.#suppressTouchButtonClickUntil) {
       return;
     }
-
-    this.#animateButtonRelease();
 
     const shouldPlay = this.#optimisticPlaybackState
       ? this.#optimisticPlaybackState !== 'playing'
@@ -2548,6 +2573,7 @@ export class SimplePlayer extends HTMLElement {
     };
 
     if (!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !video.requestPictureInPicture) return;
+    this.#showTouchControls();
 
     try {
       await this.#hydrateVideoSource();
@@ -2560,6 +2586,7 @@ export class SimplePlayer extends HTMLElement {
       // Picture-in-Picture can be blocked by browser policy or missing user activation.
     } finally {
       this.#syncPictureInPictureState();
+      this.#scheduleTouchControlsHide();
     }
   };
 
@@ -2568,6 +2595,7 @@ export class SimplePlayer extends HTMLElement {
     event.preventDefault();
     event.stopPropagation();
     this.#trackPointerPosition(event);
+    this.#showTouchControls();
 
     try {
       const fullscreenElement = this.#getFullscreenElement();
@@ -2591,6 +2619,7 @@ export class SimplePlayer extends HTMLElement {
       // Fullscreen can be blocked by browser policy or missing user activation.
     } finally {
       this.#syncFullscreenState();
+      this.#scheduleTouchControlsHide();
     }
   };
 
