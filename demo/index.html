@@ -6,11 +6,24 @@
     <title>SimplePlayer Demo</title>
     <script type="module" src="/src/simple-player.ts"></script>
     <style>
+      @font-face {
+        font-family: "SF Pro Demo";
+        src: url("./assets/SFPro.woff2") format("woff2");
+        font-display: swap;
+        font-style: normal;
+        font-weight: 1 1000;
+      }
+
       :root {
-        background: #111;
+        color: #000;
+        background: #fff;
         font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
+          -apple-system, BlinkMacSystemFont, "SF Pro Demo", "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        font-synthesis: none;
+        text-rendering: geometricPrecision;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       * {
@@ -20,29 +33,502 @@
       body {
         margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
+        background: #fff;
       }
 
-      main {
+      button,
+      pre {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        color: inherit;
+        background: transparent;
+      }
+
+      .page {
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 192px 24px 96px;
+      }
+
+      .shell {
+        width: min(100%, 540px);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 48px;
+      }
+
+      .intro {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .logo {
+        width: 122.414px;
+        height: 23.195px;
+        display: block;
+      }
+
+      p,
+      h2,
+      pre {
+        margin: 0;
+      }
+
+      .text {
+        max-width: 100%;
+        font-size: 15px;
+        font-weight: 450;
+        line-height: 20px;
+        letter-spacing: -0.24px;
+      }
+
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
         width: 100%;
-        max-width: 980px;
+      }
+
+      .section-head {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .title {
+        font-size: 15px;
+        font-weight: 590;
+        line-height: 20px;
+        letter-spacing: -0.24px;
+      }
+
+      .tabs {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+      }
+
+      .framework-tabs {
+        gap: 24px;
+      }
+
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-height: 24px;
+        padding: 0;
+        opacity: 0.4;
+        cursor: pointer;
+        transition: opacity 160ms ease, transform 160ms ease;
+      }
+
+      .tab:hover,
+      .tab.is-active {
+        opacity: 1;
+      }
+
+      .tab:active {
+        transform: scale(0.98);
+      }
+
+      .tab-icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+      }
+
+      .tab-icon.react {
+        width: 26.672px;
+      }
+
+      .tab-icon.vue {
+        width: 27.801px;
+      }
+
+      .tab-icon.svelte {
+        width: 19.948px;
+      }
+
+      .field {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        min-height: 52px;
+        padding: 16px 16px 16px 8px;
+        border: 1px solid rgb(0 0 0 / 0.14);
+        border-radius: 12px;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .command {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+      }
+
+      .prompt {
+        opacity: 0.3;
+      }
+
+      .command-text,
+      .code {
+        opacity: 0.5;
+      }
+
+      .copy {
+        flex: 0 0 auto;
+        padding: 0;
+        opacity: 0.4;
+        cursor: pointer;
+        transition: opacity 160ms ease;
+      }
+
+      .copy:hover {
+        opacity: 0.7;
+      }
+
+      .code-field {
+        align-items: flex-start;
+        min-height: 128px;
+      }
+
+      .code {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-family:
+          "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 19px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .code-field .copy {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+      }
+
+      .player-card {
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+        border: 1px solid rgb(0 0 0 / 0.14);
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 2px 4px 16px rgb(0 0 0 / 0.04);
       }
 
       simple-player {
+        display: block;
         width: 100%;
-        max-height: calc(100vh - 48px);
-        --simple-player-object-fit: cover;
+        height: 100%;
+        --overlay-blur: 2px;
+      }
+
+      .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .footer-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: rgb(0 0 0 / 0.4);
+      }
+
+      .author {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 4px 2px 2px;
+        border-radius: 8px;
+        color: rgb(0 0 0 / 0.4);
+        text-decoration: none;
+        background: rgb(0 0 0 / 0.05);
+      }
+
+      .bear {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .bear img {
+        display: block;
+        width: 20px;
+        height: 18px;
+      }
+
+      .footer-link {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          padding: 80px 20px 56px;
+        }
+
+        .shell {
+          gap: 40px;
+        }
+
+        .tabs {
+          flex-wrap: wrap;
+          row-gap: 10px;
+        }
+
+        .framework-tabs {
+          gap: 14px;
+        }
+
+        .field {
+          min-height: 52px;
+        }
+
+        .command-text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .code-field {
+          min-height: 148px;
+          padding-right: 52px;
+        }
+
+        .player-card {
+          height: auto;
+          aspect-ratio: 16 / 9;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .page {
+          padding: 48px 16px 40px;
+        }
+
+        .shell {
+          gap: 36px;
+        }
+
+        .text,
+        .title {
+          font-size: 14px;
+          line-height: 19px;
+        }
+
+        .tabs {
+          gap: 12px;
+        }
+
+        .framework-tabs {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          width: 100%;
+          gap: 12px 18px;
+        }
       }
     </style>
   </head>
   <body>
-    <main>
-      <simple-player
-        src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-        aspect-ratio="16 / 9">
-      </simple-player>
+    <main class="page">
+      <div class="shell">
+        <header class="intro">
+          <img class="logo" src="./assets/logo.svg" alt="SimplePlayer" />
+          <p class="text">framework-free Web Component.</p>
+          <p class="text">
+            It gives you a clean default video player with custom overlay
+            controls, a scrubber, volume, Picture-in-Picture, fullscreen, and
+            lazy loading.
+          </p>
+        </header>
+
+        <section class="section" aria-labelledby="install-title">
+          <div class="section-head">
+            <h2 class="title" id="install-title">Install</h2>
+            <div class="tabs" role="tablist" aria-label="Package manager">
+              <button class="tab is-active text" type="button" data-install-tab="npm">npm</button>
+              <button class="tab text" type="button" data-install-tab="pnpm">pnpm</button>
+              <button class="tab text" type="button" data-install-tab="yarn">yarn</button>
+              <button class="tab text" type="button" data-install-tab="bun">bun</button>
+              <button class="tab text" type="button" data-install-tab="skill">skill</button>
+            </div>
+          </div>
+          <div class="field text">
+            <div class="command">
+              <span class="prompt">$</span>
+              <span class="command-text" data-install-command>npm install @grizzshutsdown/simpleplayer</span>
+            </div>
+            <button class="copy text" type="button" data-copy-target="install">Copy</button>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="usage-title">
+          <div class="section-head">
+            <h2 class="title" id="usage-title">Usage</h2>
+            <div class="tabs framework-tabs" role="tablist" aria-label="Framework">
+              <button class="tab is-active text" type="button" data-framework-tab="react">
+                <img class="tab-icon react" src="./assets/react.svg" alt="" />
+                React
+              </button>
+              <button class="tab text" type="button" data-framework-tab="typescript">
+                <img class="tab-icon" src="./assets/typescript.svg" alt="" />
+                Typescript
+              </button>
+              <button class="tab text" type="button" data-framework-tab="vue">
+                <img class="tab-icon vue" src="./assets/vue.svg" alt="" />
+                Vue
+              </button>
+              <button class="tab text" type="button" data-framework-tab="svelte">
+                <img class="tab-icon svelte" src="./assets/svelte.svg" alt="" />
+                Svelte
+              </button>
+            </div>
+          </div>
+          <div class="field code-field">
+            <pre class="code" data-usage-code>import '@grizzshutsdown/simpleplayer';
+
+export function App() {
+  return &lt;simple-player src="/video.mp4" aspect-ratio="16 / 9" /&gt;;
+}</pre>
+            <button class="copy text" type="button" data-copy-target="usage">Copy</button>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="example-title">
+          <h2 class="title" id="example-title">Example</h2>
+          <div class="player-card">
+            <simple-player
+              src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+              aspect-ratio="16 / 9">
+            </simple-player>
+          </div>
+        </section>
+
+        <footer class="footer text">
+          <div class="footer-line">
+            <span>Created for fun by</span>
+            <a class="author" href="https://grizz.fyi" target="_blank" rel="noreferrer">
+              <span class="bear">
+                <img src="./assets/bear.svg" alt="" />
+              </span>
+              <span>Grizz</span>
+            </a>
+          </div>
+          <div class="footer-line">
+            <span>v0.0.1</span>
+            <span>•</span>
+            <a class="footer-link" href="https://github.com/grizzshutsdown/simpleplayer" target="_blank" rel="noreferrer">Github</a>
+          </div>
+        </footer>
+      </div>
     </main>
+
+    <script>
+      const installCommands = {
+        npm: 'npm install @grizzshutsdown/simpleplayer',
+        pnpm: 'pnpm add @grizzshutsdown/simpleplayer',
+        yarn: 'yarn add @grizzshutsdown/simpleplayer',
+        bun: 'bun add @grizzshutsdown/simpleplayer',
+        skill: 'npx @grizzshutsdown/simpleplayer --dir ~/.ai/skills',
+      };
+
+      const usageExamples = {
+        react: `import '@grizzshutsdown/simpleplayer';
+
+export function App() {
+  return <simple-player src="/video.mp4" aspect-ratio="16 / 9" />;
+}`,
+        typescript: `import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'simple-player': DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & {
+        src?: string;
+        'aspect-ratio'?: string;
+      };
+    }
+  }
+}`,
+        vue: `<script setup>
+import '@grizzshutsdown/simpleplayer';
+<\/script>
+
+<template>
+  <simple-player src="/video.mp4" aspect-ratio="16 / 9" />
+</template>`,
+        svelte: `<script>
+  import '@grizzshutsdown/simpleplayer';
+<\/script>
+
+<simple-player src="/video.mp4" aspect-ratio="16 / 9" />`,
+      };
+
+      const installCommand = document.querySelector('[data-install-command]');
+      const usageCode = document.querySelector('[data-usage-code]');
+
+      const setActiveTab = (selector, activeButton) => {
+        document.querySelectorAll(selector).forEach((button) => {
+          button.classList.toggle('is-active', button === activeButton);
+        });
+      };
+
+      document.querySelectorAll('[data-install-tab]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.installTab;
+          installCommand.textContent = installCommands[key];
+          setActiveTab('[data-install-tab]', button);
+        });
+      });
+
+      document.querySelectorAll('[data-framework-tab]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.dataset.frameworkTab;
+          usageCode.textContent = usageExamples[key];
+          setActiveTab('[data-framework-tab]', button);
+        });
+      });
+
+      document.querySelectorAll('[data-copy-target]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const target = button.dataset.copyTarget;
+          const value = target === 'install' ? installCommand.textContent : usageCode.textContent;
+          await navigator.clipboard?.writeText(value || '');
+          const label = button.textContent;
+          button.textContent = 'Copied';
+          window.setTimeout(() => {
+            button.textContent = label;
+          }, 1200);
+        });
+      });
+    </script>
   </body>
 </html>
