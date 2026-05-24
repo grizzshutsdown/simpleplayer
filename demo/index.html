@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SimplePlayer Demo</title>
-    <script type="module" src="/src/simple-player.ts"></script>
+    <script type="module" src="../dist/simple-player.js"></script>
     <style>
       @font-face {
         font-family: "SF Pro Demo";
@@ -374,11 +374,11 @@
           <div class="section-head">
             <h2 class="title" id="install-title">Install</h2>
             <div class="tabs" role="tablist" aria-label="Package manager">
-              <button class="tab is-active text" type="button" data-install-tab="npm">npm</button>
-              <button class="tab text" type="button" data-install-tab="pnpm">pnpm</button>
-              <button class="tab text" type="button" data-install-tab="yarn">yarn</button>
-              <button class="tab text" type="button" data-install-tab="bun">bun</button>
-              <button class="tab text" type="button" data-install-tab="skill">skill</button>
+              <button class="tab is-active text" type="button" role="tab" aria-selected="true" data-install-tab="npm">npm</button>
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-install-tab="pnpm">pnpm</button>
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-install-tab="yarn">yarn</button>
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-install-tab="bun">bun</button>
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-install-tab="skill">skill</button>
             </div>
           </div>
           <div class="field text">
@@ -394,19 +394,19 @@
           <div class="section-head">
             <h2 class="title" id="usage-title">Usage</h2>
             <div class="tabs framework-tabs" role="tablist" aria-label="Framework">
-              <button class="tab is-active text" type="button" data-framework-tab="react">
+              <button class="tab is-active text" type="button" role="tab" aria-selected="true" data-framework-tab="react">
                 <img class="tab-icon react" src="./assets/react.svg" alt="" />
                 React
               </button>
-              <button class="tab text" type="button" data-framework-tab="typescript">
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-framework-tab="typescript">
                 <img class="tab-icon" src="./assets/typescript.svg" alt="" />
                 Typescript
               </button>
-              <button class="tab text" type="button" data-framework-tab="vue">
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-framework-tab="vue">
                 <img class="tab-icon vue" src="./assets/vue.svg" alt="" />
                 Vue
               </button>
-              <button class="tab text" type="button" data-framework-tab="svelte">
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-framework-tab="svelte">
                 <img class="tab-icon svelte" src="./assets/svelte.svg" alt="" />
                 Svelte
               </button>
@@ -426,7 +426,7 @@ export function App() {
           <h2 class="title" id="example-title">Example</h2>
           <div class="player-card">
             <simple-player
-              src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+              src="https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"
               aspect-ratio="16 / 9">
             </simple-player>
           </div>
@@ -494,11 +494,55 @@ import '@grizzshutsdown/simpleplayer';
 
       const installCommand = document.querySelector('[data-install-command]');
       const usageCode = document.querySelector('[data-usage-code]');
+      const installCopy = document.querySelector('[data-copy-target="install"]');
+      const usageCopy = document.querySelector('[data-copy-target="usage"]');
+      const copyTimers = new WeakMap();
 
       const setActiveTab = (selector, activeButton) => {
         document.querySelectorAll(selector).forEach((button) => {
           button.classList.toggle('is-active', button === activeButton);
+          button.setAttribute('aria-selected', button === activeButton ? 'true' : 'false');
         });
+      };
+
+      const copyText = async (value) => {
+        if (navigator.clipboard?.writeText && window.isSecureContext) {
+          await navigator.clipboard.writeText(value);
+          return;
+        }
+
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      };
+
+      const flashCopied = (button) => {
+        if (copyTimers.has(button)) {
+          window.clearTimeout(copyTimers.get(button));
+        }
+
+        button.textContent = 'Copied';
+        const timer = window.setTimeout(() => {
+          button.textContent = 'Copy';
+          copyTimers.delete(button);
+        }, 1200);
+        copyTimers.set(button, timer);
+      };
+
+      const resetCopyButton = (button) => {
+        if (copyTimers.has(button)) {
+          window.clearTimeout(copyTimers.get(button));
+          copyTimers.delete(button);
+        }
+
+        button.textContent = 'Copy';
       };
 
       document.querySelectorAll('[data-install-tab]').forEach((button) => {
@@ -506,6 +550,7 @@ import '@grizzshutsdown/simpleplayer';
           const key = button.dataset.installTab;
           installCommand.textContent = installCommands[key];
           setActiveTab('[data-install-tab]', button);
+          resetCopyButton(installCopy);
         });
       });
 
@@ -514,6 +559,7 @@ import '@grizzshutsdown/simpleplayer';
           const key = button.dataset.frameworkTab;
           usageCode.textContent = usageExamples[key];
           setActiveTab('[data-framework-tab]', button);
+          resetCopyButton(usageCopy);
         });
       });
 
@@ -521,12 +567,8 @@ import '@grizzshutsdown/simpleplayer';
         button.addEventListener('click', async () => {
           const target = button.dataset.copyTarget;
           const value = target === 'install' ? installCommand.textContent : usageCode.textContent;
-          await navigator.clipboard?.writeText(value || '');
-          const label = button.textContent;
-          button.textContent = 'Copied';
-          window.setTimeout(() => {
-            button.textContent = label;
-          }, 1200);
+          await copyText((value || '').trim());
+          flashCopied(button);
         });
       });
     </script>
