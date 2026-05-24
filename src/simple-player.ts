@@ -1,6 +1,24 @@
 const DEFAULT_ASPECT_RATIO = '16 / 9';
 const DEFAULT_PRELOAD_MARGIN = '360px 0px';
 
+type FullscreenDocument = Document & {
+  webkitFullscreenElement?: Element | null;
+  webkitFullscreenEnabled?: boolean;
+  webkitExitFullscreen?: () => Promise<void> | void;
+  mozFullScreenElement?: Element | null;
+  mozFullScreenEnabled?: boolean;
+  mozCancelFullScreen?: () => Promise<void> | void;
+  msFullscreenElement?: Element | null;
+  msFullscreenEnabled?: boolean;
+  msExitFullscreen?: () => Promise<void> | void;
+};
+
+type FullscreenPlayer = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+  mozRequestFullScreen?: () => Promise<void> | void;
+  msRequestFullscreen?: () => Promise<void> | void;
+};
+
 const styles = `
   :host {
     --simple-player-aspect-ratio: ${DEFAULT_ASPECT_RATIO};
@@ -89,6 +107,26 @@ const styles = `
     -webkit-touch-callout: none;
   }
 
+  .sp-player:fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
+    background: #1E1E1E;
+  }
+
+  .sp-player:-webkit-full-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
+    background: #1E1E1E;
+  }
+
   .sp-overlay {
     position: absolute;
     inset: 0;
@@ -105,7 +143,8 @@ const styles = `
   }
 
   .sp-player.is-pointer-active .sp-overlay,
-  .sp-player.is-controls-visible .sp-overlay {
+  .sp-player.is-controls-visible .sp-overlay,
+  :host(:hover) .sp-overlay {
     opacity: 1;
   }
 
@@ -141,7 +180,8 @@ const styles = `
   }
 
   .sp-player.is-pointer-active .sp-button,
-  .sp-player.is-controls-visible .sp-button {
+  .sp-player.is-controls-visible .sp-button,
+  :host(:hover) .sp-button {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
@@ -317,7 +357,8 @@ const styles = `
   }
 
   .sp-player.is-pointer-active .sp-control-tray,
-  .sp-player.is-controls-visible .sp-control-tray {
+  .sp-player.is-controls-visible .sp-control-tray,
+  :host(:hover) .sp-control-tray {
     opacity: 1;
     pointer-events: auto;
     filter: blur(0);
@@ -548,23 +589,27 @@ const styles = `
   }
 
   .sp-player.is-pointer-active .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-icon,
+  :host(:hover) .sp-control-icon {
     opacity: var(--sp-control-icon-opacity);
     transform: translateY(0) scale(1);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(1) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(1) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(1) .sp-control-icon,
+  :host(:hover) .sp-control-button:nth-child(1) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-1);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(2) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(2) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(2) .sp-control-icon,
+  :host(:hover) .sp-control-button:nth-child(2) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-2);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(3) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(3) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(3) .sp-control-icon,
+  :host(:hover) .sp-control-button:nth-child(3) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-3);
   }
 
@@ -911,6 +956,9 @@ export class SimplePlayer extends HTMLElement {
   #hasControlsCollision = false;
   #hasAudioTrack = true;
   #isPointerOverControlSurface = false;
+  #lastPointerClientX: number | null = null;
+  #lastPointerClientY: number | null = null;
+  #lastPointerWasTouch = false;
   #isVolumeScrubbing = false;
   #isVolumeHovering = false;
   #activeVolumePointerId: number | null = null;
@@ -1153,15 +1201,30 @@ export class SimplePlayer extends HTMLElement {
 
   #bindEvents() {
     this.#listen(this.#button, 'click', this.#handleButtonClick);
+    this.#listen(this, 'pointerenter', this.#handlePlayerPointerEnter);
+    this.#listen(this, 'pointermove', this.#handlePlayerPointerMove);
+    this.#listen(this, 'pointerleave', this.#handlePlayerPointerLeave);
+    this.#listen(this, 'mouseenter', this.#handlePlayerPointerEnter);
+    this.#listen(this, 'mousemove', this.#handlePlayerPointerMove);
+    this.#listen(this, 'mouseleave', this.#handlePlayerPointerLeave);
     this.#listen(this.#player, 'pointerenter', this.#handlePlayerPointerEnter);
     this.#listen(this.#player, 'pointermove', this.#handlePlayerPointerMove);
     this.#listen(this.#player, 'pointerleave', this.#handlePlayerPointerLeave);
+    this.#listen(this.#player, 'mouseenter', this.#handlePlayerPointerEnter);
+    this.#listen(this.#player, 'mousemove', this.#handlePlayerPointerMove);
+    this.#listen(this.#player, 'mouseleave', this.#handlePlayerPointerLeave);
     this.#listen(this.#button, 'pointerenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#button, 'pointerleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#button, 'mouseenter', this.#handleControlSurfacePointerEnter);
+    this.#listen(this.#button, 'mouseleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#progressTrack, 'pointerenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#progressTrack, 'pointerleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#progressTrack, 'mouseenter', this.#handleControlSurfacePointerEnter);
+    this.#listen(this.#progressTrack, 'mouseleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#controlTray, 'pointerenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#controlTray, 'pointerleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#controlTray, 'mouseenter', this.#handleControlSurfacePointerEnter);
+    this.#listen(this.#controlTray, 'mouseleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#player, 'pointerdown', this.#handlePlayerPointerDown);
     this.#listen(this.#player, 'dragstart', this.#preventNativeVideoAction);
     this.#listen(this.#player, 'selectstart', this.#preventNativeVideoAction);
@@ -1186,11 +1249,19 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#fullscreenControl, 'click', this.#handleFullscreenClick);
     for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerenter', this.#handleControlButtonPointerEnter);
+      this.#listen(control, 'mouseenter', this.#handleControlButtonPointerEnter);
     }
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);
     this.#listen(document, 'pointercancel', this.#handleDocumentPointerCancel);
+    this.#listen(document, 'pointermove', this.#handleDocumentPointerMove);
+    this.#listen(document, 'mousemove', this.#handleDocumentPointerMove);
     this.#listen(document, 'fullscreenchange', this.#handleFullscreenChange);
+    this.#listen(document, 'webkitfullscreenchange', this.#handleFullscreenChange);
+    this.#listen(document, 'mozfullscreenchange', this.#handleFullscreenChange);
+    this.#listen(document, 'MSFullscreenChange', this.#handleFullscreenChange);
+    this.#listen(this.#root, 'fullscreenchange', this.#handleFullscreenChange);
     this.#listen(window, 'blur', this.#handleWindowBlur);
+    this.#listen(window, 'focus', this.#handleWindowFocus);
 
     this.#listen(this.#video, 'play', this.#handleVideoPlay);
     this.#listen(this.#video, 'pause', this.#handleVideoPause);
@@ -1281,40 +1352,92 @@ export class SimplePlayer extends HTMLElement {
     return !wasVisible;
   }
 
-  #showPointerControls() {
-    if (this.#isTouchControls()) return;
+  #showPointerControls(forcePointer = false) {
+    if (!forcePointer && this.#isTouchControls()) return;
     this.#player.classList.add('is-pointer-active');
     if (!this.#isPointerOverControlSurface) {
-      this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
+      this.#scheduleControlsHide(forcePointer ? this.#pointerControlsIdleDelay : undefined);
     } else {
       this.#clearControlsHideTimer();
     }
   }
 
-  #handlePlayerPointerEnter = () => {
-    this.#showPointerControls();
-  };
-
-  #handlePlayerPointerMove = () => {
-    this.#showPointerControls();
-  };
-
-  #handlePlayerPointerLeave = () => {
-    if (this.#isTouchControls()) return;
+  #hidePointerControls() {
     this.#isPointerOverControlSurface = false;
     this.#clearControlsHideTimer();
     this.#player.classList.remove('is-pointer-active');
+  }
+
+  #trackPointerPosition(event: Event) {
+    if (event instanceof PointerEvent) {
+      this.#lastPointerWasTouch = event.pointerType === 'touch';
+      if (this.#lastPointerWasTouch) return false;
+      this.#lastPointerClientX = event.clientX;
+      this.#lastPointerClientY = event.clientY;
+      return true;
+    }
+
+    if (event instanceof MouseEvent) {
+      this.#lastPointerWasTouch = false;
+      this.#lastPointerClientX = event.clientX;
+      this.#lastPointerClientY = event.clientY;
+      return true;
+    }
+
+    return false;
+  }
+
+  #isPointInsidePlayer(clientX: number | null, clientY: number | null) {
+    if (clientX === null || clientY === null) return false;
+    if (clientX < 0 || clientY < 0 || clientX > window.innerWidth || clientY > window.innerHeight) return false;
+
+    const rect = this.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return false;
+
+    return (
+      clientX >= rect.left &&
+      clientX <= rect.right &&
+      clientY >= rect.top &&
+      clientY <= rect.bottom
+    );
+  }
+
+  #syncPointerControlsFromLastPosition() {
+    if (!this.#lastPointerWasTouch && this.#isPointInsidePlayer(this.#lastPointerClientX, this.#lastPointerClientY)) {
+      this.#showPointerControls(true);
+      return;
+    }
+
+    this.#hidePointerControls();
+  }
+
+  #handlePlayerPointerEnter = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
+    this.#showPointerControls(true);
   };
 
-  #handleControlSurfacePointerEnter = () => {
-    if (this.#isTouchControls()) return;
+  #handlePlayerPointerMove = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
+    this.#showPointerControls(true);
+  };
+
+  #handleDocumentPointerMove = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
+    this.#syncPointerControlsFromLastPosition();
+  };
+
+  #handlePlayerPointerLeave = () => {
+    this.#hidePointerControls();
+  };
+
+  #handleControlSurfacePointerEnter = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
     this.#isPointerOverControlSurface = true;
     this.#player.classList.add('is-pointer-active');
     this.#clearControlsHideTimer();
   };
 
   #handleControlSurfacePointerLeave = () => {
-    if (this.#isTouchControls()) return;
     this.#isPointerOverControlSurface = false;
     this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
   };
@@ -2037,19 +2160,107 @@ export class SimplePlayer extends HTMLElement {
     this.#pictureInPictureControl.setAttribute('aria-label', isActive ? 'Exit picture in picture' : 'Enter picture in picture');
   };
 
+  #getFullscreenElement() {
+    const fullscreenDocument = document as FullscreenDocument;
+    return (
+      this.#root.fullscreenElement ||
+      fullscreenDocument.fullscreenElement ||
+      fullscreenDocument.webkitFullscreenElement ||
+      fullscreenDocument.mozFullScreenElement ||
+      fullscreenDocument.msFullscreenElement ||
+      null
+    );
+  }
+
+  #isFullscreenSupported() {
+    const fullscreenDocument = document as FullscreenDocument;
+    const player = this.#player as FullscreenPlayer;
+    const isFullscreenEnabled =
+      fullscreenDocument.fullscreenEnabled ??
+      fullscreenDocument.webkitFullscreenEnabled ??
+      fullscreenDocument.mozFullScreenEnabled ??
+      fullscreenDocument.msFullscreenEnabled ??
+      false;
+
+    return Boolean(
+      this.fullscreenEnabled &&
+      isFullscreenEnabled &&
+      (
+        player.requestFullscreen ||
+        player.webkitRequestFullscreen ||
+        player.mozRequestFullScreen ||
+        player.msRequestFullscreen
+      )
+    );
+  }
+
+  #requestPlayerFullscreen() {
+    const player = this.#player as FullscreenPlayer;
+    const requestFullscreen =
+      player.requestFullscreen ||
+      player.webkitRequestFullscreen ||
+      player.mozRequestFullScreen ||
+      player.msRequestFullscreen;
+
+    return Promise.resolve(requestFullscreen?.call(player));
+  }
+
+  #exitFullscreen() {
+    const fullscreenDocument = document as FullscreenDocument;
+    const exitFullscreen =
+      fullscreenDocument.exitFullscreen ||
+      fullscreenDocument.webkitExitFullscreen ||
+      fullscreenDocument.mozCancelFullScreen ||
+      fullscreenDocument.msExitFullscreen;
+
+    return Promise.resolve(exitFullscreen?.call(fullscreenDocument));
+  }
+
   #syncFullscreenState = () => {
-    const isActive = document.fullscreenElement === this || document.fullscreenElement === this.#player;
-    const isSupported = Boolean(this.fullscreenEnabled && document.fullscreenEnabled && this.requestFullscreen);
+    const fullscreenElement = this.#getFullscreenElement();
+    const isActive = fullscreenElement === this.#player || fullscreenElement === this;
+    const isSupported = this.#isFullscreenSupported();
     this.#player.classList.toggle('is-fullscreen', isActive);
     this.#fullscreenControl.disabled = !isSupported;
     this.#fullscreenControl.setAttribute('aria-label', isActive ? 'Exit fullscreen' : 'Enter fullscreen');
+    return isActive;
   };
 
   #handleFullscreenChange = () => {
-    this.#syncFullscreenState();
-    this.#isPointerOverControlSurface = false;
-    this.#showPointerControls();
+    const isFullscreenActive = this.#syncFullscreenState();
+    this.#resetFullscreenPointerState(isFullscreenActive);
   };
+
+  #resetFullscreenPointerState(isFullscreenActive: boolean) {
+    this.#clearControlsHideTimer();
+    this.#clearVolumeCloseTimer();
+    this.#releaseScrubPointer(this.#activeScrubPointerId);
+    this.#releaseVolumePointer(this.#activeVolumePointerId);
+    this.#clearScrubLongPressTimer();
+    this.#isTrackingScrub = false;
+    this.#isScrubbing = false;
+    this.#activeScrubPointerId = null;
+    this.#isPointerOverControlSurface = false;
+    this.#isVolumeHovering = false;
+    this.#isVolumeScrubbing = false;
+    this.#activeVolumePointerId = null;
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
+    this.#volumeControl.classList.remove('is-volume-open');
+    this.#volumePopover.classList.remove('is-scrubbing-volume');
+    this.#player.classList.remove('is-scrubbing');
+    this.#player.classList.remove('is-pointer-active');
+
+    const activeElement = this.#root.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+
+    if (isFullscreenActive) {
+      this.#syncPointerControlsFromLastPosition();
+    } else {
+      this.#hidePointerControls();
+    }
+  }
 
   #enterScrubMode = () => {
     if (!this.#isTrackingScrub || this.#isScrubbing) return;
@@ -2304,14 +2515,18 @@ export class SimplePlayer extends HTMLElement {
     }
   };
 
-  #handleFullscreenClick = async () => {
-    if (!this.fullscreenEnabled || !document.fullscreenEnabled || !this.requestFullscreen) return;
+  #handleFullscreenClick = async (event: Event) => {
+    if (!this.#isFullscreenSupported()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.#trackPointerPosition(event);
 
     try {
-      if (document.fullscreenElement === this || document.fullscreenElement === this.#player) {
-        await document.exitFullscreen();
+      const fullscreenElement = this.#getFullscreenElement();
+      if (fullscreenElement === this.#player || fullscreenElement === this) {
+        await this.#exitFullscreen();
       } else {
-        await this.requestFullscreen();
+        await this.#requestPlayerFullscreen();
       }
     } catch {
       // Fullscreen can be blocked by browser policy or missing user activation.
@@ -2387,6 +2602,11 @@ export class SimplePlayer extends HTMLElement {
   #handleWindowBlur = () => {
     this.#finishVolumeScrub(this.#activeVolumePointerId);
     this.#cancelScrub(this.#activeScrubPointerId);
+  };
+
+  #handleWindowFocus = () => {
+    if (this.#getFullscreenElement()) return;
+    this.#hidePointerControls();
   };
 
   #handleVideoPlay = () => {

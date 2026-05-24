@@ -25,6 +25,7 @@
       content="A simple default video player created from Grizz's portfolio for others to use."
     />
     <meta name="twitter:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
+    <link rel="icon" type="image/svg+xml" href="./assets/Favicon.svg" />
     <script type="module" src="./dist/simple-player.js"></script>
     <style>
       @font-face {
@@ -36,8 +37,22 @@
       }
 
       :root {
-        color: #000;
-        background: #fff;
+        --page-background: #fff;
+        --text-color: #000;
+        --field-background: #fff;
+        --field-border: rgb(0 0 0 / 0.14);
+        --player-background: #fff;
+        --player-shadow: 2px 4px 16px rgb(0 0 0 / 0.04);
+        --muted-color: rgb(0 0 0 / 0.4);
+        --hover-color: #000;
+        --author-hover-background: rgb(0 0 0 / 0.05);
+        --logo-filter: none;
+        --bear-filter: none;
+        --bear-opacity: 1;
+
+        color: var(--text-color);
+        background: var(--page-background);
+        color-scheme: light;
         font-family:
           -apple-system, BlinkMacSystemFont, "SF Pro Demo", "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
@@ -47,6 +62,25 @@
         -moz-osx-font-smoothing: grayscale;
       }
 
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page-background: #000;
+          --text-color: #fff;
+          --field-background: rgb(255 255 255 / 0.06);
+          --field-border: rgb(255 255 255 / 0.16);
+          --player-background: #000;
+          --player-shadow: 2px 4px 16px rgb(0 0 0 / 0.4);
+          --muted-color: rgb(255 255 255 / 0.45);
+          --hover-color: #fff;
+          --author-hover-background: rgb(255 255 255 / 0.1);
+          --logo-filter: invert(1);
+          --bear-filter: invert(1);
+          --bear-opacity: 0.45;
+
+          color-scheme: dark;
+        }
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -54,7 +88,7 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background: #fff;
+        background: var(--page-background);
       }
 
       button,
@@ -66,6 +100,13 @@
         border: 0;
         color: inherit;
         background: transparent;
+      }
+
+      img,
+      svg {
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
       }
 
       .page {
@@ -93,6 +134,7 @@
         width: 122.414px;
         height: 23.195px;
         display: block;
+        filter: var(--logo-filter);
       }
 
       p,
@@ -157,7 +199,11 @@
         opacity: 1;
       }
 
-      .tab:active {
+      .tab.is-active {
+        cursor: default;
+      }
+
+      .tab:not(.is-active):active {
         transform: scale(0.98);
       }
 
@@ -189,9 +235,9 @@
         width: 100%;
         min-height: 52px;
         padding: 16px 16px 16px 8px;
-        border: 1px solid rgb(0 0 0 / 0.14);
+        border: 1px solid var(--field-border);
         border-radius: 12px;
-        background: #fff;
+        background: var(--field-background);
         overflow: hidden;
       }
 
@@ -226,11 +272,13 @@
       .code-field {
         align-items: flex-start;
         min-height: 128px;
+        padding: 16px;
       }
 
       .code {
         flex: 1 1 auto;
         min-width: 0;
+        padding-right: 52px;
         font-family:
           "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
@@ -251,10 +299,10 @@
         width: 100%;
         height: 300px;
         overflow: hidden;
-        border: 1px solid rgb(0 0 0 / 0.14);
+        border: 1px solid var(--field-border);
         border-radius: 16px;
-        background: #fff;
-        box-shadow: 2px 4px 16px rgb(0 0 0 / 0.04);
+        background: var(--player-background);
+        box-shadow: var(--player-shadow);
       }
 
       .player-card.is-loading-preview simple-player {
@@ -280,7 +328,7 @@
         align-items: center;
         justify-content: center;
         gap: 4px;
-        color: rgb(0 0 0 / 0.4);
+        color: var(--muted-color);
       }
 
       .author {
@@ -289,7 +337,7 @@
         gap: 4px;
         padding: 2px 4px 2px 2px;
         border-radius: 8px;
-        color: rgb(0 0 0 / 0.4);
+        color: var(--muted-color);
         text-decoration: none;
         background: transparent;
         transition:
@@ -298,8 +346,8 @@
       }
 
       .author:hover {
-        color: #000;
-        background: rgb(0 0 0 / 0.05);
+        color: var(--hover-color);
+        background: var(--author-hover-background);
       }
 
       .bear {
@@ -310,12 +358,25 @@
         border-radius: 6px;
         background: transparent;
         overflow: hidden;
+        transition: background-color 160ms ease;
+      }
+
+      .author:hover .bear {
+        background: #fff;
       }
 
       .bear img {
         display: block;
         width: 20px;
         height: 18px;
+        filter: var(--bear-filter);
+        opacity: var(--bear-opacity);
+        transition: filter 160ms ease, opacity 160ms ease;
+      }
+
+      .author:hover .bear img {
+        filter: none;
+        opacity: 1;
       }
 
       .footer-link {
@@ -325,7 +386,7 @@
       }
 
       .footer-link:hover {
-        color: #000;
+        color: var(--hover-color);
       }
 
       @media (max-width: 680px) {
@@ -358,7 +419,6 @@
 
         .code-field {
           min-height: 148px;
-          padding-right: 52px;
         }
 
         .player-card {
@@ -477,7 +537,7 @@ export function App() {
         <footer class="footer text">
           <div class="footer-line">
             <span>Created for fun by</span>
-            <a class="author" href="https://grizz.fyi" target="_blank" rel="noreferrer">
+            <a class="author" href="https://x.com/GrizzShutsDown" target="_blank" rel="noreferrer">
               <span class="bear">
                 <img src="./assets/bear.svg" alt="" />
               </span>
@@ -592,19 +652,28 @@ import '@grizzshutsdown/simpleplayer';
       const renderPlayerPreview = (mode) => {
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
         const src = mode === 'loading' ? '' : ` src="${bunnyVideo}"`;
-        playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"></simple-player>`;
+        const controls = mode === 'controls' ? '' : ' disable-volume disable-picture-in-picture disable-fullscreen';
+        playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
 
         if (mode !== 'controls') return;
 
         const player = playerCard.querySelector('simple-player');
         window.requestAnimationFrame(() => {
-          const surface = player?.shadowRoot?.querySelector('[data-sp-player]');
-          surface?.classList.add('is-pointer-active');
+          player.style.setProperty('--sp-control-icon-delay-1', '0ms');
+          player.style.setProperty('--sp-control-icon-delay-2', '0ms');
+          player.style.setProperty('--sp-control-icon-delay-3', '0ms');
+
+          window.requestAnimationFrame(() => {
+            const surface = player?.shadowRoot?.querySelector('[data-sp-player]');
+            surface?.classList.remove('is-progress-settling');
+            surface?.classList.add('has-loaded-once', 'is-pointer-active');
+          });
         });
       };
 
       document.querySelectorAll('[data-install-tab]').forEach((button) => {
         button.addEventListener('click', () => {
+          if (button.classList.contains('is-active')) return;
           const key = button.dataset.installTab;
           installCommand.textContent = installCommands[key];
           setActiveTab('[data-install-tab]', button);
@@ -614,6 +683,7 @@ import '@grizzshutsdown/simpleplayer';
 
       document.querySelectorAll('[data-framework-tab]').forEach((button) => {
         button.addEventListener('click', () => {
+          if (button.classList.contains('is-active')) return;
           const key = button.dataset.frameworkTab;
           usageCode.textContent = usageExamples[key];
           setActiveTab('[data-framework-tab]', button);
@@ -623,6 +693,7 @@ import '@grizzshutsdown/simpleplayer';
 
       document.querySelectorAll('[data-example-tab]').forEach((button) => {
         button.addEventListener('click', () => {
+          if (button.classList.contains('is-active')) return;
           const key = button.dataset.exampleTab;
           renderPlayerPreview(key);
           setActiveTab('[data-example-tab]', button);
