@@ -1,0 +1,43 @@
+{
+  "name": "@grizzshutsdown/simpleplayer",
+  "version": "0.1.0",
+  "description": "A framework-free video player Web Component.",
+  "type": "module",
+  "main": "./dist/simple-player.js",
+  "module": "./dist/simple-player.js",
+  "types": "./dist/simple-player.d.ts",
+  "bin": {
+    "simpleplayer": "./bin/install-skill.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/simple-player.d.ts",
+      "import": "./dist/simple-player.js"
+    }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "skill",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "demo": "vite --host 127.0.0.1"
+  },
+  "keywords": [
+    "video",
+    "player",
+    "web-component",
+    "custom-element"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}
