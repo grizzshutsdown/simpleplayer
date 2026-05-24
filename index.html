@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SimplePlayer Demo</title>
+    <title>SimplePlayer</title>
     <meta
       name="description"
-      content="A simple default video player created from Grizz's portfolio for others to use."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="SimplePlayer" />
     <meta
       property="og:description"
-      content="A simple default video player created from Grizz's portfolio for others to use."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta property="og:url" content="https://simpleplayer.grizz.fyi/" />
     <meta property="og:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
@@ -22,7 +22,7 @@
     <meta name="twitter:title" content="SimplePlayer" />
     <meta
       name="twitter:description"
-      content="A simple default video player created from Grizz's portfolio for others to use."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta name="twitter:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
     <link rel="icon" type="image/svg+xml" href="./assets/Favicon.svg" />
@@ -257,6 +257,11 @@
         opacity: 0.5;
       }
 
+      .command-text.is-text-swapping,
+      .code.is-text-swapping {
+        animation: text-swap 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
       .copy {
         flex: 0 0 auto;
         padding: 0;
@@ -389,6 +394,26 @@
         color: var(--hover-color);
       }
 
+      @keyframes text-swap {
+        0% {
+          opacity: 0.5;
+          filter: blur(0);
+          transform: scale(1);
+        }
+
+        45% {
+          opacity: 0;
+          filter: blur(4px);
+          transform: scale(0.985);
+        }
+
+        100% {
+          opacity: 0.5;
+          filter: blur(0);
+          transform: scale(1);
+        }
+      }
+
       @media (max-width: 680px) {
         .page {
           padding: 80px 20px 56px;
@@ -460,7 +485,7 @@
       <div class="shell">
         <header class="intro">
           <img class="logo" src="./assets/logo.svg" alt="SimplePlayer" />
-          <p class="text">framework-free Web Component.</p>
+          <p class="text">Framework-free Web Component.</p>
           <p class="text">
             It gives you a clean default video player with custom overlay
             controls, a scrubber, volume, Picture-in-Picture, fullscreen, and
@@ -649,6 +674,22 @@ import '@grizzshutsdown/simpleplayer';
         button.textContent = 'Copy';
       };
 
+      const swapText = (element, value) => {
+        if (!element || element.textContent === value) return;
+
+        element.classList.remove('is-text-swapping');
+        void element.offsetWidth;
+        element.classList.add('is-text-swapping');
+
+        window.setTimeout(() => {
+          element.textContent = value;
+        }, 90);
+
+        window.setTimeout(() => {
+          element.classList.remove('is-text-swapping');
+        }, 240);
+      };
+
       const renderPlayerPreview = (mode) => {
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
         const src = mode === 'loading' ? '' : ` src="${bunnyVideo}"`;
@@ -675,7 +716,7 @@ import '@grizzshutsdown/simpleplayer';
         button.addEventListener('click', () => {
           if (button.classList.contains('is-active')) return;
           const key = button.dataset.installTab;
-          installCommand.textContent = installCommands[key];
+          swapText(installCommand, installCommands[key]);
           setActiveTab('[data-install-tab]', button);
           resetCopyButton(installCopy);
         });
@@ -685,7 +726,7 @@ import '@grizzshutsdown/simpleplayer';
         button.addEventListener('click', () => {
           if (button.classList.contains('is-active')) return;
           const key = button.dataset.frameworkTab;
-          usageCode.textContent = usageExamples[key];
+          swapText(usageCode, usageExamples[key]);
           setActiveTab('[data-framework-tab]', button);
           resetCopyButton(usageCopy);
         });

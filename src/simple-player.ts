@@ -19,6 +19,13 @@ type FullscreenPlayer = HTMLElement & {
   msRequestFullscreen?: () => Promise<void> | void;
 };
 
+type FullscreenVideo = HTMLVideoElement & {
+  webkitEnterFullscreen?: () => void;
+  webkitEnterFullScreen?: () => void;
+  webkitSupportsFullscreen?: boolean;
+  webkitDisplayingFullscreen?: boolean;
+};
+
 const styles = `
   :host {
     --simple-player-aspect-ratio: ${DEFAULT_ASPECT_RATIO};
@@ -105,6 +112,7 @@ const styles = `
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .sp-player:fullscreen {
@@ -177,6 +185,22 @@ const styles = `
     pointer-events: none;
     transform: translate(-50%, -50%) scale(0.96);
     transition: opacity 260ms ease, transform 260ms cubic-bezier(0.23, 1, 0.32, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sp-button::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 999px;
+    background: rgb(var(--white-rgb) / 0.14);
+    filter: blur(5px);
+    opacity: 0;
+    transform: scale(0.82);
+    transition:
+      opacity 220ms ease,
+      filter 260ms ease,
+      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .sp-player.is-pointer-active .sp-button,
@@ -189,6 +213,13 @@ const styles = `
 
   .sp-player.is-button-animating .sp-button {
     animation: sp-button-release 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-player.is-button-animating .sp-button::before,
+  .sp-button:active::before {
+    opacity: 1;
+    filter: blur(7px);
+    transform: scale(1);
   }
 
   .sp-player.is-scrubbing .sp-button,
@@ -204,6 +235,8 @@ const styles = `
 
   .sp-icon {
     grid-area: 1 / 1;
+    position: relative;
+    z-index: 1;
     display: block;
     overflow: visible;
     transition: opacity 160ms ease, transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
@@ -2174,6 +2207,7 @@ export class SimplePlayer extends HTMLElement {
   #isFullscreenSupported() {
     const fullscreenDocument = document as FullscreenDocument;
     const player = this.#player as FullscreenPlayer;
+    const video = this.#video as FullscreenVideo;
     const isFullscreenEnabled =
       fullscreenDocument.fullscreenEnabled ??
       fullscreenDocument.webkitFullscreenEnabled ??
@@ -2181,8 +2215,7 @@ export class SimplePlayer extends HTMLElement {
       fullscreenDocument.msFullscreenEnabled ??
       false;
 
-    return Boolean(
-      this.fullscreenEnabled &&
+    const canFullscreenPlayer = Boolean(
       isFullscreenEnabled &&
       (
         player.requestFullscreen ||
@@ -2191,6 +2224,9 @@ export class SimplePlayer extends HTMLElement {
         player.msRequestFullscreen
       )
     );
+    const canFullscreenVideo = Boolean(video.webkitSupportsFullscreen || video.webkitEnterFullscreen || video.webkitEnterFullScreen);
+
+    return Boolean(this.fullscreenEnabled && (canFullscreenPlayer || canFullscreenVideo));
   }
 
   #requestPlayerFullscreen() {
@@ -2202,6 +2238,12 @@ export class SimplePlayer extends HTMLElement {
       player.msRequestFullscreen;
 
     return Promise.resolve(requestFullscreen?.call(player));
+  }
+
+  #requestVideoFullscreen() {
+    const video = this.#video as FullscreenVideo;
+    const enterFullscreen = video.webkitEnterFullscreen || video.webkitEnterFullScreen;
+    enterFullscreen?.call(video);
   }
 
   #exitFullscreen() {
@@ -2415,17 +2457,23 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #handleVolumePointerEnter = () => {
+    if (this.#isTouchControls()) return;
     this.#isVolumeHovering = true;
     this.#openVolumePopover();
   };
 
   #handleVolumePointerLeave = () => {
+    if (this.#isTouchControls()) return;
     this.#isVolumeHovering = false;
     this.#scheduleVolumePopoverClose();
   };
 
-  #handleVolumeControlClick = () => {
+  #handleVolumeControlClick = (event: Event) => {
     if (!this.volumeEnabled || !this.#hasAudioTrack) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.#showTouchControls();
+    this.#closeVolumePopover();
     if (this.#video.muted || this.#video.volume <= 0) {
       if (this.#video.volume <= 0) this.#video.volume = 0.7;
       this.#video.muted = false;
@@ -2434,6 +2482,7 @@ export class SimplePlayer extends HTMLElement {
     }
 
     this.#syncAudioControlState();
+    this.#scheduleTouchControlsHide();
   };
 
   #handleVolumePointerDown = (event: Event) => {
@@ -2525,7 +2574,18 @@ export class SimplePlayer extends HTMLElement {
       if (fullscreenElement === this.#player || fullscreenElement === this) {
         await this.#exitFullscreen();
       } else {
-        await this.#requestPlayerFullscreen();
+        await this.#hydrateVideoSource();
+        const player = this.#player as FullscreenPlayer;
+        if (
+          typeof player.requestFullscreen === 'function' ||
+          typeof player.webkitRequestFullscreen === 'function' ||
+          typeof player.mozRequestFullScreen === 'function' ||
+          typeof player.msRequestFullscreen === 'function'
+        ) {
+          await this.#requestPlayerFullscreen();
+        } else {
+          this.#requestVideoFullscreen();
+        }
       }
     } catch {
       // Fullscreen can be blocked by browser policy or missing user activation.
