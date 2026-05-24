@@ -138,15 +138,23 @@ simple-player {
 }
 ```
 
-## Agent Skill
+## AI Skill
 
-Install the bundled Codex skill with:
+The package includes a plain Markdown skill that any AI tool can read.
+
+Install it to the default local skills folder:
 
 ```bash
 npx @grizzshutsdown/simpleplayer
 ```
 
-It installs a `simpleplayer` skill into your Codex skills folder.
+Or choose the skills folder your AI tool uses:
+
+```bash
+npx @grizzshutsdown/simpleplayer --dir ~/.ai/skills
+```
+
+The installer copies the `simpleplayer` skill folder there. Point your AI tool at that folder if it does not scan it automatically.
 
 ## License
 
