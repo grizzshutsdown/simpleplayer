@@ -22,7 +22,9 @@
   },
   "files": [
     "bin",
-    "dist",
+    "dist/simple-player.d.ts",
+    "dist/simple-player.js",
+    "dist/simple-player.js.map",
     "skill",
     "LICENSE",
     "README.md"

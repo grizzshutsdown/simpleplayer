@@ -134,7 +134,6 @@ The package includes a plain Markdown skill that any AI tool can read.
 
 ```bash
 npx @grizzshutsdown/simpleplayer
-npx @grizzshutsdown/simpleplayer --dir ~/.ai/skills
 ```
 
 ## Found this useful?
