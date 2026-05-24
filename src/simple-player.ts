@@ -236,16 +236,15 @@ const styles = `
   .sp-progress-cluster {
     position: absolute;
     top: calc(100% - 28px);
-    left: calc(var(--space) * 4);
+    left: 50%;
     z-index: 4;
     display: block;
     width: calc(100% - (var(--space) * 8));
     height: 28px;
     --sp-progress-height: 4px;
-    transform: translateX(0);
+    transform: translateX(-50%);
     transition:
       top 360ms cubic-bezier(0.23, 1, 0.32, 1),
-      left 360ms cubic-bezier(0.23, 1, 0.32, 1),
       width 360ms cubic-bezier(0.23, 1, 0.32, 1),
       height 360ms cubic-bezier(0.23, 1, 0.32, 1),
       transform 360ms cubic-bezier(0.23, 1, 0.32, 1);
