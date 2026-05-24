@@ -568,9 +568,12 @@ const styles = `
     transition-delay: var(--sp-control-icon-delay-3);
   }
 
-  .sp-player.is-loading:not(.has-loaded-once) .sp-control-tray {
+  .sp-player.is-loading:not(.has-loaded-once) .sp-control-tray,
+  .sp-player.is-progress-settling .sp-control-tray {
     opacity: 0;
     pointer-events: none;
+    filter: blur(0.8px);
+    transform: translateY(4px) scale(0.96);
   }
 
   .sp-player.has-controls-collision .sp-control-tray {
@@ -1186,7 +1189,7 @@ export class SimplePlayer extends HTMLElement {
     }
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);
     this.#listen(document, 'pointercancel', this.#handleDocumentPointerCancel);
-    this.#listen(document, 'fullscreenchange', this.#syncFullscreenState);
+    this.#listen(document, 'fullscreenchange', this.#handleFullscreenChange);
     this.#listen(window, 'blur', this.#handleWindowBlur);
 
     this.#listen(this.#video, 'play', this.#handleVideoPlay);
@@ -2040,6 +2043,10 @@ export class SimplePlayer extends HTMLElement {
     this.#player.classList.toggle('is-fullscreen', isActive);
     this.#fullscreenControl.disabled = !isSupported;
     this.#fullscreenControl.setAttribute('aria-label', isActive ? 'Exit fullscreen' : 'Enter fullscreen');
+  };
+
+  #handleFullscreenChange = () => {
+    this.#syncFullscreenState();
     this.#isPointerOverControlSurface = false;
     this.#showPointerControls();
   };

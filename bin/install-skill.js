@@ -13,11 +13,9 @@ SimplePlayer skill installer
 
 Usage:
   npx @grizzshutsdown/simpleplayer
-  npx @grizzshutsdown/simpleplayer --dir ~/.ai/skills
 
 Options:
-  --dir <path>   Skills directory used by your AI tool
-  --help         Show this help
+  --help   Show this help
 `;
 
 if (args.includes('--help') || args.includes('-h')) {
@@ -25,11 +23,8 @@ if (args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
-const dirIndex = args.findIndex((arg) => arg === '--dir' || arg === '--skills-dir');
-const requestedDir = dirIndex >= 0 ? args[dirIndex + 1] : '';
 const skillsDir = resolve(
-  requestedDir ||
-    process.env.SIMPLEPLAYER_SKILLS_DIR ||
+  process.env.SIMPLEPLAYER_SKILLS_DIR ||
     process.env.AI_SKILLS_DIR ||
     join(process.env.HOME || process.cwd(), '.ai', 'skills'),
 );
