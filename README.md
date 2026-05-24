@@ -25,6 +25,65 @@ Add the element:
 <simple-player src="/video.mp4"></simple-player>
 ```
 
+## Examples
+
+### React
+
+Import the package in your app entry or component:
+
+```jsx
+import '@grizzshutsdown/simpleplayer';
+
+export function App() {
+  return <simple-player src="/video.mp4" aspect-ratio="16 / 9" />;
+}
+```
+
+### TypeScript
+
+If TypeScript does not know the custom element, add a declaration file like `simple-player.d.ts`:
+
+```ts
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'simple-player': DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & {
+        src?: string;
+        'aspect-ratio'?: string;
+        'preload-margin'?: string;
+        'disable-volume'?: boolean;
+        'disable-picture-in-picture'?: boolean;
+        'disable-fullscreen'?: boolean;
+      };
+    }
+  }
+}
+```
+
+### Vue
+
+```vue
+<script setup>
+import '@grizzshutsdown/simpleplayer';
+</script>
+
+<template>
+  <simple-player src="/video.mp4" aspect-ratio="16 / 9" />
+</template>
+```
+
+### Svelte
+
+```svelte
+<script>
+  import '@grizzshutsdown/simpleplayer';
+</script>
+
+<simple-player src="/video.mp4" aspect-ratio="16 / 9" />
+```
+
 ## Options
 
 ```html
