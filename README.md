@@ -1,8 +1,10 @@
 # SimplePlayer
 
-A framework-free video player Web Component.
+A simple default video player created from [Grizz's portfolio](https://grizz.fyi) for others to use.
 
-## Install
+SimplePlayer is a framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading.
+
+## Installation
 
 ```bash
 npm install @grizzshutsdown/simpleplayer
@@ -11,25 +13,19 @@ yarn add @grizzshutsdown/simpleplayer
 bun add @grizzshutsdown/simpleplayer
 ```
 
-## Use
-
-Import it once:
+## Usage
 
 ```js
 import '@grizzshutsdown/simpleplayer';
 ```
 
-Add the element:
-
 ```html
 <simple-player src="/video.mp4"></simple-player>
 ```
 
-## Examples
+## Frameworks
 
-### React
-
-Import the package in your app entry or component:
+React:
 
 ```jsx
 import '@grizzshutsdown/simpleplayer';
@@ -39,9 +35,29 @@ export function App() {
 }
 ```
 
-### TypeScript
+Vue:
 
-If TypeScript does not know the custom element, add a declaration file like `simple-player.d.ts`:
+```vue
+<script setup>
+import '@grizzshutsdown/simpleplayer';
+</script>
+
+<template>
+  <simple-player src="/video.mp4" aspect-ratio="16 / 9" />
+</template>
+```
+
+Svelte:
+
+```svelte
+<script>
+  import '@grizzshutsdown/simpleplayer';
+</script>
+
+<simple-player src="/video.mp4" aspect-ratio="16 / 9" />
+```
+
+TypeScript with React:
 
 ```ts
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
@@ -62,28 +78,6 @@ declare module 'react' {
 }
 ```
 
-### Vue
-
-```vue
-<script setup>
-import '@grizzshutsdown/simpleplayer';
-</script>
-
-<template>
-  <simple-player src="/video.mp4" aspect-ratio="16 / 9" />
-</template>
-```
-
-### Svelte
-
-```svelte
-<script>
-  import '@grizzshutsdown/simpleplayer';
-</script>
-
-<simple-player src="/video.mp4" aspect-ratio="16 / 9" />
-```
-
 ## Options
 
 ```html
@@ -94,8 +88,6 @@ import '@grizzshutsdown/simpleplayer';
 </simple-player>
 ```
 
-Attributes:
-
 - `src`: video URL.
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
@@ -103,7 +95,7 @@ Attributes:
 - `disable-picture-in-picture`: remove the Picture-in-Picture control.
 - `disable-fullscreen`: remove the fullscreen control.
 
-JavaScript:
+You can also control it with JavaScript:
 
 ```js
 const player = document.querySelector('simple-player');
@@ -117,8 +109,6 @@ player.fullscreenEnabled = false;
 ```
 
 ## Styling
-
-Set CSS variables on the element:
 
 ```css
 simple-player {
@@ -142,19 +132,14 @@ simple-player {
 
 The package includes a plain Markdown skill that any AI tool can read.
 
-Install it to the default local skills folder:
-
 ```bash
 npx @grizzshutsdown/simpleplayer
-```
-
-Or choose the skills folder your AI tool uses:
-
-```bash
 npx @grizzshutsdown/simpleplayer --dir ~/.ai/skills
 ```
 
-The installer copies the `simpleplayer` skill folder there. Point your AI tool at that folder if it does not scan it automatically.
+## Found this useful?
+
+Follow [Grizz](https://x.com/GrizzShutsDown).
 
 ## License
 

@@ -1,8 +1,13 @@
 {
   "name": "@grizzshutsdown/simpleplayer",
   "version": "0.1.0",
-  "description": "A framework-free video player Web Component.",
+  "description": "A simple default video player created from Grizz's portfolio for others to use.",
   "type": "module",
+  "homepage": "https://grizz.fyi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grizzshutsdown/simpleplayer.git"
+  },
   "main": "./dist/simple-player.js",
   "module": "./dist/simple-player.js",
   "types": "./dist/simple-player.d.ts",
