@@ -5,6 +5,7 @@ package-lock.json
 
 dist/assets/
 dist/index.html
+site-dist/
 *.tgz
 .env
 .env.*

@@ -124,11 +124,22 @@ npm install
 npm run dev
 ```
 
-The dev playground lives in `dev/` and imports `src/simple-player.ts` directly. Use it when changing the player itself. The production site demo is separate and runs with:
+The dev playground lives in `dev/` and imports `src/simple-player.ts` directly. Use it when changing the player itself.
+
+The hosted demo is separate from the package source. It has its own consumer install in `site/`, then imports the published package the same way a user would:
 
 ```bash
+npm install --prefix site
 npm run demo
 ```
+
+Cloudflare Pages uses:
+
+```bash
+npm run build
+```
+
+with `site-dist` as the output directory.
 
 Before opening a pull request, run:
 
