@@ -1018,6 +1018,7 @@ export class SimplePlayer extends HTMLElement {
   #firstFrameRequestPending = false;
   #firstFramePresentationPending = false;
   #firstFrameRequestToken = 0;
+  #firstFrameFallbackTimer = 0;
   #hasInitialProgressSettled = false;
   #initialProgressEstimateUnlockAt = 0;
   #isPlaybackBuffering = true;
@@ -1180,6 +1181,7 @@ export class SimplePlayer extends HTMLElement {
     this.#clearVideoRetryTimer();
     this.#clearInitialProgressSettleTimer();
     this.#clearScrubLongPressTimer();
+    this.#clearFirstFrameFallbackTimer();
     this.#clearVolumeCloseTimer();
     this.#clearVolumeIconAnimationTimer();
     this.#clearControlTapTimer();
@@ -1623,6 +1625,12 @@ export class SimplePlayer extends HTMLElement {
     this.#initialProgressSettleTimer = 0;
   }
 
+  #clearFirstFrameFallbackTimer() {
+    if (!this.#firstFrameFallbackTimer) return;
+    window.clearTimeout(this.#firstFrameFallbackTimer);
+    this.#firstFrameFallbackTimer = 0;
+  }
+
   #clearVolumeIconAnimationTimer() {
     if (!this.#volumeIconAnimationTimer) return;
     window.clearTimeout(this.#volumeIconAnimationTimer);
@@ -1673,6 +1681,7 @@ export class SimplePlayer extends HTMLElement {
     if (!source) return;
 
     this.#clearVideoRetryTimer();
+    this.#clearFirstFrameFallbackTimer();
     this.#videoLoadAttempt += 1;
     this.#videoSourceLoaded = true;
     this.#hasDecodedFirstFrame = false;
@@ -1816,6 +1825,7 @@ export class SimplePlayer extends HTMLElement {
 
     this.#videoRetryTimer = window.setTimeout(() => {
       this.#videoRetryTimer = 0;
+      this.#clearFirstFrameFallbackTimer();
       this.#videoSourceLoaded = false;
       this.#hasDecodedFirstFrame = false;
       this.#hasPresentedFirstFrame = false;
@@ -1872,6 +1882,7 @@ export class SimplePlayer extends HTMLElement {
     const confirmFirstFrame = () => {
       if (requestToken !== this.#firstFrameRequestToken) return;
 
+      this.#clearFirstFrameFallbackTimer();
       this.#firstFrameRequestPending = false;
       this.#hasDecodedFirstFrame =
         !this.#video.error &&
@@ -1902,6 +1913,7 @@ export class SimplePlayer extends HTMLElement {
 
     if ('requestVideoFrameCallback' in this.#video) {
       this.#video.requestVideoFrameCallback(confirmFirstFrame);
+      this.#firstFrameFallbackTimer = window.setTimeout(confirmFirstFrame, 180);
       return;
     }
 

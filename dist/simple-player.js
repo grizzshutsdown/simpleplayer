@@ -1,13 +1,13 @@
-var wi = Object.defineProperty;
-var je = (m) => {
+var ki = Object.defineProperty;
+var Oe = (m) => {
   throw TypeError(m);
 };
-var xi = (m, b, i) => b in m ? wi(m, b, { enumerable: !0, configurable: !0, writable: !0, value: i }) : m[b] = i;
-var Ze = (m, b, i) => xi(m, typeof b != "symbol" ? b + "" : b, i), Fe = (m, b, i) => b.has(m) || je("Cannot " + i);
-var t = (m, b, i) => (Fe(m, b, "read from private field"), i ? i.call(m) : b.get(m)), n = (m, b, i) => b.has(m) ? je("Cannot add the same private member more than once") : b instanceof WeakSet ? b.add(m) : b.set(m, i), r = (m, b, i, a) => (Fe(m, b, "write to private field"), a ? a.call(m, i) : b.set(m, i), i), e = (m, b, i) => (Fe(m, b, "access private method"), i);
-const Oe = "16 / 9", ki = "360px 0px", Pi = `
+var Pi = (m, b, i) => b in m ? ki(m, b, { enumerable: !0, configurable: !0, writable: !0, value: i }) : m[b] = i;
+var Ke = (m, b, i) => Pi(m, typeof b != "symbol" ? b + "" : b, i), Me = (m, b, i) => b.has(m) || Oe("Cannot " + i);
+var t = (m, b, i) => (Me(m, b, "read from private field"), i ? i.call(m) : b.get(m)), n = (m, b, i) => b.has(m) ? Oe("Cannot add the same private member more than once") : b instanceof WeakSet ? b.add(m) : b.set(m, i), r = (m, b, i, a) => (Me(m, b, "write to private field"), a ? a.call(m, i) : b.set(m, i), i), e = (m, b, i) => (Me(m, b, "access private method"), i);
+const Ge = "16 / 9", Ei = "360px 0px", Ti = `
   :host {
-    --simple-player-aspect-ratio: ${Oe};
+    --simple-player-aspect-ratio: ${Ge};
     --space: 4px;
     --white: #fff;
     --black: #000;
@@ -850,9 +850,9 @@ const Oe = "16 / 9", ki = "360px 0px", Pi = `
       transform: translateY(0) scale(1);
     }
   }
-`, Ke = document.createElement("template");
-Ke.innerHTML = `
-  <style>${Pi}</style>
+`, Je = document.createElement("template");
+Je.innerHTML = `
+  <style>${Ti}</style>
   <div class="sp-player is-loading" data-sp-player>
     <video
       class="sp-video sp-asset"
@@ -928,15 +928,15 @@ Ke.innerHTML = `
     </div>
   </div>
 `;
-var f, _t, z, Wt, B, c, o, q, d, $, Q, jt, us, y, _, E, tt, st, ut, dt, v, M, et, L, Tt, it, Ct, N, mt, Zt, Lt, k, C, Ot, rt, ft, bt, ot, ds, Kt, R, D, W, j, Z, vt, ms, At, fs, bs, gt, V, nt, Ft, g, O, Gt, Jt, St, U, at, w, yt, wt, xt, Qt, Bs, qs, ts, $s, Ns, vs, Mt, Us, Ys, Xs, _s, Ws, js, Vt, Zs, Os, s, Ls, As, Se, Me, Je, h, Fs, It, H, Ks, rs, K, G, Ss, os, qt, Qe, $t, ns, Ve, Ie, zt, Rt, gs, Dt, lt, ht, ys, Gs, ws, Ms, xs, Js, ze, as, Vs, Re, ti, ks, si, ct, Y, De, ei, He, Nt, A, ii, X, ri, Be, qe, oi, Ht, $e, x, J, Ne, ni, Ut, pt, ai, Is, ls, li, hi, ci, S, hs, cs, pi, Yt, ui, T, Et, di, F, Ue, zs, Xt, kt, Rs, Ye, mi, fi, bi, Bt, Pt, vi, Ps, Ds, Xe, Hs, Qs, te, se, ps, _e, ss, We, Es, Ts, ee, ie, re, oe, ne, ae, le, he, ce, pe, ue, de, me, fe, be, ve, ge, ye, we, xe, ke, es, Pe, Ee, Te, Ce, Le, Ae, I, gi;
-class Ge extends HTMLElement {
+var f, Wt, z, jt, B, c, o, q, d, $, Q, Zt, ms, y, _, E, tt, st, ut, dt, v, M, et, F, Tt, it, Ct, N, mt, Ot, Ft, k, C, Kt, rt, ft, bt, ot, fs, Gt, R, D, W, j, Z, Lt, vt, bs, At, vs, gs, gt, V, nt, St, g, O, Jt, Qt, Mt, U, at, w, yt, wt, xt, ts, $s, Ns, ss, Us, Ys, ys, Vt, Xs, _s, Ws, js, Zs, Os, It, Ks, Gs, s, As, Ss, Ve, Ie, ti, h, Ms, zt, H, Js, os, K, G, Vs, ns, $t, si, Nt, as, ze, Re, Rt, Dt, ws, Ht, lt, ht, xs, Qs, ks, Is, Ps, te, De, ls, zs, hs, He, ei, Es, ii, ct, Y, Be, ri, qe, Ut, L, oi, X, ni, $e, Ne, ai, Bt, Ue, x, J, Ye, li, Yt, pt, hi, Rs, cs, ci, pi, ui, S, ps, us, di, Xt, mi, T, Et, fi, A, Xe, Ds, _t, kt, Hs, _e, bi, vi, gi, qt, Pt, yi, Ts, Bs, We, qs, se, ee, ie, ds, je, es, Ze, Cs, Fs, re, oe, ne, ae, le, he, ce, pe, ue, de, me, fe, be, ve, ge, ye, we, xe, ke, Pe, Ee, is, Te, Ce, Fe, Le, Ae, Se, I, wi;
+class Qe extends HTMLElement {
   constructor() {
     super();
     n(this, s);
     n(this, f);
-    n(this, _t, []);
+    n(this, Wt, []);
     n(this, z, null);
-    n(this, Wt, !1);
+    n(this, jt, !1);
     n(this, B, !1);
     n(this, c);
     n(this, o);
@@ -944,8 +944,8 @@ class Ge extends HTMLElement {
     n(this, d);
     n(this, $);
     n(this, Q);
-    n(this, jt);
-    n(this, us);
+    n(this, Zt);
+    n(this, ms);
     n(this, y);
     n(this, _);
     n(this, E);
@@ -956,69 +956,70 @@ class Ge extends HTMLElement {
     n(this, v, !1);
     n(this, M, !1);
     n(this, et, !1);
-    n(this, L, 0);
+    n(this, F, 0);
     n(this, Tt, 0);
     n(this, it, 0);
     n(this, Ct, !1);
     n(this, N, !1);
     n(this, mt, !1);
-    n(this, Zt, 0);
-    n(this, Lt, 0);
+    n(this, Ot, 0);
+    n(this, Ft, 0);
     n(this, k, null);
     n(this, C, null);
-    n(this, Ot, 0);
+    n(this, Kt, 0);
     n(this, rt, 0);
     n(this, ft, 0);
     n(this, bt, 0);
     n(this, ot, 0);
-    n(this, ds, 0);
-    n(this, Kt, 0);
+    n(this, fs, 0);
+    n(this, Gt, 0);
     n(this, R, !1);
     n(this, D, !1);
     n(this, W, !1);
     n(this, j, !1);
     n(this, Z, 0);
+    n(this, Lt, 0);
     n(this, vt, !1);
-    n(this, ms, 0);
+    n(this, bs, 0);
     n(this, At, !0);
-    n(this, fs, 0);
-    n(this, bs, performance.now());
+    n(this, vs, 0);
+    n(this, gs, performance.now());
     n(this, gt, 0);
     n(this, V, null);
     n(this, nt, null);
-    n(this, Ft, !1);
+    n(this, St, !1);
     n(this, g, !0);
     n(this, O, !1);
-    n(this, Gt, null);
     n(this, Jt, null);
-    n(this, St, !1);
+    n(this, Qt, null);
+    n(this, Mt, !1);
     n(this, U, !1);
     n(this, at, !1);
     n(this, w, null);
     n(this, yt, 0);
     n(this, wt, 0);
     n(this, xt, 0);
-    n(this, Qt, null);
-    n(this, Bs, 4);
-    n(this, qs, 3.5);
-    n(this, ts, 6);
-    n(this, $s, 0.08);
-    n(this, Ns, 240);
-    n(this, vs, 1200);
-    n(this, Mt, 1600);
-    n(this, Us, 140);
-    n(this, Ys, 380);
-    n(this, Xs, 650);
-    n(this, _s, 2e3);
-    n(this, Ws, 3);
-    n(this, js, 10);
-    n(this, Vt, 0.18);
-    n(this, Zs, 8);
-    n(this, Os, 18);
-    n(this, It, (i) => {
+    n(this, ts, null);
+    n(this, $s, 4);
+    n(this, Ns, 3.5);
+    n(this, ss, 6);
+    n(this, Us, 0.08);
+    n(this, Ys, 240);
+    n(this, ys, 1200);
+    n(this, Vt, 1600);
+    n(this, Xs, 140);
+    n(this, _s, 380);
+    n(this, Ws, 650);
+    n(this, js, 2e3);
+    n(this, Zs, 3);
+    n(this, Os, 10);
+    n(this, It, 0.18);
+    n(this, Ks, 8);
+    n(this, Gs, 18);
+    n(this, zt, (i) => {
       i.preventDefault();
     });
-    n(this, Ks, () => {
+    n(this, Js, () => {
       if (r(this, ft, 0), !(t(this, M) || t(this, v) || t(this, U))) {
         if (e(this, s, I).call(this)) {
           t(this, c).classList.remove("is-controls-visible");
@@ -1027,81 +1028,81 @@ class Ge extends HTMLElement {
         t(this, O) || t(this, c).classList.remove("is-pointer-active");
       }
     });
-    n(this, zt, (i) => {
-      e(this, s, qt).call(this, i) && e(this, s, Ss).call(this, !0);
-    });
     n(this, Rt, (i) => {
-      e(this, s, qt).call(this, i) && e(this, s, Ss).call(this, !0);
+      e(this, s, $t).call(this, i) && e(this, s, Vs).call(this, !0);
     });
-    n(this, gs, (i) => {
-      e(this, s, qt).call(this, i) && e(this, s, Ie).call(this);
-    });
-    n(this, Dt, () => {
-      e(this, s, os).call(this);
-    });
-    n(this, lt, (i) => {
-      e(this, s, qt).call(this, i) && (r(this, O, !0), t(this, c).classList.add("is-pointer-active"), e(this, s, H).call(this));
-    });
-    n(this, ht, () => {
-      r(this, O, !1), e(this, s, rs).call(this, t(this, Mt));
-    });
-    n(this, ys, () => {
-      e(this, s, I).call(this) ? t(this, c).classList.add("is-controls-visible") : t(this, c).classList.add("is-pointer-active"), e(this, s, H).call(this);
-    });
-    n(this, Gs, () => {
-      e(this, s, rs).call(this, t(this, Mt));
+    n(this, Dt, (i) => {
+      e(this, s, $t).call(this, i) && e(this, s, Vs).call(this, !0);
     });
     n(this, ws, (i) => {
+      e(this, s, $t).call(this, i) && e(this, s, Re).call(this);
+    });
+    n(this, Ht, () => {
+      e(this, s, ns).call(this);
+    });
+    n(this, lt, (i) => {
+      e(this, s, $t).call(this, i) && (r(this, O, !0), t(this, c).classList.add("is-pointer-active"), e(this, s, H).call(this));
+    });
+    n(this, ht, () => {
+      r(this, O, !1), e(this, s, os).call(this, t(this, Vt));
+    });
+    n(this, xs, () => {
+      e(this, s, I).call(this) ? t(this, c).classList.add("is-controls-visible") : t(this, c).classList.add("is-pointer-active"), e(this, s, H).call(this);
+    });
+    n(this, Qs, () => {
+      e(this, s, os).call(this, t(this, Vt));
+    });
+    n(this, ks, (i) => {
       const a = i.currentTarget;
-      if (e(this, s, Ve).call(this, a)) {
+      if (e(this, s, ze).call(this, a)) {
         t(this, Q).style.removeProperty("--sp-control-hover-offset");
         return;
       }
       const l = Number(a?.dataset.spControlIndex ?? 0);
       t(this, Q).style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${l})`);
     });
-    n(this, xs, () => {
+    n(this, Ps, () => {
       r(this, xt, 0), t(this, ut).forEach((i) => i.classList.remove("is-control-tap-active")), this.style.removeProperty("--sp-touch-control-hover-offset");
     });
-    n(this, Js, (i) => {
+    n(this, te, (i) => {
       if (!(i instanceof PointerEvent) || i.pointerType !== "touch") return;
       const a = i.currentTarget;
-      if (!a || !e(this, s, $t).call(this) || e(this, s, Ve).call(this, a)) return;
+      if (!a || !e(this, s, Nt).call(this) || e(this, s, ze).call(this, a)) return;
       const l = Number(a.dataset.spControlIndex ?? 0);
-      e(this, s, Ms).call(this), t(this, ut).forEach((p) => p.classList.toggle("is-control-tap-active", p === a)), this.style.setProperty("--sp-touch-control-hover-offset", `calc(var(--sp-control-slot-size) * ${l})`), r(this, xt, window.setTimeout(t(this, xs), 280));
+      e(this, s, Is).call(this), t(this, ut).forEach((p) => p.classList.toggle("is-control-tap-active", p === a)), this.style.setProperty("--sp-touch-control-hover-offset", `calc(var(--sp-control-slot-size) * ${l})`), r(this, xt, window.setTimeout(t(this, Ps), 280));
     });
-    n(this, ks, () => {
+    n(this, Es, () => {
       if (t(this, ot) || t(this, c).classList.contains("is-progress-settling")) {
-        if (e(this, s, Vs).call(this), t(this, vt)) {
+        if (e(this, s, zs).call(this), t(this, vt)) {
           t(this, c).classList.remove("is-progress-settling");
           return;
         }
-        r(this, vt, !0), r(this, ms, performance.now() + t(this, Xs)), e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, S).call(this), t(this, c).classList.remove("is-progress-settling"), e(this, s, T).call(this);
+        r(this, vt, !0), r(this, bs, performance.now() + t(this, Ws)), e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, S).call(this), t(this, c).classList.remove("is-progress-settling"), e(this, s, T).call(this);
       }
     });
-    n(this, A, () => {
+    n(this, L, () => {
       if (t(this, o).error) {
-        e(this, s, Nt).call(this, !0, !0);
+        e(this, s, Ut).call(this, !0, !0);
         return;
       }
-      e(this, s, Nt).call(this, !t(this, B) || !t(this, D) || t(this, o).readyState < HTMLMediaElement.HAVE_FUTURE_DATA);
+      e(this, s, Ut).call(this, !t(this, B) || !t(this, D) || t(this, o).readyState < HTMLMediaElement.HAVE_FUTURE_DATA);
     });
-    n(this, Ht, () => {
+    n(this, Bt, () => {
       if (t(this, o).error || t(this, o).readyState < HTMLMediaElement.HAVE_CURRENT_DATA || t(this, o).videoWidth <= 0 || t(this, o).videoHeight <= 0)
-        return t(this, A).call(this), !1;
+        return t(this, L).call(this), !1;
       if (!t(this, R))
-        return e(this, s, oi).call(this), t(this, A).call(this), !1;
-      const i = e(this, s, qe).call(this);
-      return t(this, F).call(this), i;
+        return e(this, s, ai).call(this), t(this, L).call(this), !1;
+      const i = e(this, s, Ne).call(this);
+      return t(this, A).call(this), i;
     });
-    n(this, F, () => {
+    n(this, A, () => {
       if (!this.volumeEnabled) {
         t(this, c).classList.remove("is-volume-unavailable", "is-volume-muted", "is-volume-sound", "is-volume-icon-animating"), t(this, y).disabled = !0, t(this, y).setAttribute("aria-disabled", "true");
         return;
       }
-      r(this, g, e(this, s, di).call(this));
+      r(this, g, e(this, s, fi).call(this));
       const i = !t(this, g) || t(this, o).muted || t(this, o).volume <= 0, a = t(this, g) && !t(this, o).muted ? t(this, o).volume : 0, l = Math.round(a * 100), p = i ? "muted" : "sound";
-      t(this, Qt) && t(this, Qt) !== p && e(this, s, ti).call(this), r(this, Qt, p), t(this, c).classList.toggle("is-volume-unavailable", !t(this, g)), t(this, c).classList.toggle("is-volume-muted", i), t(this, c).classList.toggle("is-volume-sound", !i), t(this, c).style.setProperty("--sp-volume-level", `${l}%`), t(this, y).disabled = !t(this, g), t(this, y).setAttribute("aria-disabled", `${!t(this, g)}`), t(this, y).setAttribute(
+      t(this, ts) && t(this, ts) !== p && e(this, s, ei).call(this), r(this, ts, p), t(this, c).classList.toggle("is-volume-unavailable", !t(this, g)), t(this, c).classList.toggle("is-volume-muted", i), t(this, c).classList.toggle("is-volume-sound", !i), t(this, c).style.setProperty("--sp-volume-level", `${l}%`), t(this, y).disabled = !t(this, g), t(this, y).setAttribute("aria-disabled", `${!t(this, g)}`), t(this, y).setAttribute(
         "aria-label",
         t(this, g) ? i ? "Unmute video" : "Mute video" : "Video has no audio"
       ), t(this, E).setAttribute("aria-valuenow", `${l}`), t(this, E).setAttribute("aria-valuetext", `${l}%`);
@@ -1110,66 +1111,66 @@ class Ge extends HTMLElement {
       const i = document.pictureInPictureElement === t(this, o), a = t(this, o), l = !!(this.pictureInPictureEnabled && document.pictureInPictureEnabled && a.requestPictureInPicture);
       t(this, c).classList.toggle("is-picture-in-picture", i), t(this, tt).disabled = !l, t(this, tt).setAttribute("aria-label", i ? "Exit picture in picture" : "Enter picture in picture");
     });
-    n(this, Bt, () => {
-      const i = e(this, s, Rs).call(this), a = i === t(this, c) || i === this, l = e(this, s, Ye).call(this);
+    n(this, qt, () => {
+      const i = e(this, s, Hs).call(this), a = i === t(this, c) || i === this, l = e(this, s, _e).call(this);
       return t(this, c).classList.toggle("is-fullscreen", a), t(this, st).disabled = !l, t(this, st).setAttribute("aria-label", a ? "Exit fullscreen" : "Enter fullscreen"), a;
     });
     n(this, Pt, () => {
-      const i = t(this, Bt).call(this);
-      e(this, s, vi).call(this, i);
-    });
-    n(this, Ps, () => {
-      !t(this, M) || t(this, v) || (e(this, s, J).call(this), e(this, s, H).call(this), e(this, s, Et).call(this), r(this, v, !0), t(this, c).classList.add("is-scrubbing"), r(this, L, e(this, s, hs).call(this, t(this, Zt), !0)), t(this, et) && t(this, o).pause(), t(this, o).currentTime = t(this, L), e(this, s, x).call(this, t(this, L)), e(this, s, S).call(this, t(this, L)), e(this, s, Yt).call(this), e(this, s, T).call(this));
-    });
-    n(this, Qs, async () => {
-      if (performance.now() < t(this, ds))
-        return;
-      const i = t(this, C) ? t(this, C) !== "playing" : t(this, o).paused || t(this, o).ended, a = !i || e(this, s, ii).call(this);
-      e(this, s, G).call(this), a && (r(this, C, i ? "playing" : "paused"), e(this, s, T).call(this)), i ? (e(this, s, J).call(this), await e(this, s, ct).call(this), await t(this, o).play().catch(() => {
-        r(this, C, null);
-      })) : (e(this, s, ni).call(this), t(this, o).pause()), e(this, s, T).call(this), e(this, s, K).call(this);
-    });
-    n(this, te, (i) => {
-      if (!(i instanceof PointerEvent)) return;
-      const a = t(this, q).getBoundingClientRect(), l = i.clientX >= a.left && i.clientX <= a.right && i.clientY >= a.top && i.clientY <= a.bottom, p = t(this, $).getBoundingClientRect(), u = i.clientX >= p.left && i.clientX <= p.right && i.clientY >= p.top && i.clientY <= p.bottom, P = t(this, d).getBoundingClientRect(), Cs = i.clientX >= P.left && i.clientX <= P.right && i.clientY >= P.top && i.clientY <= P.bottom, is = e(this, s, G).call(this);
-      is && l && r(this, ds, performance.now() + 260), is && (u || Cs) && r(this, Kt, performance.now() + 260), e(this, s, ct).call(this);
-    });
-    n(this, se, (i) => {
-      i.stopPropagation();
-    });
-    n(this, ss, () => {
-      r(this, yt, 0), !(t(this, at) || t(this, U)) && t(this, y).classList.remove("is-volume-open");
-    });
-    n(this, Es, () => {
-      e(this, s, I).call(this) || !this.volumeSliderEnabled || !t(this, g) || (r(this, at, !0), e(this, s, _e).call(this));
+      const i = t(this, qt).call(this);
+      e(this, s, yi).call(this, i);
     });
     n(this, Ts, () => {
-      e(this, s, I).call(this) || !this.volumeSliderEnabled || !t(this, g) || (r(this, at, !1), e(this, s, We).call(this));
+      !t(this, M) || t(this, v) || (e(this, s, J).call(this), e(this, s, H).call(this), e(this, s, Et).call(this), r(this, v, !0), t(this, c).classList.add("is-scrubbing"), r(this, F, e(this, s, ps).call(this, t(this, Ot), !0)), t(this, et) && t(this, o).pause(), t(this, o).currentTime = t(this, F), e(this, s, x).call(this, t(this, F)), e(this, s, S).call(this, t(this, F)), e(this, s, Xt).call(this), e(this, s, T).call(this));
+    });
+    n(this, se, async () => {
+      if (performance.now() < t(this, fs))
+        return;
+      const i = t(this, C) ? t(this, C) !== "playing" : t(this, o).paused || t(this, o).ended, a = !i || e(this, s, oi).call(this);
+      e(this, s, G).call(this), a && (r(this, C, i ? "playing" : "paused"), e(this, s, T).call(this)), i ? (e(this, s, J).call(this), await e(this, s, ct).call(this), await t(this, o).play().catch(() => {
+        r(this, C, null);
+      })) : (e(this, s, li).call(this), t(this, o).pause()), e(this, s, T).call(this), e(this, s, K).call(this);
     });
     n(this, ee, (i) => {
-      !this.volumeEnabled || !t(this, g) || (i.preventDefault(), i.stopPropagation(), !(!e(this, s, $t).call(this) || e(this, s, ns).call(this)) && (e(this, s, G).call(this), t(this, ss).call(this), t(this, o).muted || t(this, o).volume <= 0 ? (t(this, o).volume <= 0 && (t(this, o).volume = 0.7), t(this, o).muted = !1) : t(this, o).muted = !0, t(this, F).call(this), e(this, s, K).call(this)));
+      if (!(i instanceof PointerEvent)) return;
+      const a = t(this, q).getBoundingClientRect(), l = i.clientX >= a.left && i.clientX <= a.right && i.clientY >= a.top && i.clientY <= a.bottom, p = t(this, $).getBoundingClientRect(), u = i.clientX >= p.left && i.clientX <= p.right && i.clientY >= p.top && i.clientY <= p.bottom, P = t(this, d).getBoundingClientRect(), Ls = i.clientX >= P.left && i.clientX <= P.right && i.clientY >= P.top && i.clientY <= P.bottom, rs = e(this, s, G).call(this);
+      rs && l && r(this, fs, performance.now() + 260), rs && (u || Ls) && r(this, Gt, performance.now() + 260), e(this, s, ct).call(this);
     });
     n(this, ie, (i) => {
-      i instanceof PointerEvent && (!this.volumeEnabled || !this.volumeSliderEnabled || !t(this, g) || e(this, s, I).call(this) || (i.preventDefault(), i.stopPropagation(), e(this, s, G).call(this), e(this, s, H).call(this), e(this, s, _e).call(this), r(this, U, !0), r(this, w, i.pointerId), t(this, _).classList.add("is-scrubbing-volume"), t(this, E).setPointerCapture(i.pointerId), e(this, s, Ue).call(this, i.clientY)));
+      i.stopPropagation();
+    });
+    n(this, es, () => {
+      r(this, yt, 0), !(t(this, at) || t(this, U)) && t(this, y).classList.remove("is-volume-open");
+    });
+    n(this, Cs, () => {
+      e(this, s, I).call(this) || !this.volumeSliderEnabled || !t(this, g) || (r(this, at, !0), e(this, s, je).call(this));
+    });
+    n(this, Fs, () => {
+      e(this, s, I).call(this) || !this.volumeSliderEnabled || !t(this, g) || (r(this, at, !1), e(this, s, Ze).call(this));
     });
     n(this, re, (i) => {
-      i instanceof PointerEvent && t(this, U) && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.preventDefault(), i.stopPropagation(), e(this, s, Ue).call(this, i.clientY)));
+      !this.volumeEnabled || !t(this, g) || (i.preventDefault(), i.stopPropagation(), !(!e(this, s, Nt).call(this) || e(this, s, as).call(this)) && (e(this, s, G).call(this), t(this, es).call(this), t(this, o).muted || t(this, o).volume <= 0 ? (t(this, o).volume <= 0 && (t(this, o).volume = 0.7), t(this, o).muted = !1) : t(this, o).muted = !0, t(this, A).call(this), e(this, s, K).call(this)));
     });
     n(this, oe, (i) => {
-      i instanceof PointerEvent && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.stopPropagation(), e(this, s, Xt).call(this, i.pointerId), e(this, s, K).call(this)));
+      i instanceof PointerEvent && (!this.volumeEnabled || !this.volumeSliderEnabled || !t(this, g) || e(this, s, I).call(this) || (i.preventDefault(), i.stopPropagation(), e(this, s, G).call(this), e(this, s, H).call(this), e(this, s, je).call(this), r(this, U, !0), r(this, w, i.pointerId), t(this, _).classList.add("is-scrubbing-volume"), t(this, E).setPointerCapture(i.pointerId), e(this, s, Xe).call(this, i.clientY)));
     });
     n(this, ne, (i) => {
-      i instanceof PointerEvent && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.stopPropagation(), e(this, s, Xt).call(this, i.pointerId)));
+      i instanceof PointerEvent && t(this, U) && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.preventDefault(), i.stopPropagation(), e(this, s, Xe).call(this, i.clientY)));
     });
     n(this, ae, (i) => {
+      i instanceof PointerEvent && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.stopPropagation(), e(this, s, _t).call(this, i.pointerId), e(this, s, K).call(this)));
+    });
+    n(this, le, (i) => {
+      i instanceof PointerEvent && (t(this, w) !== null && i.pointerId !== t(this, w) || (i.stopPropagation(), e(this, s, _t).call(this, i.pointerId)));
+    });
+    n(this, he, (i) => {
       if (!(i instanceof KeyboardEvent) || !this.volumeEnabled || !t(this, g) || !["ArrowUp", "ArrowDown", "Home", "End"].includes(i.key)) return;
       i.preventDefault(), i.stopPropagation();
       const a = i.shiftKey ? 0.1 : 0.05, l = i.key === "Home" ? 0 : i.key === "End" ? 1 : t(this, o).volume + (i.key === "ArrowUp" ? a : -a);
-      t(this, o).volume = Math.min(1, Math.max(0, l)), t(this, o).muted = t(this, o).volume <= 0, t(this, F).call(this);
+      t(this, o).volume = Math.min(1, Math.max(0, l)), t(this, o).muted = t(this, o).volume <= 0, t(this, A).call(this);
     });
-    n(this, le, async () => {
+    n(this, ce, async () => {
       const i = t(this, o);
-      if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !i.requestPictureInPicture) && !(!e(this, s, $t).call(this) || e(this, s, ns).call(this))) {
+      if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !i.requestPictureInPicture) && !(!e(this, s, Nt).call(this) || e(this, s, as).call(this))) {
         e(this, s, G).call(this);
         try {
           await e(this, s, ct).call(this), document.pictureInPictureElement === t(this, o) ? await document.exitPictureInPicture() : await i.requestPictureInPicture();
@@ -1179,135 +1180,135 @@ class Ge extends HTMLElement {
         }
       }
     });
-    n(this, he, async (i) => {
-      if (e(this, s, Ye).call(this) && (i.preventDefault(), i.stopPropagation(), !(!e(this, s, $t).call(this) || e(this, s, ns).call(this)))) {
-        e(this, s, qt).call(this, i), e(this, s, G).call(this);
+    n(this, pe, async (i) => {
+      if (e(this, s, _e).call(this) && (i.preventDefault(), i.stopPropagation(), !(!e(this, s, Nt).call(this) || e(this, s, as).call(this)))) {
+        e(this, s, $t).call(this, i), e(this, s, G).call(this);
         try {
-          const a = e(this, s, Rs).call(this);
+          const a = e(this, s, Hs).call(this);
           if (a === t(this, c) || a === this)
-            await e(this, s, bi).call(this);
+            await e(this, s, gi).call(this);
           else {
             await e(this, s, ct).call(this);
             const l = t(this, c);
-            typeof l.requestFullscreen == "function" || typeof l.webkitRequestFullscreen == "function" || typeof l.mozRequestFullScreen == "function" || typeof l.msRequestFullscreen == "function" ? await e(this, s, mi).call(this) : e(this, s, fi).call(this);
+            typeof l.requestFullscreen == "function" || typeof l.webkitRequestFullscreen == "function" || typeof l.mozRequestFullScreen == "function" || typeof l.msRequestFullscreen == "function" ? await e(this, s, bi).call(this) : e(this, s, vi).call(this);
           }
         } catch {
         } finally {
-          t(this, Bt).call(this), e(this, s, K).call(this);
+          t(this, qt).call(this), e(this, s, K).call(this);
         }
       }
-    });
-    n(this, ce, (i) => {
-      if (i instanceof PointerEvent) {
-        if (i.preventDefault(), !e(this, s, $t).call(this) || e(this, s, ns).call(this)) {
-          e(this, s, G).call(this), e(this, s, I).call(this) && r(this, Kt, performance.now() + 260);
-          return;
-        }
-        e(this, s, G).call(this), e(this, s, H).call(this), t(this, ks).call(this), r(this, N, !1), r(this, mt, !1), e(this, s, hi).call(this, e(this, s, Ut).call(this)), r(this, M, !0), r(this, k, i.pointerId), r(this, Zt, i.clientX), r(this, et, !t(this, o).paused && !t(this, o).ended), t(this, d).setPointerCapture(i.pointerId), r(this, L, e(this, s, hs).call(this, i.clientX, !1)), e(this, s, Et).call(this), r(this, Lt, window.setTimeout(t(this, Ps), t(this, Ns)));
-      }
-    });
-    n(this, pe, (i) => {
-      if (!(i instanceof KeyboardEvent) || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(i.key)) return;
-      i.preventDefault(), i.stopPropagation(), t(this, ys).call(this);
-      const a = e(this, s, Ut).call(this), l = i.shiftKey ? 10 : 5, p = Math.max(10, t(this, o).duration * 0.1), u = i.key === "Home" ? 0 : i.key === "End" ? t(this, o).duration : i.key === "PageUp" ? a + p : i.key === "PageDown" ? a - p : a + (i.key === "ArrowRight" ? l : -l);
-      t(this, o).currentTime = Math.min(t(this, o).duration, Math.max(0, u)), e(this, s, x).call(this, t(this, o).currentTime), e(this, s, S).call(this, t(this, o).currentTime);
     });
     n(this, ue, (i) => {
-      i instanceof PointerEvent && t(this, M) && (t(this, k) !== null && i.pointerId !== t(this, k) || (!t(this, v) && Math.abs(i.clientX - t(this, Zt)) >= t(this, Bs) && t(this, Ps).call(this), t(this, v) && r(this, L, e(this, s, hs).call(this, i.clientX))));
+      if (i instanceof PointerEvent) {
+        if (i.preventDefault(), !e(this, s, Nt).call(this) || e(this, s, as).call(this)) {
+          e(this, s, G).call(this), e(this, s, I).call(this) && r(this, Gt, performance.now() + 260);
+          return;
+        }
+        e(this, s, G).call(this), e(this, s, H).call(this), t(this, Es).call(this), r(this, N, !1), r(this, mt, !1), e(this, s, pi).call(this, e(this, s, Yt).call(this)), r(this, M, !0), r(this, k, i.pointerId), r(this, Ot, i.clientX), r(this, et, !t(this, o).paused && !t(this, o).ended), t(this, d).setPointerCapture(i.pointerId), r(this, F, e(this, s, ps).call(this, i.clientX, !1)), e(this, s, Et).call(this), r(this, Ft, window.setTimeout(t(this, Ts), t(this, Ys)));
+      }
     });
     n(this, de, (i) => {
-      i instanceof PointerEvent && (t(this, k) !== null && i.pointerId !== t(this, k) || e(this, s, Xe).call(this, i.clientX, i.pointerId, !0));
+      if (!(i instanceof KeyboardEvent) || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(i.key)) return;
+      i.preventDefault(), i.stopPropagation(), t(this, xs).call(this);
+      const a = e(this, s, Yt).call(this), l = i.shiftKey ? 10 : 5, p = Math.max(10, t(this, o).duration * 0.1), u = i.key === "Home" ? 0 : i.key === "End" ? t(this, o).duration : i.key === "PageUp" ? a + p : i.key === "PageDown" ? a - p : a + (i.key === "ArrowRight" ? l : -l);
+      t(this, o).currentTime = Math.min(t(this, o).duration, Math.max(0, u)), e(this, s, x).call(this, t(this, o).currentTime), e(this, s, S).call(this, t(this, o).currentTime);
     });
     n(this, me, (i) => {
-      i instanceof PointerEvent && (t(this, k) !== null && i.pointerId !== t(this, k) || e(this, s, Hs).call(this, i.pointerId));
+      i instanceof PointerEvent && t(this, M) && (t(this, k) !== null && i.pointerId !== t(this, k) || (!t(this, v) && Math.abs(i.clientX - t(this, Ot)) >= t(this, $s) && t(this, Ts).call(this), t(this, v) && r(this, F, e(this, s, ps).call(this, i.clientX))));
     });
     n(this, fe, (i) => {
-      if (i instanceof PointerEvent) {
-        if (t(this, w) !== null && i.pointerId === t(this, w)) {
-          e(this, s, Xt).call(this, i.pointerId);
-          return;
-        }
-        t(this, k) === null || i.pointerId !== t(this, k) || e(this, s, Xe).call(this, i.clientX, i.pointerId, !0);
-      }
+      i instanceof PointerEvent && (t(this, k) !== null && i.pointerId !== t(this, k) || e(this, s, We).call(this, i.clientX, i.pointerId, !0));
     });
     n(this, be, (i) => {
+      i instanceof PointerEvent && (t(this, k) !== null && i.pointerId !== t(this, k) || e(this, s, qs).call(this, i.pointerId));
+    });
+    n(this, ve, (i) => {
       if (i instanceof PointerEvent) {
         if (t(this, w) !== null && i.pointerId === t(this, w)) {
-          e(this, s, Xt).call(this, i.pointerId);
+          e(this, s, _t).call(this, i.pointerId);
           return;
         }
-        t(this, k) === null || i.pointerId !== t(this, k) || e(this, s, Hs).call(this, i.pointerId);
+        t(this, k) === null || i.pointerId !== t(this, k) || e(this, s, We).call(this, i.clientX, i.pointerId, !0);
       }
     });
-    n(this, ve, () => {
-      e(this, s, Xt).call(this, t(this, w)), e(this, s, Hs).call(this, t(this, k));
-    });
-    n(this, ge, () => {
-      e(this, s, Rs).call(this) || e(this, s, os).call(this);
+    n(this, ge, (i) => {
+      if (i instanceof PointerEvent) {
+        if (t(this, w) !== null && i.pointerId === t(this, w)) {
+          e(this, s, _t).call(this, i.pointerId);
+          return;
+        }
+        t(this, k) === null || i.pointerId !== t(this, k) || e(this, s, qs).call(this, i.pointerId);
+      }
     });
     n(this, ye, () => {
-      r(this, C, null), e(this, s, J).call(this), e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, T).call(this);
+      e(this, s, _t).call(this, t(this, w)), e(this, s, qs).call(this, t(this, k));
     });
     n(this, we, () => {
-      r(this, C, null), e(this, s, X).call(this) || e(this, s, Ne).call(this), t(this, A).call(this), e(this, s, T).call(this);
+      e(this, s, Hs).call(this) || e(this, s, ns).call(this);
     });
     n(this, xe, () => {
       r(this, C, null), e(this, s, J).call(this), e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, T).call(this);
     });
     n(this, ke, () => {
-      e(this, s, Nt).call(this, !0, !0);
-    });
-    n(this, es, () => {
-      e(this, s, Nt).call(this, !0);
+      r(this, C, null), e(this, s, X).call(this) || e(this, s, Ye).call(this), t(this, L).call(this), e(this, s, T).call(this);
     });
     n(this, Pe, () => {
-      e(this, s, J).call(this), r(this, g, !0), t(this, F).call(this), e(this, s, X).call(this) || e(this, s, x).call(this), t(this, A).call(this), e(this, s, S).call(this);
+      r(this, C, null), e(this, s, J).call(this), e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, T).call(this);
     });
     n(this, Ee, () => {
-      const i = t(this, Ht).call(this);
-      t(this, F).call(this), i && !e(this, s, X).call(this) && e(this, s, x).call(this), e(this, s, T).call(this);
+      e(this, s, Ut).call(this, !0, !0);
+    });
+    n(this, is, () => {
+      e(this, s, Ut).call(this, !0);
     });
     n(this, Te, () => {
-      if (e(this, s, J).call(this), t(this, A).call(this), t(this, N) && (!t(this, mt) || t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
-        e(this, s, Be).call(this), e(this, s, T).call(this);
+      e(this, s, J).call(this), r(this, g, !0), t(this, A).call(this), e(this, s, X).call(this) || e(this, s, x).call(this), t(this, L).call(this), e(this, s, S).call(this);
+    });
+    n(this, Ce, () => {
+      const i = t(this, Bt).call(this);
+      t(this, A).call(this), i && !e(this, s, X).call(this) && e(this, s, x).call(this), e(this, s, T).call(this);
+    });
+    n(this, Fe, () => {
+      if (e(this, s, J).call(this), t(this, L).call(this), t(this, N) && (!t(this, mt) || t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
+        e(this, s, $e).call(this), e(this, s, T).call(this);
         return;
       }
       e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, S).call(this);
     });
-    n(this, Ce, () => {
-      r(this, C, null), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), e(this, s, Nt).call(this, !0, !0), e(this, s, T).call(this), e(this, s, ri).call(this);
-    });
     n(this, Le, () => {
-      t(this, F).call(this), e(this, s, S).call(this);
+      r(this, C, null), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), e(this, s, Ut).call(this, !0, !0), e(this, s, T).call(this), e(this, s, ni).call(this);
     });
     n(this, Ae, () => {
-      t(this, F).call(this);
+      t(this, A).call(this), e(this, s, S).call(this);
     });
-    r(this, f, this.attachShadow({ mode: "open" })), t(this, f).append(Ke.content.cloneNode(!0));
+    n(this, Se, () => {
+      t(this, A).call(this);
+    });
+    r(this, f, this.attachShadow({ mode: "open" })), t(this, f).append(Je.content.cloneNode(!0));
   }
   get src() {
     return this.getAttribute("src") ?? "";
   }
   set src(i) {
-    e(this, s, Ls).call(this, "src", i);
+    e(this, s, As).call(this, "src", i);
   }
   get aspectRatio() {
-    return this.getAttribute("aspect-ratio") || Oe;
+    return this.getAttribute("aspect-ratio") || Ge;
   }
   set aspectRatio(i) {
-    e(this, s, Ls).call(this, "aspect-ratio", i);
+    e(this, s, As).call(this, "aspect-ratio", i);
   }
   get preloadMargin() {
-    return this.getAttribute("preload-margin") || ki;
+    return this.getAttribute("preload-margin") || Ei;
   }
   set preloadMargin(i) {
-    e(this, s, Ls).call(this, "preload-margin", i);
+    e(this, s, As).call(this, "preload-margin", i);
   }
   get volumeEnabled() {
     return !this.hasAttribute("disable-volume") && !this.hasAttribute("no-volume");
   }
   set volumeEnabled(i) {
-    e(this, s, As).call(this, "volume", i);
+    e(this, s, Ss).call(this, "volume", i);
   }
   get volumeSliderEnabled() {
     return !this.hasAttribute("disable-volume-slider") && !this.hasAttribute("no-volume-slider");
@@ -1323,7 +1324,7 @@ class Ge extends HTMLElement {
     return !this.hasAttribute("disable-picture-in-picture") && !this.hasAttribute("disable-pip") && !this.hasAttribute("no-picture-in-picture") && !this.hasAttribute("no-pip");
   }
   set pictureInPictureEnabled(i) {
-    e(this, s, As).call(this, "picture-in-picture", i);
+    e(this, s, Ss).call(this, "picture-in-picture", i);
   }
   get pipEnabled() {
     return this.pictureInPictureEnabled;
@@ -1335,47 +1336,47 @@ class Ge extends HTMLElement {
     return !this.hasAttribute("disable-fullscreen") && !this.hasAttribute("no-fullscreen");
   }
   set fullscreenEnabled(i) {
-    e(this, s, As).call(this, "fullscreen", i);
+    e(this, s, Ss).call(this, "fullscreen", i);
   }
   connectedCallback() {
-    r(this, c, t(this, f).querySelector("[data-sp-player]")), r(this, o, t(this, f).querySelector("[data-sp-video]")), r(this, q, t(this, f).querySelector("[data-sp-button]")), r(this, d, t(this, f).querySelector("[data-sp-progress-track]")), r(this, $, t(this, f).querySelector("[data-sp-control-tray]")), r(this, Q, t(this, f).querySelector("[data-sp-control-tray-slots]")), r(this, jt, t(this, f).querySelector("[data-sp-time]")), r(this, us, t(this, f).querySelector("[data-sp-time-text]")), r(this, y, t(this, f).querySelector("[data-sp-volume-control]")), r(this, _, t(this, f).querySelector("[data-sp-volume-popover]")), r(this, E, t(this, f).querySelector("[data-sp-volume-track]")), r(this, tt, t(this, f).querySelector("[data-sp-picture-in-picture-control]")), r(this, st, t(this, f).querySelector("[data-sp-fullscreen-control]")), r(this, ut, [t(this, y), t(this, tt), t(this, st)]), e(this, s, Se).call(this), t(this, Wt) || (e(this, s, Je).call(this), r(this, Wt, !0)), e(this, s, Fs).call(this), e(this, s, Me).call(this), t(this, A).call(this), t(this, F).call(this), t(this, kt).call(this), t(this, Bt).call(this), e(this, s, T).call(this);
+    r(this, c, t(this, f).querySelector("[data-sp-player]")), r(this, o, t(this, f).querySelector("[data-sp-video]")), r(this, q, t(this, f).querySelector("[data-sp-button]")), r(this, d, t(this, f).querySelector("[data-sp-progress-track]")), r(this, $, t(this, f).querySelector("[data-sp-control-tray]")), r(this, Q, t(this, f).querySelector("[data-sp-control-tray-slots]")), r(this, Zt, t(this, f).querySelector("[data-sp-time]")), r(this, ms, t(this, f).querySelector("[data-sp-time-text]")), r(this, y, t(this, f).querySelector("[data-sp-volume-control]")), r(this, _, t(this, f).querySelector("[data-sp-volume-popover]")), r(this, E, t(this, f).querySelector("[data-sp-volume-track]")), r(this, tt, t(this, f).querySelector("[data-sp-picture-in-picture-control]")), r(this, st, t(this, f).querySelector("[data-sp-fullscreen-control]")), r(this, ut, [t(this, y), t(this, tt), t(this, st)]), e(this, s, Ve).call(this), t(this, jt) || (e(this, s, ti).call(this), r(this, jt, !0)), e(this, s, Ms).call(this), e(this, s, Ie).call(this), t(this, L).call(this), t(this, A).call(this), t(this, kt).call(this), t(this, qt).call(this), e(this, s, T).call(this);
   }
   disconnectedCallback() {
-    t(this, z)?.disconnect(), r(this, z, null), t(this, _t).forEach((i) => i()), r(this, _t, []), r(this, Wt, !1), e(this, s, H).call(this), e(this, s, ze).call(this), e(this, s, as).call(this), e(this, s, Vs).call(this), e(this, s, Et).call(this), e(this, s, ps).call(this), e(this, s, Re).call(this), e(this, s, Ms).call(this), t(this, c).classList.remove("is-volume-icon-animating"), t(this, Q).style.removeProperty("--sp-control-hover-offset"), this.style.removeProperty("--sp-touch-control-hover-offset"), e(this, s, cs).call(this), r(this, U, !1), r(this, at, !1), r(this, O, !1), r(this, w, null), t(this, y).classList.remove("is-volume-open"), t(this, ut).forEach((i) => i.classList.remove("is-control-tap-active")), t(this, c).classList.remove("is-pointer-active"), e(this, s, Yt).call(this);
+    t(this, z)?.disconnect(), r(this, z, null), t(this, Wt).forEach((i) => i()), r(this, Wt, []), r(this, jt, !1), e(this, s, H).call(this), e(this, s, De).call(this), e(this, s, ls).call(this), e(this, s, zs).call(this), e(this, s, Et).call(this), e(this, s, hs).call(this), e(this, s, ds).call(this), e(this, s, He).call(this), e(this, s, Is).call(this), t(this, c).classList.remove("is-volume-icon-animating"), t(this, Q).style.removeProperty("--sp-control-hover-offset"), this.style.removeProperty("--sp-touch-control-hover-offset"), e(this, s, us).call(this), r(this, U, !1), r(this, at, !1), r(this, O, !1), r(this, w, null), t(this, y).classList.remove("is-volume-open"), t(this, ut).forEach((i) => i.classList.remove("is-control-tap-active")), t(this, c).classList.remove("is-pointer-active"), e(this, s, Xt).call(this);
   }
   attributeChangedCallback(i, a, l) {
     if (a !== l) {
       if (i === "aspect-ratio") {
-        e(this, s, Se).call(this);
+        e(this, s, Ve).call(this);
         return;
       }
       if (i === "preload-margin" && this.isConnected) {
-        t(this, z)?.disconnect(), e(this, s, Fs).call(this);
+        t(this, z)?.disconnect(), e(this, s, Ms).call(this);
         return;
       }
       if (i === "src" && this.isConnected) {
-        e(this, s, gi).call(this), e(this, s, Fs).call(this);
+        e(this, s, wi).call(this), e(this, s, Ms).call(this);
         return;
       }
-      (i.startsWith("disable-") || i.startsWith("no-")) && this.isConnected && (e(this, s, Me).call(this), t(this, F).call(this), t(this, kt).call(this), t(this, Bt).call(this));
+      (i.startsWith("disable-") || i.startsWith("no-")) && this.isConnected && (e(this, s, Ie).call(this), t(this, A).call(this), t(this, kt).call(this), t(this, qt).call(this));
     }
   }
 }
-f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B = new WeakMap(), c = new WeakMap(), o = new WeakMap(), q = new WeakMap(), d = new WeakMap(), $ = new WeakMap(), Q = new WeakMap(), jt = new WeakMap(), us = new WeakMap(), y = new WeakMap(), _ = new WeakMap(), E = new WeakMap(), tt = new WeakMap(), st = new WeakMap(), ut = new WeakMap(), dt = new WeakMap(), v = new WeakMap(), M = new WeakMap(), et = new WeakMap(), L = new WeakMap(), Tt = new WeakMap(), it = new WeakMap(), Ct = new WeakMap(), N = new WeakMap(), mt = new WeakMap(), Zt = new WeakMap(), Lt = new WeakMap(), k = new WeakMap(), C = new WeakMap(), Ot = new WeakMap(), rt = new WeakMap(), ft = new WeakMap(), bt = new WeakMap(), ot = new WeakMap(), ds = new WeakMap(), Kt = new WeakMap(), R = new WeakMap(), D = new WeakMap(), W = new WeakMap(), j = new WeakMap(), Z = new WeakMap(), vt = new WeakMap(), ms = new WeakMap(), At = new WeakMap(), fs = new WeakMap(), bs = new WeakMap(), gt = new WeakMap(), V = new WeakMap(), nt = new WeakMap(), Ft = new WeakMap(), g = new WeakMap(), O = new WeakMap(), Gt = new WeakMap(), Jt = new WeakMap(), St = new WeakMap(), U = new WeakMap(), at = new WeakMap(), w = new WeakMap(), yt = new WeakMap(), wt = new WeakMap(), xt = new WeakMap(), Qt = new WeakMap(), Bs = new WeakMap(), qs = new WeakMap(), ts = new WeakMap(), $s = new WeakMap(), Ns = new WeakMap(), vs = new WeakMap(), Mt = new WeakMap(), Us = new WeakMap(), Ys = new WeakMap(), Xs = new WeakMap(), _s = new WeakMap(), Ws = new WeakMap(), js = new WeakMap(), Vt = new WeakMap(), Zs = new WeakMap(), Os = new WeakMap(), s = new WeakSet(), Ls = function(i, a) {
+f = new WeakMap(), Wt = new WeakMap(), z = new WeakMap(), jt = new WeakMap(), B = new WeakMap(), c = new WeakMap(), o = new WeakMap(), q = new WeakMap(), d = new WeakMap(), $ = new WeakMap(), Q = new WeakMap(), Zt = new WeakMap(), ms = new WeakMap(), y = new WeakMap(), _ = new WeakMap(), E = new WeakMap(), tt = new WeakMap(), st = new WeakMap(), ut = new WeakMap(), dt = new WeakMap(), v = new WeakMap(), M = new WeakMap(), et = new WeakMap(), F = new WeakMap(), Tt = new WeakMap(), it = new WeakMap(), Ct = new WeakMap(), N = new WeakMap(), mt = new WeakMap(), Ot = new WeakMap(), Ft = new WeakMap(), k = new WeakMap(), C = new WeakMap(), Kt = new WeakMap(), rt = new WeakMap(), ft = new WeakMap(), bt = new WeakMap(), ot = new WeakMap(), fs = new WeakMap(), Gt = new WeakMap(), R = new WeakMap(), D = new WeakMap(), W = new WeakMap(), j = new WeakMap(), Z = new WeakMap(), Lt = new WeakMap(), vt = new WeakMap(), bs = new WeakMap(), At = new WeakMap(), vs = new WeakMap(), gs = new WeakMap(), gt = new WeakMap(), V = new WeakMap(), nt = new WeakMap(), St = new WeakMap(), g = new WeakMap(), O = new WeakMap(), Jt = new WeakMap(), Qt = new WeakMap(), Mt = new WeakMap(), U = new WeakMap(), at = new WeakMap(), w = new WeakMap(), yt = new WeakMap(), wt = new WeakMap(), xt = new WeakMap(), ts = new WeakMap(), $s = new WeakMap(), Ns = new WeakMap(), ss = new WeakMap(), Us = new WeakMap(), Ys = new WeakMap(), ys = new WeakMap(), Vt = new WeakMap(), Xs = new WeakMap(), _s = new WeakMap(), Ws = new WeakMap(), js = new WeakMap(), Zs = new WeakMap(), Os = new WeakMap(), It = new WeakMap(), Ks = new WeakMap(), Gs = new WeakMap(), s = new WeakSet(), As = function(i, a) {
   if (a === "") {
     this.removeAttribute(i);
     return;
   }
   this.setAttribute(i, a);
-}, As = function(i, a) {
+}, Ss = function(i, a) {
   if (a) {
     this.removeAttribute(`disable-${i}`), this.removeAttribute(`no-${i}`), i === "picture-in-picture" && (this.removeAttribute("disable-pip"), this.removeAttribute("no-pip"));
     return;
   }
   this.setAttribute(`disable-${i}`, "");
-}, Se = function() {
+}, Ve = function() {
   this.style.setProperty("--simple-player-aspect-ratio", this.aspectRatio);
-}, Me = function() {
+}, Ie = function() {
   if (!t(this, c)) return;
   const i = [
     { button: t(this, y), enabled: this.volumeEnabled, className: "has-volume-control" },
@@ -1385,15 +1386,15 @@ f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B 
   let a = 0;
   for (const l of i)
     t(this, c).classList.toggle(l.className, l.enabled), l.button.hidden = !l.enabled, l.enabled ? (l.button.dataset.spControlIndex = `${a}`, a += 1) : delete l.button.dataset.spControlIndex;
-  this.style.setProperty("--sp-enabled-controls-count", `${a}`), this.style.setProperty("--sp-control-tray-display", a > 0 ? "block" : "none"), t(this, c).classList.toggle("has-volume-slider-control", this.volumeEnabled && this.volumeSliderEnabled), (!this.volumeEnabled || !this.volumeSliderEnabled) && (t(this, ss).call(this), e(this, s, zs).call(this, t(this, w)), r(this, U, !1), r(this, at, !1), t(this, _).classList.remove("is-scrubbing-volume")), t(this, Q).style.removeProperty("--sp-control-hover-offset");
-}, Je = function() {
-  e(this, s, h).call(this, t(this, q), "click", t(this, Qs)), e(this, s, h).call(this, this, "pointerenter", t(this, zt)), e(this, s, h).call(this, this, "pointermove", t(this, Rt)), e(this, s, h).call(this, this, "pointerleave", t(this, Dt)), e(this, s, h).call(this, this, "mouseenter", t(this, zt)), e(this, s, h).call(this, this, "mousemove", t(this, Rt)), e(this, s, h).call(this, this, "mouseleave", t(this, Dt)), e(this, s, h).call(this, t(this, c), "pointerenter", t(this, zt)), e(this, s, h).call(this, t(this, c), "pointermove", t(this, Rt)), e(this, s, h).call(this, t(this, c), "pointerleave", t(this, Dt)), e(this, s, h).call(this, t(this, c), "mouseenter", t(this, zt)), e(this, s, h).call(this, t(this, c), "mousemove", t(this, Rt)), e(this, s, h).call(this, t(this, c), "mouseleave", t(this, Dt)), e(this, s, h).call(this, t(this, q), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, q), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, q), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, q), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, d), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, d), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, d), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, d), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, $), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, $), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, $), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, $), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, f), "focusin", t(this, ys)), e(this, s, h).call(this, t(this, f), "focusout", t(this, Gs)), e(this, s, h).call(this, t(this, c), "pointerdown", t(this, te)), e(this, s, h).call(this, t(this, c), "dragstart", t(this, It)), e(this, s, h).call(this, t(this, c), "selectstart", t(this, It)), e(this, s, h).call(this, t(this, o), "dragstart", t(this, It)), e(this, s, h).call(this, t(this, o), "selectstart", t(this, It)), e(this, s, h).call(this, t(this, d), "pointerdown", t(this, ce)), e(this, s, h).call(this, t(this, d), "pointermove", t(this, ue)), e(this, s, h).call(this, t(this, d), "pointerup", t(this, de)), e(this, s, h).call(this, t(this, d), "pointercancel", t(this, me)), e(this, s, h).call(this, t(this, d), "keydown", t(this, pe)), e(this, s, h).call(this, t(this, y), "pointerenter", t(this, Es)), e(this, s, h).call(this, t(this, y), "pointerleave", t(this, Ts)), e(this, s, h).call(this, t(this, y), "click", t(this, ee)), e(this, s, h).call(this, t(this, _), "pointerenter", t(this, Es)), e(this, s, h).call(this, t(this, _), "pointerleave", t(this, Ts)), e(this, s, h).call(this, t(this, E), "pointerdown", t(this, ie)), e(this, s, h).call(this, t(this, E), "pointermove", t(this, re)), e(this, s, h).call(this, t(this, E), "pointerup", t(this, oe)), e(this, s, h).call(this, t(this, E), "pointercancel", t(this, ne)), e(this, s, h).call(this, t(this, E), "click", t(this, se)), e(this, s, h).call(this, t(this, E), "keydown", t(this, ae)), e(this, s, h).call(this, t(this, tt), "click", t(this, le)), e(this, s, h).call(this, t(this, st), "click", t(this, he));
+  this.style.setProperty("--sp-enabled-controls-count", `${a}`), this.style.setProperty("--sp-control-tray-display", a > 0 ? "block" : "none"), t(this, c).classList.toggle("has-volume-slider-control", this.volumeEnabled && this.volumeSliderEnabled), (!this.volumeEnabled || !this.volumeSliderEnabled) && (t(this, es).call(this), e(this, s, Ds).call(this, t(this, w)), r(this, U, !1), r(this, at, !1), t(this, _).classList.remove("is-scrubbing-volume")), t(this, Q).style.removeProperty("--sp-control-hover-offset");
+}, ti = function() {
+  e(this, s, h).call(this, t(this, q), "click", t(this, se)), e(this, s, h).call(this, this, "pointerenter", t(this, Rt)), e(this, s, h).call(this, this, "pointermove", t(this, Dt)), e(this, s, h).call(this, this, "pointerleave", t(this, Ht)), e(this, s, h).call(this, this, "mouseenter", t(this, Rt)), e(this, s, h).call(this, this, "mousemove", t(this, Dt)), e(this, s, h).call(this, this, "mouseleave", t(this, Ht)), e(this, s, h).call(this, t(this, c), "pointerenter", t(this, Rt)), e(this, s, h).call(this, t(this, c), "pointermove", t(this, Dt)), e(this, s, h).call(this, t(this, c), "pointerleave", t(this, Ht)), e(this, s, h).call(this, t(this, c), "mouseenter", t(this, Rt)), e(this, s, h).call(this, t(this, c), "mousemove", t(this, Dt)), e(this, s, h).call(this, t(this, c), "mouseleave", t(this, Ht)), e(this, s, h).call(this, t(this, q), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, q), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, q), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, q), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, d), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, d), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, d), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, d), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, $), "pointerenter", t(this, lt)), e(this, s, h).call(this, t(this, $), "pointerleave", t(this, ht)), e(this, s, h).call(this, t(this, $), "mouseenter", t(this, lt)), e(this, s, h).call(this, t(this, $), "mouseleave", t(this, ht)), e(this, s, h).call(this, t(this, f), "focusin", t(this, xs)), e(this, s, h).call(this, t(this, f), "focusout", t(this, Qs)), e(this, s, h).call(this, t(this, c), "pointerdown", t(this, ee)), e(this, s, h).call(this, t(this, c), "dragstart", t(this, zt)), e(this, s, h).call(this, t(this, c), "selectstart", t(this, zt)), e(this, s, h).call(this, t(this, o), "dragstart", t(this, zt)), e(this, s, h).call(this, t(this, o), "selectstart", t(this, zt)), e(this, s, h).call(this, t(this, d), "pointerdown", t(this, ue)), e(this, s, h).call(this, t(this, d), "pointermove", t(this, me)), e(this, s, h).call(this, t(this, d), "pointerup", t(this, fe)), e(this, s, h).call(this, t(this, d), "pointercancel", t(this, be)), e(this, s, h).call(this, t(this, d), "keydown", t(this, de)), e(this, s, h).call(this, t(this, y), "pointerenter", t(this, Cs)), e(this, s, h).call(this, t(this, y), "pointerleave", t(this, Fs)), e(this, s, h).call(this, t(this, y), "click", t(this, re)), e(this, s, h).call(this, t(this, _), "pointerenter", t(this, Cs)), e(this, s, h).call(this, t(this, _), "pointerleave", t(this, Fs)), e(this, s, h).call(this, t(this, E), "pointerdown", t(this, oe)), e(this, s, h).call(this, t(this, E), "pointermove", t(this, ne)), e(this, s, h).call(this, t(this, E), "pointerup", t(this, ae)), e(this, s, h).call(this, t(this, E), "pointercancel", t(this, le)), e(this, s, h).call(this, t(this, E), "click", t(this, ie)), e(this, s, h).call(this, t(this, E), "keydown", t(this, he)), e(this, s, h).call(this, t(this, tt), "click", t(this, ce)), e(this, s, h).call(this, t(this, st), "click", t(this, pe));
   for (const i of t(this, ut))
-    e(this, s, h).call(this, i, "pointerenter", t(this, ws)), e(this, s, h).call(this, i, "mouseenter", t(this, ws)), e(this, s, h).call(this, i, "pointerdown", t(this, Js));
-  e(this, s, h).call(this, document, "pointerup", t(this, fe)), e(this, s, h).call(this, document, "pointercancel", t(this, be)), e(this, s, h).call(this, document, "pointermove", t(this, gs)), e(this, s, h).call(this, document, "mousemove", t(this, gs)), e(this, s, h).call(this, document, "fullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "webkitfullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "mozfullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "MSFullscreenChange", t(this, Pt)), e(this, s, h).call(this, t(this, f), "fullscreenchange", t(this, Pt)), e(this, s, h).call(this, window, "blur", t(this, ve)), e(this, s, h).call(this, window, "focus", t(this, ge)), e(this, s, h).call(this, t(this, o), "play", t(this, ye)), e(this, s, h).call(this, t(this, o), "pause", t(this, we)), e(this, s, h).call(this, t(this, o), "ended", t(this, xe)), e(this, s, h).call(this, t(this, o), "loadstart", t(this, ke)), e(this, s, h).call(this, t(this, o), "waiting", t(this, es)), e(this, s, h).call(this, t(this, o), "stalled", t(this, es)), e(this, s, h).call(this, t(this, o), "seeking", t(this, es)), e(this, s, h).call(this, t(this, o), "loadeddata", t(this, Ht)), e(this, s, h).call(this, t(this, o), "loadedmetadata", t(this, Pe)), e(this, s, h).call(this, t(this, o), "canplay", t(this, Ht)), e(this, s, h).call(this, t(this, o), "canplaythrough", t(this, Ht)), e(this, s, h).call(this, t(this, o), "playing", t(this, Ee)), e(this, s, h).call(this, t(this, o), "seeked", t(this, Te)), e(this, s, h).call(this, t(this, o), "error", t(this, Ce)), e(this, s, h).call(this, t(this, o), "progress", t(this, A)), e(this, s, h).call(this, t(this, o), "suspend", t(this, A)), e(this, s, h).call(this, t(this, o), "timeupdate", t(this, Le)), e(this, s, h).call(this, t(this, o), "volumechange", t(this, Ae)), e(this, s, h).call(this, t(this, o), "enterpictureinpicture", t(this, kt)), e(this, s, h).call(this, t(this, o), "leavepictureinpicture", t(this, kt));
+    e(this, s, h).call(this, i, "pointerenter", t(this, ks)), e(this, s, h).call(this, i, "mouseenter", t(this, ks)), e(this, s, h).call(this, i, "pointerdown", t(this, te));
+  e(this, s, h).call(this, document, "pointerup", t(this, ve)), e(this, s, h).call(this, document, "pointercancel", t(this, ge)), e(this, s, h).call(this, document, "pointermove", t(this, ws)), e(this, s, h).call(this, document, "mousemove", t(this, ws)), e(this, s, h).call(this, document, "fullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "webkitfullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "mozfullscreenchange", t(this, Pt)), e(this, s, h).call(this, document, "MSFullscreenChange", t(this, Pt)), e(this, s, h).call(this, t(this, f), "fullscreenchange", t(this, Pt)), e(this, s, h).call(this, window, "blur", t(this, ye)), e(this, s, h).call(this, window, "focus", t(this, we)), e(this, s, h).call(this, t(this, o), "play", t(this, xe)), e(this, s, h).call(this, t(this, o), "pause", t(this, ke)), e(this, s, h).call(this, t(this, o), "ended", t(this, Pe)), e(this, s, h).call(this, t(this, o), "loadstart", t(this, Ee)), e(this, s, h).call(this, t(this, o), "waiting", t(this, is)), e(this, s, h).call(this, t(this, o), "stalled", t(this, is)), e(this, s, h).call(this, t(this, o), "seeking", t(this, is)), e(this, s, h).call(this, t(this, o), "loadeddata", t(this, Bt)), e(this, s, h).call(this, t(this, o), "loadedmetadata", t(this, Te)), e(this, s, h).call(this, t(this, o), "canplay", t(this, Bt)), e(this, s, h).call(this, t(this, o), "canplaythrough", t(this, Bt)), e(this, s, h).call(this, t(this, o), "playing", t(this, Ce)), e(this, s, h).call(this, t(this, o), "seeked", t(this, Fe)), e(this, s, h).call(this, t(this, o), "error", t(this, Le)), e(this, s, h).call(this, t(this, o), "progress", t(this, L)), e(this, s, h).call(this, t(this, o), "suspend", t(this, L)), e(this, s, h).call(this, t(this, o), "timeupdate", t(this, Ae)), e(this, s, h).call(this, t(this, o), "volumechange", t(this, Se)), e(this, s, h).call(this, t(this, o), "enterpictureinpicture", t(this, kt)), e(this, s, h).call(this, t(this, o), "leavepictureinpicture", t(this, kt));
 }, h = function(i, a, l) {
-  i.addEventListener(a, l), t(this, _t).push(() => i.removeEventListener(a, l));
-}, Fs = function() {
+  i.addEventListener(a, l), t(this, Wt).push(() => i.removeEventListener(a, l));
+}, Ms = function() {
   if (!(!this.src || t(this, B))) {
     if (t(this, z)?.disconnect(), t(this, o).dataset.src = this.src, "IntersectionObserver" in window) {
       r(this, z, new IntersectionObserver((i, a) => {
@@ -1403,85 +1404,87 @@ f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B 
     }
     e(this, s, ct).call(this);
   }
-}, It = new WeakMap(), H = function() {
+}, zt = new WeakMap(), H = function() {
   t(this, ft) && (window.clearTimeout(t(this, ft)), r(this, ft, 0));
-}, Ks = new WeakMap(), rs = function(i = e(this, s, I).call(this) ? t(this, vs) : t(this, Mt)) {
-  e(this, s, H).call(this), r(this, ft, window.setTimeout(t(this, Ks), i));
+}, Js = new WeakMap(), os = function(i = e(this, s, I).call(this) ? t(this, ys) : t(this, Vt)) {
+  e(this, s, H).call(this), r(this, ft, window.setTimeout(t(this, Js), i));
 }, K = function() {
-  e(this, s, I).call(this) && e(this, s, rs).call(this, t(this, vs));
+  e(this, s, I).call(this) && e(this, s, os).call(this, t(this, ys));
 }, G = function() {
   if (!e(this, s, I).call(this)) return !1;
   const i = t(this, c).classList.contains("is-controls-visible");
   return t(this, c).classList.add("is-controls-visible"), e(this, s, K).call(this), !i;
-}, Ss = function(i = !1) {
-  !i && e(this, s, I).call(this) || (t(this, c).classList.add("is-pointer-active"), t(this, O) ? e(this, s, H).call(this) : e(this, s, rs).call(this, i ? t(this, Mt) : void 0));
-}, os = function() {
+}, Vs = function(i = !1) {
+  !i && e(this, s, I).call(this) || (t(this, c).classList.add("is-pointer-active"), t(this, O) ? e(this, s, H).call(this) : e(this, s, os).call(this, i ? t(this, Vt) : void 0));
+}, ns = function() {
   r(this, O, !1), e(this, s, H).call(this), t(this, c).classList.remove("is-pointer-active");
-}, qt = function(i) {
-  return i instanceof PointerEvent ? (r(this, St, i.pointerType === "touch"), t(this, St) ? !1 : (r(this, Gt, i.clientX), r(this, Jt, i.clientY), !0)) : i instanceof MouseEvent ? (r(this, St, !1), r(this, Gt, i.clientX), r(this, Jt, i.clientY), !0) : !1;
-}, Qe = function(i, a) {
+}, $t = function(i) {
+  return i instanceof PointerEvent ? (r(this, Mt, i.pointerType === "touch"), t(this, Mt) ? !1 : (r(this, Jt, i.clientX), r(this, Qt, i.clientY), !0)) : i instanceof MouseEvent ? (r(this, Mt, !1), r(this, Jt, i.clientX), r(this, Qt, i.clientY), !0) : !1;
+}, si = function(i, a) {
   if (i === null || a === null || i < 0 || a < 0 || i > window.innerWidth || a > window.innerHeight) return !1;
   const l = this.getBoundingClientRect();
   return l.width <= 0 || l.height <= 0 ? !1 : i >= l.left && i <= l.right && a >= l.top && a <= l.bottom;
-}, $t = function() {
+}, Nt = function() {
   return t(this, c).classList.contains("is-controls-visible") || t(this, c).classList.contains("is-pointer-active") || t(this, f).activeElement instanceof HTMLElement;
-}, ns = function() {
-  return e(this, s, I).call(this) && performance.now() < t(this, Kt);
-}, Ve = function(i) {
+}, as = function() {
+  return e(this, s, I).call(this) && performance.now() < t(this, Gt);
+}, ze = function(i) {
   return i instanceof HTMLButtonElement && (i.disabled || i === t(this, y) && (!this.volumeEnabled || !t(this, g)));
-}, Ie = function() {
-  if (!t(this, St) && e(this, s, Qe).call(this, t(this, Gt), t(this, Jt))) {
-    e(this, s, Ss).call(this, !0);
+}, Re = function() {
+  if (!t(this, Mt) && e(this, s, si).call(this, t(this, Jt), t(this, Qt))) {
+    e(this, s, Vs).call(this, !0);
     return;
   }
-  e(this, s, os).call(this);
-}, zt = new WeakMap(), Rt = new WeakMap(), gs = new WeakMap(), Dt = new WeakMap(), lt = new WeakMap(), ht = new WeakMap(), ys = new WeakMap(), Gs = new WeakMap(), ws = new WeakMap(), Ms = function() {
+  e(this, s, ns).call(this);
+}, Rt = new WeakMap(), Dt = new WeakMap(), ws = new WeakMap(), Ht = new WeakMap(), lt = new WeakMap(), ht = new WeakMap(), xs = new WeakMap(), Qs = new WeakMap(), ks = new WeakMap(), Is = function() {
   t(this, xt) && (window.clearTimeout(t(this, xt)), r(this, xt, 0));
-}, xs = new WeakMap(), Js = new WeakMap(), ze = function() {
+}, Ps = new WeakMap(), te = new WeakMap(), De = function() {
   t(this, bt) && (window.clearTimeout(t(this, bt)), r(this, bt, 0));
-}, as = function() {
+}, ls = function() {
   t(this, rt) && (window.clearTimeout(t(this, rt)), r(this, rt, 0));
-}, Vs = function() {
+}, zs = function() {
   t(this, ot) && (window.clearTimeout(t(this, ot)), r(this, ot, 0));
-}, Re = function() {
+}, hs = function() {
+  t(this, Lt) && (window.clearTimeout(t(this, Lt)), r(this, Lt, 0));
+}, He = function() {
   t(this, wt) && (window.clearTimeout(t(this, wt)), r(this, wt, 0));
-}, ti = function() {
-  e(this, s, Re).call(this), t(this, c).classList.remove("is-volume-icon-animating"), t(this, y).offsetWidth, t(this, c).classList.add("is-volume-icon-animating"), r(this, wt, window.setTimeout(() => {
+}, ei = function() {
+  e(this, s, He).call(this), t(this, c).classList.remove("is-volume-icon-animating"), t(this, y).offsetWidth, t(this, c).classList.add("is-volume-icon-animating"), r(this, wt, window.setTimeout(() => {
     r(this, wt, 0), t(this, c).classList.remove("is-volume-icon-animating");
   }, 240));
-}, ks = new WeakMap(), si = function() {
-  t(this, vt) || t(this, ot) || (t(this, c).classList.add("is-progress-settling"), e(this, s, pt).call(this, 0), r(this, ot, window.setTimeout(t(this, ks), t(this, Ys))));
+}, Es = new WeakMap(), ii = function() {
+  t(this, vt) || t(this, ot) || (t(this, c).classList.add("is-progress-settling"), e(this, s, pt).call(this, 0), r(this, ot, window.setTimeout(t(this, Es), t(this, _s))));
 }, ct = async function() {
   if (t(this, B)) return;
   const i = t(this, o).dataset.src || this.src;
-  i && (e(this, s, as).call(this), r(this, Ot, t(this, Ot) + 1), r(this, B, !0), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), t(this, o).src = i, t(this, o).preload = "auto", t(this, o).load(), t(this, o).autoplay && t(this, o).muted && await t(this, o).play().catch(() => {
+  i && (e(this, s, ls).call(this), e(this, s, hs).call(this), r(this, Kt, t(this, Kt) + 1), r(this, B, !0), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), t(this, o).src = i, t(this, o).preload = "auto", t(this, o).load(), t(this, o).autoplay && t(this, o).muted && await t(this, o).play().catch(() => {
   }));
 }, Y = function(i) {
   if (!Number.isFinite(i) || i < 0) return "0:00";
   const a = Math.floor(i), l = a % 60, p = Math.floor(a / 60), u = p % 60, P = Math.floor(p / 60);
   return P > 0 ? `${P}:${String(u).padStart(2, "0")}:${String(l).padStart(2, "0")}` : `${u}:${String(l).padStart(2, "0")}`;
-}, De = function() {
+}, Be = function() {
   return !t(this, o).loop || t(this, o).paused || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 ? !1 : t(this, o).currentTime < 0.28 || t(this, o).duration - t(this, o).currentTime < 0.28;
-}, ei = function(i = t(this, o).currentTime) {
+}, ri = function(i = t(this, o).currentTime) {
   if (!Number.isFinite(i)) return 0;
   const a = Math.max(0, i);
   try {
     for (let l = 0; l < t(this, o).buffered.length; l += 1) {
       const p = t(this, o).buffered.start(l), u = t(this, o).buffered.end(l);
-      if (a + t(this, Vt) >= p && a <= u + t(this, Vt))
+      if (a + t(this, It) >= p && a <= u + t(this, It))
         return Math.max(0, u - a);
     }
   } catch {
     return 0;
   }
   return 0;
-}, He = function(i = t(this, js)) {
+}, qe = function(i = t(this, Os)) {
   if (!t(this, B) || t(this, o).error || !t(this, c).classList.contains("has-loaded-once") || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return !1;
   const a = Math.max(0, t(this, o).duration - t(this, o).currentTime), l = Math.min(i, a);
-  return l <= t(this, Vt) || e(this, s, ei).call(this) + t(this, Vt) >= l;
-}, Nt = function(i, a = !1) {
-  e(this, s, ze).call(this);
-  const l = i && !e(this, s, De).call(this) && !e(this, s, He).call(this), u = i && !t(this, D) || l;
+  return l <= t(this, It) || e(this, s, ri).call(this) + t(this, It) >= l;
+}, Ut = function(i, a = !1) {
+  e(this, s, De).call(this);
+  const l = i && !e(this, s, Be).call(this) && !e(this, s, qe).call(this), u = i && !t(this, D) || l;
   if (r(this, At, u), !u) {
     t(this, c).classList.remove("is-loading");
     return;
@@ -1491,112 +1494,112 @@ f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B 
     return;
   }
   r(this, bt, window.setTimeout(() => {
-    if (r(this, bt, 0), !t(this, D) || !e(this, s, De).call(this) && !e(this, s, He).call(this)) {
+    if (r(this, bt, 0), !t(this, D) || !e(this, s, Be).call(this) && !e(this, s, qe).call(this)) {
       r(this, At, !0), t(this, c).classList.add("is-loading");
       return;
     }
     r(this, At, !1), t(this, c).classList.remove("is-loading");
-  }, t(this, Us)));
-}, A = new WeakMap(), ii = function() {
+  }, t(this, Xs)));
+}, L = new WeakMap(), oi = function() {
   return t(this, B) && !t(this, o).error && t(this, R) && (t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !t(this, c).classList.contains("is-loading"));
 }, X = function() {
   return t(this, M) || t(this, v) || t(this, N);
-}, ri = function() {
-  t(this, Ot) >= t(this, Ws) || t(this, rt) || r(this, rt, window.setTimeout(() => {
-    r(this, rt, 0), r(this, B, !1), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), t(this, c).classList.contains("has-loaded-once") || e(this, s, pt).call(this, 0), t(this, o).removeAttribute("src"), t(this, o).load(), e(this, s, ct).call(this);
-  }, t(this, _s)));
-}, Be = function() {
+}, ni = function() {
+  t(this, Kt) >= t(this, Zs) || t(this, rt) || r(this, rt, window.setTimeout(() => {
+    r(this, rt, 0), e(this, s, hs).call(this), r(this, B, !1), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), t(this, c).classList.remove("has-visible-frame"), t(this, c).classList.contains("has-loaded-once") || e(this, s, pt).call(this, 0), t(this, o).removeAttribute("src"), t(this, o).load(), e(this, s, ct).call(this);
+  }, t(this, js)));
+}, $e = function() {
   return t(this, N) ? (r(this, N, !1), r(this, mt, !1), e(this, s, x).call(this), e(this, s, S).call(this), !0) : !1;
-}, qe = function() {
-  return e(this, s, as).call(this), !t(this, c).classList.contains("has-loaded-once") && e(this, s, si).call(this), t(this, c).classList.add("has-loaded-once"), t(this, c).classList.add("has-visible-frame"), t(this, A).call(this), r(this, C, null), t(this, N) ? (e(this, s, Be).call(this), !0) : (e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, S).call(this), !0);
-}, oi = function() {
+}, Ne = function() {
+  return e(this, s, ls).call(this), !t(this, c).classList.contains("has-loaded-once") && e(this, s, ii).call(this), t(this, c).classList.add("has-loaded-once"), t(this, c).classList.add("has-visible-frame"), t(this, L).call(this), r(this, C, null), t(this, N) ? (e(this, s, $e).call(this), !0) : (e(this, s, X).call(this) || e(this, s, x).call(this), e(this, s, S).call(this), !0);
+}, ai = function() {
   if (t(this, R) || t(this, W) || t(this, o).error) return;
   r(this, W, !0);
   const i = t(this, Z), a = () => {
     if (i === t(this, Z)) {
-      if (r(this, W, !1), r(this, R, !t(this, o).error && t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && t(this, o).videoWidth > 0 && t(this, o).videoHeight > 0), t(this, R)) {
+      if (e(this, s, hs).call(this), r(this, W, !1), r(this, R, !t(this, o).error && t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && t(this, o).videoWidth > 0 && t(this, o).videoHeight > 0), t(this, R)) {
         if (t(this, j) || t(this, D)) return;
         r(this, j, !0), window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
-            i === t(this, Z) && (r(this, j, !1), r(this, D, !0), e(this, s, qe).call(this), e(this, s, T).call(this));
+            i === t(this, Z) && (r(this, j, !1), r(this, D, !0), e(this, s, Ne).call(this), e(this, s, T).call(this));
           });
         }), e(this, s, T).call(this);
         return;
       }
-      t(this, A).call(this);
+      t(this, L).call(this);
     }
   };
   if ("requestVideoFrameCallback" in t(this, o)) {
-    t(this, o).requestVideoFrameCallback(a);
+    t(this, o).requestVideoFrameCallback(a), r(this, Lt, window.setTimeout(a, 180));
     return;
   }
   window.requestAnimationFrame(a);
-}, Ht = new WeakMap(), $e = function() {
+}, Bt = new WeakMap(), Ue = function() {
   return !t(this, o).paused && (!t(this, o).ended || t(this, o).loop) && t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
 }, x = function(i = t(this, o).currentTime) {
-  r(this, fs, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, bs, performance.now());
+  r(this, vs, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, gs, performance.now());
 }, J = function() {
   r(this, V, null), r(this, nt, null);
-}, Ne = function() {
+}, Ye = function() {
   if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) {
     r(this, V, null);
     return;
   }
   const i = Number.isFinite(t(this, o).currentTime) ? Math.max(0, t(this, o).currentTime) : 0, a = Number.isFinite(t(this, gt)) ? t(this, gt) : i;
   r(this, V, Math.min(t(this, o).duration, Math.max(i, a))), e(this, s, x).call(this, t(this, V));
-}, ni = function() {
+}, li = function() {
   if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) {
-    r(this, nt, null), e(this, s, Ne).call(this);
+    r(this, nt, null), e(this, s, Ye).call(this);
     return;
   }
-  const i = t(this, c).style.getPropertyValue("--sp-progress-inset"), a = Number.parseFloat(i), l = Number.isFinite(a) ? Math.min(1, Math.max(0, 1 - a / 100)) : null, p = e(this, s, Ut).call(this), u = Math.min(1, Math.max(0, p / t(this, o).duration)), P = Math.max(l ?? 0, u);
+  const i = t(this, c).style.getPropertyValue("--sp-progress-inset"), a = Number.parseFloat(i), l = Number.isFinite(a) ? Math.min(1, Math.max(0, 1 - a / 100)) : null, p = e(this, s, Yt).call(this), u = Math.min(1, Math.max(0, p / t(this, o).duration)), P = Math.max(l ?? 0, u);
   r(this, nt, P), r(this, V, P * t(this, o).duration), e(this, s, x).call(this, t(this, V)), e(this, s, pt).call(this, P), t(this, d).setAttribute("aria-valuenow", `${t(this, V)}`), t(this, d).setAttribute(
     "aria-valuetext",
     `${e(this, s, Y).call(this, t(this, V))} of ${e(this, s, Y).call(this, t(this, o).duration)}`
   );
-}, Ut = function() {
+}, Yt = function() {
   if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return t(this, o).currentTime || 0;
-  if (e(this, s, X).call(this)) return t(this, L);
+  if (e(this, s, X).call(this)) return t(this, F);
   if (t(this, V) !== null) return t(this, V);
-  if (!e(this, s, $e).call(this)) return t(this, o).currentTime || 0;
-  if (t(this, At) || !t(this, vt) || performance.now() < t(this, ms))
+  if (!e(this, s, Ue).call(this)) return t(this, o).currentTime || 0;
+  if (t(this, At) || !t(this, vt) || performance.now() < t(this, bs))
     return e(this, s, x).call(this), t(this, o).currentTime || 0;
   if (t(this, c).classList.contains("is-loading") && t(this, o).readyState < HTMLMediaElement.HAVE_FUTURE_DATA)
     return e(this, s, x).call(this), t(this, o).currentTime || 0;
-  const i = (performance.now() - t(this, bs)) / 1e3, a = t(this, fs) + i, l = t(this, o).loop ? a % t(this, o).duration : Math.min(a, t(this, o).duration);
+  const i = (performance.now() - t(this, gs)) / 1e3, a = t(this, vs) + i, l = t(this, o).loop ? a % t(this, o).duration : Math.min(a, t(this, o).duration);
   return !t(this, o).loop && t(this, o).currentTime - l > 0.45 ? (e(this, s, x).call(this), t(this, o).currentTime) : l;
 }, pt = function(i) {
-  const a = Math.min(1, Math.max(0, i)), l = (1 - a) * 100, { innerWidth: p } = e(this, s, Is).call(this), u = 1 / p, P = t(this, v) && t(this, Ct) && t(this, it) + u < a;
+  const a = Math.min(1, Math.max(0, i)), l = (1 - a) * 100, { innerWidth: p } = e(this, s, Rs).call(this), u = 1 / p, P = t(this, v) && t(this, Ct) && t(this, it) + u < a;
   if (t(this, c).style.setProperty("--sp-progress-inset", `${l}%`), t(this, c).style.setProperty("--sp-return-marker-base-opacity", P ? "0" : "1"), P) {
-    const Cs = e(this, s, ls).call(this, t(this, it)), is = Math.max(0, p - 2), yi = Math.min(is, Math.max(0, Cs - 3));
-    t(this, c).style.setProperty("--sp-return-marker-hole-left", `${yi}px`);
+    const Ls = e(this, s, cs).call(this, t(this, it)), rs = Math.max(0, p - 2), xi = Math.min(rs, Math.max(0, Ls - 3));
+    t(this, c).style.setProperty("--sp-return-marker-hole-left", `${xi}px`);
   } else
     t(this, c).style.setProperty("--sp-return-marker-hole-left", "-9999px");
-}, ai = function(i) {
+}, hi = function(i) {
   return !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 ? 0 : Math.min(1, Math.max(0, i / t(this, o).duration));
-}, Is = function(i = t(this, d).getBoundingClientRect()) {
+}, Rs = function(i = t(this, d).getBoundingClientRect()) {
   const a = Math.min(2, Math.max(0, i.width / 2)), l = Math.max(1, i.width - a * 2);
   return { rect: i, sideInset: a, innerWidth: l };
-}, ls = function(i, a = t(this, d).getBoundingClientRect()) {
-  const { sideInset: l, innerWidth: p } = e(this, s, Is).call(this, a), u = Math.min(1, Math.max(0, i));
+}, cs = function(i, a = t(this, d).getBoundingClientRect()) {
+  const { sideInset: l, innerWidth: p } = e(this, s, Rs).call(this, a), u = Math.min(1, Math.max(0, i));
   return l + u * p;
-}, li = function(i, a) {
-  const { sideInset: l, innerWidth: p } = e(this, s, Is).call(this, a);
+}, ci = function(i, a) {
+  const { sideInset: l, innerWidth: p } = e(this, s, Rs).call(this, a);
   return Math.min(1, Math.max(0, (i - a.left - l) / p));
-}, hi = function(i) {
-  r(this, Tt, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, it, e(this, s, ai).call(this, t(this, Tt)));
-  const a = t(this, d).getBoundingClientRect(), l = e(this, s, ls).call(this, t(this, it), a), p = l >= t(this, ts) && l <= Math.max(t(this, ts), a.width - t(this, ts));
-  r(this, Ct, t(this, Tt) > t(this, $s) && p), t(this, c).classList.toggle("has-return-marker", t(this, Ct)), t(this, c).style.setProperty("--sp-return-marker-left", `${l}px`);
-}, ci = function(i, a, l, p = t(this, v)) {
+}, pi = function(i) {
+  r(this, Tt, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, it, e(this, s, hi).call(this, t(this, Tt)));
+  const a = t(this, d).getBoundingClientRect(), l = e(this, s, cs).call(this, t(this, it), a), p = l >= t(this, ss) && l <= Math.max(t(this, ss), a.width - t(this, ss));
+  r(this, Ct, t(this, Tt) > t(this, Us) && p), t(this, c).classList.toggle("has-return-marker", t(this, Ct)), t(this, c).style.setProperty("--sp-return-marker-left", `${l}px`);
+}, ui = function(i, a, l, p = t(this, v)) {
   const u = l * t(this, o).duration;
   if (!p || !t(this, Ct))
     return { percent: l, targetTime: u };
-  const P = a.left + e(this, s, ls).call(this, t(this, it), a);
-  return Math.abs(i - P) <= t(this, qs) ? {
+  const P = a.left + e(this, s, cs).call(this, t(this, it), a);
+  return Math.abs(i - P) <= t(this, Ns) ? {
     percent: t(this, it),
     targetTime: t(this, Tt)
   } : { percent: l, targetTime: u };
-}, S = function(i = e(this, s, Ut).call(this)) {
+}, S = function(i = e(this, s, Yt).call(this)) {
   const a = Number.isFinite(t(this, o).duration) && t(this, o).duration > 0;
   if (a && t(this, nt) !== null) {
     const u = t(this, nt) * t(this, o).duration;
@@ -1611,88 +1614,88 @@ f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B 
     "aria-valuetext",
     a ? `${e(this, s, Y).call(this, l)} of ${e(this, s, Y).call(this, t(this, o).duration)}` : "Loading video"
   );
-}, hs = function(i, a = t(this, v)) {
+}, ps = function(i, a = t(this, v)) {
   if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return t(this, o).currentTime;
-  const l = t(this, d).getBoundingClientRect(), p = e(this, s, li).call(this, i, l), u = e(this, s, ci).call(this, i, l, p, a);
-  return e(this, s, pt).call(this, u.percent), t(this, c).style.setProperty("--sp-scrub-preview-left", `${e(this, s, ls).call(this, u.percent, l)}px`), t(this, us).textContent = e(this, s, Y).call(this, u.targetTime), t(this, d).setAttribute("aria-valuenow", `${u.targetTime}`), t(this, d).setAttribute(
+  const l = t(this, d).getBoundingClientRect(), p = e(this, s, ci).call(this, i, l), u = e(this, s, ui).call(this, i, l, p, a);
+  return e(this, s, pt).call(this, u.percent), t(this, c).style.setProperty("--sp-scrub-preview-left", `${e(this, s, cs).call(this, u.percent, l)}px`), t(this, ms).textContent = e(this, s, Y).call(this, u.targetTime), t(this, d).setAttribute("aria-valuenow", `${u.targetTime}`), t(this, d).setAttribute(
     "aria-valuetext",
     `${e(this, s, Y).call(this, u.targetTime)} of ${e(this, s, Y).call(this, t(this, o).duration)}`
-  ), e(this, s, pi).call(this), u.targetTime;
-}, cs = function() {
-  r(this, Ft, !1), t(this, c)?.classList.remove("has-controls-collision");
-}, pi = function() {
-  if (!t(this, v) || !t(this, $) || !t(this, jt)) {
-    e(this, s, cs).call(this);
+  ), e(this, s, di).call(this), u.targetTime;
+}, us = function() {
+  r(this, St, !1), t(this, c)?.classList.remove("has-controls-collision");
+}, di = function() {
+  if (!t(this, v) || !t(this, $) || !t(this, Zt)) {
+    e(this, s, us).call(this);
     return;
   }
-  const i = t(this, $).getBoundingClientRect(), a = t(this, jt).getBoundingClientRect(), l = i.width > 0 && i.height > 0, p = t(this, Ft) ? t(this, Os) : t(this, Zs), u = l && a.right >= i.left - p && a.left <= i.right + p && a.bottom >= i.top - p && a.top <= i.bottom + p;
-  r(this, Ft, u), t(this, c).classList.toggle("has-controls-collision", t(this, Ft));
-}, Yt = function() {
+  const i = t(this, $).getBoundingClientRect(), a = t(this, Zt).getBoundingClientRect(), l = i.width > 0 && i.height > 0, p = t(this, St) ? t(this, Gs) : t(this, Ks), u = l && a.right >= i.left - p && a.left <= i.right + p && a.bottom >= i.top - p && a.top <= i.bottom + p;
+  r(this, St, u), t(this, c).classList.toggle("has-controls-collision", t(this, St));
+}, Xt = function() {
   t(this, dt) && (window.cancelAnimationFrame(t(this, dt)), r(this, dt, 0));
-}, ui = function() {
-  e(this, s, Yt).call(this), e(this, s, x).call(this);
+}, mi = function() {
+  e(this, s, Xt).call(this), e(this, s, x).call(this);
   const i = () => {
-    e(this, s, S).call(this, e(this, s, Ut).call(this)), e(this, s, $e).call(this) && r(this, dt, window.requestAnimationFrame(i));
+    e(this, s, S).call(this, e(this, s, Yt).call(this)), e(this, s, Ue).call(this) && r(this, dt, window.requestAnimationFrame(i));
   };
   r(this, dt, window.requestAnimationFrame(i));
 }, T = function() {
   const i = !t(this, o).paused && (!t(this, o).ended || t(this, o).loop) || t(this, v) && t(this, et), a = t(this, C) ? t(this, C) === "playing" : i;
   if (t(this, c).classList.toggle("is-playing", a), t(this, q).setAttribute("aria-label", a ? "Pause video" : "Play video"), t(this, v)) {
-    e(this, s, Yt).call(this);
+    e(this, s, Xt).call(this);
     return;
   }
-  i && t(this, c).classList.contains("has-loaded-once") && !t(this, c).classList.contains("is-progress-settling") ? e(this, s, ui).call(this) : (e(this, s, Yt).call(this), e(this, s, S).call(this));
+  i && t(this, c).classList.contains("has-loaded-once") && !t(this, c).classList.contains("is-progress-settling") ? e(this, s, mi).call(this) : (e(this, s, Xt).call(this), e(this, s, S).call(this));
 }, Et = function() {
-  t(this, Lt) && (window.clearTimeout(t(this, Lt)), r(this, Lt, 0));
-}, di = function() {
-  const i = t(this, o);
-  return i.audioTracks && typeof i.audioTracks.length == "number" ? i.audioTracks.length > 0 : typeof i.mozHasAudio == "boolean" ? i.mozHasAudio : typeof i.webkitAudioDecodedByteCount == "number" && t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !t(this, o).muted && t(this, o).currentTime > 0.25 ? i.webkitAudioDecodedByteCount > 0 : t(this, g);
-}, F = new WeakMap(), Ue = function(i) {
-  if (!t(this, g)) return;
-  const a = t(this, E).getBoundingClientRect(), l = Math.min(1, Math.max(0, 1 - (i - a.top) / a.height)), p = Math.round(l * 100) / 100;
-  t(this, o).volume = p, t(this, o).muted = p <= 0, t(this, F).call(this);
-}, zs = function(i) {
-  i !== null && t(this, E).hasPointerCapture(i) && t(this, E).releasePointerCapture(i);
-}, Xt = function(i) {
-  r(this, U, !1), r(this, w, null), t(this, _).classList.remove("is-scrubbing-volume"), t(this, E).blur(), e(this, s, zs).call(this, i), e(this, s, We).call(this, 260);
-}, kt = new WeakMap(), Rs = function() {
-  const i = document;
-  return t(this, f).fullscreenElement || i.fullscreenElement || i.webkitFullscreenElement || i.mozFullScreenElement || i.msFullscreenElement || null;
-}, Ye = function() {
-  const i = document, a = t(this, c), l = t(this, o), u = !!((i.fullscreenEnabled ?? i.webkitFullscreenEnabled ?? i.mozFullScreenEnabled ?? i.msFullscreenEnabled ?? !1) && (a.requestFullscreen || a.webkitRequestFullscreen || a.mozRequestFullScreen || a.msRequestFullscreen)), P = !!(l.webkitSupportsFullscreen || l.webkitEnterFullscreen || l.webkitEnterFullScreen);
-  return !!(this.fullscreenEnabled && (u || P));
-}, mi = function() {
-  const i = t(this, c), a = i.requestFullscreen || i.webkitRequestFullscreen || i.mozRequestFullScreen || i.msRequestFullscreen;
-  return Promise.resolve(a?.call(i));
+  t(this, Ft) && (window.clearTimeout(t(this, Ft)), r(this, Ft, 0));
 }, fi = function() {
   const i = t(this, o);
-  (i.webkitEnterFullscreen || i.webkitEnterFullScreen)?.call(i);
+  return i.audioTracks && typeof i.audioTracks.length == "number" ? i.audioTracks.length > 0 : typeof i.mozHasAudio == "boolean" ? i.mozHasAudio : typeof i.webkitAudioDecodedByteCount == "number" && t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !t(this, o).muted && t(this, o).currentTime > 0.25 ? i.webkitAudioDecodedByteCount > 0 : t(this, g);
+}, A = new WeakMap(), Xe = function(i) {
+  if (!t(this, g)) return;
+  const a = t(this, E).getBoundingClientRect(), l = Math.min(1, Math.max(0, 1 - (i - a.top) / a.height)), p = Math.round(l * 100) / 100;
+  t(this, o).volume = p, t(this, o).muted = p <= 0, t(this, A).call(this);
+}, Ds = function(i) {
+  i !== null && t(this, E).hasPointerCapture(i) && t(this, E).releasePointerCapture(i);
+}, _t = function(i) {
+  r(this, U, !1), r(this, w, null), t(this, _).classList.remove("is-scrubbing-volume"), t(this, E).blur(), e(this, s, Ds).call(this, i), e(this, s, Ze).call(this, 260);
+}, kt = new WeakMap(), Hs = function() {
+  const i = document;
+  return t(this, f).fullscreenElement || i.fullscreenElement || i.webkitFullscreenElement || i.mozFullScreenElement || i.msFullscreenElement || null;
+}, _e = function() {
+  const i = document, a = t(this, c), l = t(this, o), u = !!((i.fullscreenEnabled ?? i.webkitFullscreenEnabled ?? i.mozFullScreenEnabled ?? i.msFullscreenEnabled ?? !1) && (a.requestFullscreen || a.webkitRequestFullscreen || a.mozRequestFullScreen || a.msRequestFullscreen)), P = !!(l.webkitSupportsFullscreen || l.webkitEnterFullscreen || l.webkitEnterFullScreen);
+  return !!(this.fullscreenEnabled && (u || P));
 }, bi = function() {
+  const i = t(this, c), a = i.requestFullscreen || i.webkitRequestFullscreen || i.mozRequestFullScreen || i.msRequestFullscreen;
+  return Promise.resolve(a?.call(i));
+}, vi = function() {
+  const i = t(this, o);
+  (i.webkitEnterFullscreen || i.webkitEnterFullScreen)?.call(i);
+}, gi = function() {
   const i = document, a = i.exitFullscreen || i.webkitExitFullscreen || i.mozCancelFullScreen || i.msExitFullscreen;
   return Promise.resolve(a?.call(i));
-}, Bt = new WeakMap(), Pt = new WeakMap(), vi = function(i) {
-  e(this, s, H).call(this), e(this, s, ps).call(this), e(this, s, Ds).call(this, t(this, k)), e(this, s, zs).call(this, t(this, w)), e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), r(this, O, !1), r(this, at, !1), r(this, U, !1), r(this, w, null), e(this, s, Ms).call(this), t(this, xs).call(this), t(this, Q).style.removeProperty("--sp-control-hover-offset"), t(this, y).classList.remove("is-volume-open"), t(this, _).classList.remove("is-scrubbing-volume"), t(this, c).classList.remove("is-scrubbing"), t(this, c).classList.remove("is-pointer-active");
+}, qt = new WeakMap(), Pt = new WeakMap(), yi = function(i) {
+  e(this, s, H).call(this), e(this, s, ds).call(this), e(this, s, Bs).call(this, t(this, k)), e(this, s, Ds).call(this, t(this, w)), e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), r(this, O, !1), r(this, at, !1), r(this, U, !1), r(this, w, null), e(this, s, Is).call(this), t(this, Ps).call(this), t(this, Q).style.removeProperty("--sp-control-hover-offset"), t(this, y).classList.remove("is-volume-open"), t(this, _).classList.remove("is-scrubbing-volume"), t(this, c).classList.remove("is-scrubbing"), t(this, c).classList.remove("is-pointer-active");
   const a = t(this, f).activeElement;
-  a instanceof HTMLElement && a.blur(), i ? e(this, s, Ie).call(this) : e(this, s, os).call(this);
-}, Ps = new WeakMap(), Ds = function(i) {
+  a instanceof HTMLElement && a.blur(), i ? e(this, s, Re).call(this) : e(this, s, ns).call(this);
+}, Ts = new WeakMap(), Bs = function(i) {
   i !== null && t(this, d).hasPointerCapture(i) && t(this, d).releasePointerCapture(i);
-}, Xe = async function(i, a, l) {
+}, We = async function(i, a, l) {
   if (!t(this, M) && !t(this, v)) return;
   const p = t(this, v);
-  e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), t(this, c).classList.remove("is-scrubbing"), e(this, s, cs).call(this), e(this, s, Ds).call(this, a), l && i !== null && (e(this, s, J).call(this), r(this, L, e(this, s, hs).call(this, i, p)), r(this, N, !0), r(this, mt, t(this, et)), t(this, o).currentTime = t(this, L), e(this, s, x).call(this, t(this, L))), e(this, s, S).call(this, t(this, L)), p && t(this, et) && await t(this, o).play(), e(this, s, K).call(this);
-}, Hs = function(i) {
-  !t(this, M) && !t(this, v) || (e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), t(this, c).classList.remove("is-scrubbing"), e(this, s, cs).call(this), e(this, s, Ds).call(this, i), e(this, s, x).call(this), e(this, s, S).call(this), t(this, et) && t(this, o).play(), e(this, s, K).call(this));
-}, Qs = new WeakMap(), te = new WeakMap(), se = new WeakMap(), ps = function() {
+  e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), t(this, c).classList.remove("is-scrubbing"), e(this, s, us).call(this), e(this, s, Bs).call(this, a), l && i !== null && (e(this, s, J).call(this), r(this, F, e(this, s, ps).call(this, i, p)), r(this, N, !0), r(this, mt, t(this, et)), t(this, o).currentTime = t(this, F), e(this, s, x).call(this, t(this, F))), e(this, s, S).call(this, t(this, F)), p && t(this, et) && await t(this, o).play(), e(this, s, K).call(this);
+}, qs = function(i) {
+  !t(this, M) && !t(this, v) || (e(this, s, Et).call(this), r(this, M, !1), r(this, v, !1), r(this, k, null), t(this, c).classList.remove("is-scrubbing"), e(this, s, us).call(this), e(this, s, Bs).call(this, i), e(this, s, x).call(this), e(this, s, S).call(this), t(this, et) && t(this, o).play(), e(this, s, K).call(this));
+}, se = new WeakMap(), ee = new WeakMap(), ie = new WeakMap(), ds = function() {
   t(this, yt) && (window.clearTimeout(t(this, yt)), r(this, yt, 0));
-}, _e = function() {
-  !this.volumeEnabled || !this.volumeSliderEnabled || !t(this, g) || (e(this, s, ps).call(this), t(this, y).classList.add("is-volume-open"));
-}, ss = new WeakMap(), We = function(i = 150) {
-  e(this, s, ps).call(this), r(this, yt, window.setTimeout(t(this, ss), i));
-}, Es = new WeakMap(), Ts = new WeakMap(), ee = new WeakMap(), ie = new WeakMap(), re = new WeakMap(), oe = new WeakMap(), ne = new WeakMap(), ae = new WeakMap(), le = new WeakMap(), he = new WeakMap(), ce = new WeakMap(), pe = new WeakMap(), ue = new WeakMap(), de = new WeakMap(), me = new WeakMap(), fe = new WeakMap(), be = new WeakMap(), ve = new WeakMap(), ge = new WeakMap(), ye = new WeakMap(), we = new WeakMap(), xe = new WeakMap(), ke = new WeakMap(), es = new WeakMap(), Pe = new WeakMap(), Ee = new WeakMap(), Te = new WeakMap(), Ce = new WeakMap(), Le = new WeakMap(), Ae = new WeakMap(), I = function() {
+}, je = function() {
+  !this.volumeEnabled || !this.volumeSliderEnabled || !t(this, g) || (e(this, s, ds).call(this), t(this, y).classList.add("is-volume-open"));
+}, es = new WeakMap(), Ze = function(i = 150) {
+  e(this, s, ds).call(this), r(this, yt, window.setTimeout(t(this, es), i));
+}, Cs = new WeakMap(), Fs = new WeakMap(), re = new WeakMap(), oe = new WeakMap(), ne = new WeakMap(), ae = new WeakMap(), le = new WeakMap(), he = new WeakMap(), ce = new WeakMap(), pe = new WeakMap(), ue = new WeakMap(), de = new WeakMap(), me = new WeakMap(), fe = new WeakMap(), be = new WeakMap(), ve = new WeakMap(), ge = new WeakMap(), ye = new WeakMap(), we = new WeakMap(), xe = new WeakMap(), ke = new WeakMap(), Pe = new WeakMap(), Ee = new WeakMap(), is = new WeakMap(), Te = new WeakMap(), Ce = new WeakMap(), Fe = new WeakMap(), Le = new WeakMap(), Ae = new WeakMap(), Se = new WeakMap(), I = function() {
   return window.matchMedia("(max-width: 768px)").matches && window.matchMedia("(hover: none), (pointer: coarse)").matches;
-}, gi = function() {
-  t(this, o) && (t(this, z)?.disconnect(), r(this, z, null), e(this, s, as).call(this), e(this, s, Vs).call(this), r(this, B, !1), r(this, Ot, 0), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), r(this, vt, !1), r(this, gt, 0), e(this, s, J).call(this), r(this, g, !0), r(this, N, !1), r(this, mt, !1), r(this, C, null), t(this, c).classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), t(this, o).dataset.src = this.src, t(this, o).pause(), t(this, o).removeAttribute("src"), t(this, o).preload = "none", t(this, o).load(), e(this, s, pt).call(this, 0), t(this, F).call(this), t(this, A).call(this), e(this, s, T).call(this));
-}, Ze(Ge, "observedAttributes", [
+}, wi = function() {
+  t(this, o) && (t(this, z)?.disconnect(), r(this, z, null), e(this, s, ls).call(this), e(this, s, zs).call(this), r(this, B, !1), r(this, Kt, 0), r(this, R, !1), r(this, D, !1), r(this, W, !1), r(this, j, !1), r(this, Z, t(this, Z) + 1), r(this, vt, !1), r(this, gt, 0), e(this, s, J).call(this), r(this, g, !0), r(this, N, !1), r(this, mt, !1), r(this, C, null), t(this, c).classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), t(this, o).dataset.src = this.src, t(this, o).pause(), t(this, o).removeAttribute("src"), t(this, o).preload = "none", t(this, o).load(), e(this, s, pt).call(this, 0), t(this, A).call(this), t(this, L).call(this), e(this, s, T).call(this));
+}, Ke(Qe, "observedAttributes", [
   "src",
   "aspect-ratio",
   "preload-margin",
@@ -1707,8 +1710,8 @@ f = new WeakMap(), _t = new WeakMap(), z = new WeakMap(), Wt = new WeakMap(), B 
   "no-pip",
   "no-fullscreen"
 ]);
-customElements.get("simple-player") || customElements.define("simple-player", Ge);
+customElements.get("simple-player") || customElements.define("simple-player", Qe);
 export {
-  Ge as SimplePlayer
+  Qe as SimplePlayer
 };
 //# sourceMappingURL=simple-player.js.map
