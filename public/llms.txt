@@ -18,6 +18,14 @@ yarn add @grizzshutsdown/simpleplayer
 bun add @grizzshutsdown/simpleplayer
 ```
 
+## Agent Skill
+
+SimplePlayer also ships a plain Markdown skill that AI agents can install and read for package-specific guidance:
+
+```bash
+npx @grizzshutsdown/simpleplayer
+```
+
 Import once:
 
 ```js
@@ -65,4 +73,3 @@ player.autoplayEnabled = false;
 - `README.md`: usage, framework examples, styling variables, and contributing notes.
 - `dev/`: local source playground for contributors.
 - `site/`: production demo consumer app that installs the published npm package.
-
