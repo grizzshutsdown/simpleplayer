@@ -1317,7 +1317,7 @@ class ti extends HTMLElement {
     this.setAttribute("disable-autoplay", "");
   }
   get volumeEnabled() {
-    return !this.hasAttribute("disable-volume") && !this.hasAttribute("no-volume");
+    return (this.hasAttribute("controls") || this.hasAttribute("enable-volume")) && !this.hasAttribute("disable-volume") && !this.hasAttribute("no-volume");
   }
   set volumeEnabled(i) {
     e(this, s, Ms).call(this, "volume", i);
@@ -1333,7 +1333,7 @@ class ti extends HTMLElement {
     this.setAttribute("disable-volume-slider", "");
   }
   get pictureInPictureEnabled() {
-    return !this.hasAttribute("disable-picture-in-picture") && !this.hasAttribute("disable-pip") && !this.hasAttribute("no-picture-in-picture") && !this.hasAttribute("no-pip");
+    return (this.hasAttribute("controls") || this.hasAttribute("enable-picture-in-picture") || this.hasAttribute("enable-pip")) && !this.hasAttribute("disable-picture-in-picture") && !this.hasAttribute("disable-pip") && !this.hasAttribute("no-picture-in-picture") && !this.hasAttribute("no-pip");
   }
   set pictureInPictureEnabled(i) {
     e(this, s, Ms).call(this, "picture-in-picture", i);
@@ -1345,7 +1345,7 @@ class ti extends HTMLElement {
     this.pictureInPictureEnabled = i;
   }
   get fullscreenEnabled() {
-    return !this.hasAttribute("disable-fullscreen") && !this.hasAttribute("no-fullscreen");
+    return (this.hasAttribute("controls") || this.hasAttribute("enable-fullscreen")) && !this.hasAttribute("disable-fullscreen") && !this.hasAttribute("no-fullscreen");
   }
   set fullscreenEnabled(i) {
     e(this, s, Ms).call(this, "fullscreen", i);
@@ -1386,10 +1386,10 @@ f = new WeakMap(), Wt = new WeakMap(), z = new WeakMap(), jt = new WeakMap(), R 
   this.setAttribute(i, a);
 }, Ms = function(i, a) {
   if (a) {
-    this.removeAttribute(`disable-${i}`), this.removeAttribute(`no-${i}`), i === "picture-in-picture" && (this.removeAttribute("disable-pip"), this.removeAttribute("no-pip"));
+    this.setAttribute(`enable-${i}`, ""), this.removeAttribute(`disable-${i}`), this.removeAttribute(`no-${i}`), i === "picture-in-picture" && (this.setAttribute("enable-pip", ""), this.removeAttribute("disable-pip"), this.removeAttribute("no-pip"));
     return;
   }
-  this.setAttribute(`disable-${i}`, "");
+  this.removeAttribute(`enable-${i}`), i === "picture-in-picture" && this.removeAttribute("enable-pip"), this.setAttribute(`disable-${i}`, "");
 }, Ie = function() {
   this.style.setProperty("--simple-player-aspect-ratio", this.aspectRatio);
 }, os = function() {
@@ -1723,11 +1723,16 @@ f = new WeakMap(), Wt = new WeakMap(), z = new WeakMap(), jt = new WeakMap(), R 
   "src",
   "aspect-ratio",
   "preload-margin",
+  "controls",
   "disable-autoplay",
+  "enable-volume",
   "disable-volume",
   "disable-volume-slider",
+  "enable-picture-in-picture",
+  "enable-pip",
   "disable-picture-in-picture",
   "disable-pip",
+  "enable-fullscreen",
   "disable-fullscreen",
   "no-autoplay",
   "no-volume",

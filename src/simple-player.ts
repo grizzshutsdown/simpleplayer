@@ -962,11 +962,16 @@ export class SimplePlayer extends HTMLElement {
     'src',
     'aspect-ratio',
     'preload-margin',
+    'controls',
     'disable-autoplay',
+    'enable-volume',
     'disable-volume',
     'disable-volume-slider',
+    'enable-picture-in-picture',
+    'enable-pip',
     'disable-picture-in-picture',
     'disable-pip',
+    'enable-fullscreen',
     'disable-fullscreen',
     'no-autoplay',
     'no-volume',
@@ -1107,11 +1112,15 @@ export class SimplePlayer extends HTMLElement {
   }
 
   get volumeEnabled() {
-    return !this.hasAttribute('disable-volume') && !this.hasAttribute('no-volume');
+    return (
+      (this.hasAttribute('controls') || this.hasAttribute('enable-volume')) &&
+      !this.hasAttribute('disable-volume') &&
+      !this.hasAttribute('no-volume')
+    );
   }
 
   set volumeEnabled(value: boolean) {
-    this.#setDisabledControlAttributes('volume', value);
+    this.#setOptionalControlAttributes('volume', value);
   }
 
   get volumeSliderEnabled() {
@@ -1130,6 +1139,11 @@ export class SimplePlayer extends HTMLElement {
 
   get pictureInPictureEnabled() {
     return (
+      (
+        this.hasAttribute('controls') ||
+        this.hasAttribute('enable-picture-in-picture') ||
+        this.hasAttribute('enable-pip')
+      ) &&
       !this.hasAttribute('disable-picture-in-picture') &&
       !this.hasAttribute('disable-pip') &&
       !this.hasAttribute('no-picture-in-picture') &&
@@ -1138,7 +1152,7 @@ export class SimplePlayer extends HTMLElement {
   }
 
   set pictureInPictureEnabled(value: boolean) {
-    this.#setDisabledControlAttributes('picture-in-picture', value);
+    this.#setOptionalControlAttributes('picture-in-picture', value);
   }
 
   get pipEnabled() {
@@ -1150,11 +1164,15 @@ export class SimplePlayer extends HTMLElement {
   }
 
   get fullscreenEnabled() {
-    return !this.hasAttribute('disable-fullscreen') && !this.hasAttribute('no-fullscreen');
+    return (
+      (this.hasAttribute('controls') || this.hasAttribute('enable-fullscreen')) &&
+      !this.hasAttribute('disable-fullscreen') &&
+      !this.hasAttribute('no-fullscreen')
+    );
   }
 
   set fullscreenEnabled(value: boolean) {
-    this.#setDisabledControlAttributes('fullscreen', value);
+    this.#setOptionalControlAttributes('fullscreen', value);
   }
 
   connectedCallback() {
@@ -1262,17 +1280,23 @@ export class SimplePlayer extends HTMLElement {
     this.setAttribute(name, value);
   }
 
-  #setDisabledControlAttributes(name: 'volume' | 'picture-in-picture' | 'fullscreen', enabled: boolean) {
+  #setOptionalControlAttributes(name: 'volume' | 'picture-in-picture' | 'fullscreen', enabled: boolean) {
     if (enabled) {
+      this.setAttribute(`enable-${name}`, '');
       this.removeAttribute(`disable-${name}`);
       this.removeAttribute(`no-${name}`);
       if (name === 'picture-in-picture') {
+        this.setAttribute('enable-pip', '');
         this.removeAttribute('disable-pip');
         this.removeAttribute('no-pip');
       }
       return;
     }
 
+    this.removeAttribute(`enable-${name}`);
+    if (name === 'picture-in-picture') {
+      this.removeAttribute('enable-pip');
+    }
     this.setAttribute(`disable-${name}`, '');
   }
 

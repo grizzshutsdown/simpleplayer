@@ -23,6 +23,12 @@ import '@grizzshutsdown/simpleplayer';
 <simple-player src="/video.mp4"></simple-player>
 ```
 
+Add the extra control tray when you want volume, Picture-in-Picture, and fullscreen:
+
+```html
+<simple-player src="/video.mp4" controls></simple-player>
+```
+
 ## Frameworks
 
 React:
@@ -69,11 +75,12 @@ declare module 'react' {
         src?: string;
         'aspect-ratio'?: string;
         'preload-margin'?: string;
+        controls?: boolean;
         'disable-autoplay'?: boolean;
-        'disable-volume'?: boolean;
+        'enable-volume'?: boolean;
         'disable-volume-slider'?: boolean;
-        'disable-picture-in-picture'?: boolean;
-        'disable-fullscreen'?: boolean;
+        'enable-picture-in-picture'?: boolean;
+        'enable-fullscreen'?: boolean;
       };
     }
   }
@@ -93,11 +100,14 @@ declare module 'react' {
 - `src`: video URL.
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
+- `controls`: add volume, Picture-in-Picture, and fullscreen controls.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
-- `disable-volume`: remove the volume control.
+- `enable-volume`: add the volume control.
 - `disable-volume-slider`: keep the sound button, but make it only mute/unmute.
-- `disable-picture-in-picture`: remove the Picture-in-Picture control.
-- `disable-fullscreen`: remove the fullscreen control.
+- `enable-picture-in-picture`: add the Picture-in-Picture control.
+- `enable-fullscreen`: add the fullscreen control.
+
+The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls.
 
 You can also control it with JavaScript:
 
@@ -108,10 +118,10 @@ player.src = '/next-video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
 player.autoplayEnabled = false;
-player.volumeEnabled = false;
+player.volumeEnabled = true;
 player.volumeSliderEnabled = false;
-player.pictureInPictureEnabled = false;
-player.fullscreenEnabled = false;
+player.pictureInPictureEnabled = true;
+player.fullscreenEnabled = true;
 ```
 
 ## Styling
