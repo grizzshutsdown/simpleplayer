@@ -1,0 +1,68 @@
+# SimplePlayer
+
+> Framework-free Web Component video player. It gives users a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading.
+
+Site: https://simpleplayer.grizz.fyi/
+GitHub: https://github.com/grizzshutsdown/simpleplayer
+npm: https://www.npmjs.com/package/@grizzshutsdown/simpleplayer
+Author: https://x.com/GrizzShutsDown
+
+## Package
+
+Install:
+
+```bash
+npm install @grizzshutsdown/simpleplayer
+pnpm add @grizzshutsdown/simpleplayer
+yarn add @grizzshutsdown/simpleplayer
+bun add @grizzshutsdown/simpleplayer
+```
+
+Import once:
+
+```js
+import '@grizzshutsdown/simpleplayer';
+```
+
+Default player:
+
+```html
+<simple-player src="/video.mp4"></simple-player>
+```
+
+Player with the extra control tray:
+
+```html
+<simple-player src="/video.mp4" controls></simple-player>
+```
+
+## Main Attributes
+
+- `src`: video URL.
+- `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
+- `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
+- `controls`: enables the extra control tray for volume, Picture-in-Picture, and fullscreen.
+- `disable-autoplay`: turns off default muted autoplay.
+
+## JavaScript Properties
+
+Use properties when you want to keep the HTML clean:
+
+```js
+const player = document.querySelector('simple-player');
+
+player.controlsEnabled = true;
+player.volumeEnabled = true;
+player.volumeSliderEnabled = false;
+player.pictureInPictureEnabled = true;
+player.fullscreenEnabled = true;
+player.autoplayEnabled = false;
+```
+
+## Useful Source Files
+
+- `src/simple-player.ts`: canonical Web Component source.
+- `README.md`: usage, framework examples, styling variables, and contributing notes.
+- `dev/`: local source playground for contributors.
+- `site/`: production demo consumer app that installs the published npm package.
+
