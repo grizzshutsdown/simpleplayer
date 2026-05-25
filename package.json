@@ -32,10 +32,10 @@
   "scripts": {
     "build": "npm run build:package && npm run build:site",
     "build:package": "vite build && tsc -p tsconfig.build.json",
-    "prebuild:site": "npm install --prefix site",
+    "prebuild:site": "npm install --prefix site --package-lock=false",
     "build:site": "vite build --config vite.site.config.ts",
     "dev": "vite dev dev --host 127.0.0.1 --port 5174",
-    "predemo": "npm install --prefix site",
+    "predemo": "npm install --prefix site --package-lock=false",
     "demo": "vite --config vite.site.config.ts --host 127.0.0.1"
   },
   "keywords": [
