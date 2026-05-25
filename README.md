@@ -97,9 +97,9 @@ declare module 'react' {
 - `src`: video URL.
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
-- `controls`: add volume, Picture-in-Picture, and fullscreen controls.
+- `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
-- `show-time`: shows a pinned timestamp tray when `controls` are enabled, or a hover tooltip over the scrubber when `controls` are disabled.
+- `show-time`: dual-mode timestamp. When used with `controls`, shows a pinned glass timestamp tray in the bottom-left alongside the controls tray. When used without `controls`, shows a hover tooltip above the scrubber as you drag or hover it. Clicking the timestamp toggles between elapsed and remaining time.
 
 The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls.
 

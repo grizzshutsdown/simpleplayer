@@ -17,22 +17,29 @@ import '@grizzshutsdown/simpleplayer';
 
 ## Main Options
 
+Attributes:
+
 - `src`: video URL.
 - `aspect-ratio`: CSS aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin. Default: `360px 0px`.
-- `show-time`: shows a pinned timestamp tray when `controls` are enabled, or a hover tooltip over the scrubber when `controls` are disabled.
+- `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons.
+- `disable-autoplay`: turns off muted autoplay.
+- `show-time`: dual-mode timestamp. With `controls`, shows a pinned glass timestamp tray in the bottom-left. Without `controls`, shows a hover tooltip above the scrubber while dragging or hovering. Clicking toggles between elapsed and remaining time.
 - `disable-volume`: removes the volume control.
 - `disable-picture-in-picture`: removes Picture-in-Picture.
 - `disable-fullscreen`: removes fullscreen.
 
-JavaScript properties:
+JavaScript properties mirror each attribute:
 
 ```js
 player.src = '/video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
+player.autoplayEnabled = false;
+player.controlsEnabled = true;
 player.timeVisible = true;
-player.volumeEnabled = false;
+player.volumeEnabled = true;
+player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = false;
 player.fullscreenEnabled = false;
 ```

@@ -483,12 +483,8 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
     this.#listen(this.#volumeControl, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumeControl, 'pointerleave', this.#handleVolumePointerLeave);
-    this.#listen(this.#volumeControl, 'mouseenter', this.#handleVolumePointerEnter);
-    this.#listen(this.#volumeControl, 'mouseleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumePopover, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumePopover, 'pointerleave', this.#handleVolumePointerLeave);
-    this.#listen(this.#volumePopover, 'mouseenter', this.#handleVolumePointerEnter);
-    this.#listen(this.#volumePopover, 'mouseleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeTrack, 'pointerdown', this.#handleVolumePointerDown);
     this.#listen(this.#volumeTrack, 'pointermove', this.#handleVolumePointerMove);
     this.#listen(this.#volumeTrack, 'pointerup', this.#handleVolumePointerUp);
