@@ -10,6 +10,8 @@ export declare class SimplePlayer extends HTMLElement {
     set preloadMargin(value: string);
     get volumeEnabled(): boolean;
     set volumeEnabled(value: boolean);
+    get volumeSliderEnabled(): boolean;
+    set volumeSliderEnabled(value: boolean);
     get pictureInPictureEnabled(): boolean;
     set pictureInPictureEnabled(value: boolean);
     get pipEnabled(): boolean;

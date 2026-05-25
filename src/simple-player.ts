@@ -475,6 +475,20 @@ const styles = `
     display: none;
   }
 
+  .sp-player.is-volume-unavailable [data-sp-volume-control] {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .sp-player.is-volume-unavailable .sp-volume-icon {
+    transition: none;
+  }
+
+  .sp-player.is-volume-unavailable .sp-control-tray-slots:has([data-sp-volume-control]:hover)::before,
+  .sp-player.is-volume-unavailable .sp-control-tray-slots:has([data-sp-volume-control].is-control-tap-active)::before {
+    opacity: 0;
+  }
+
   .sp-control-button:hover .sp-control-icon {
     opacity: var(--sp-control-icon-hover-opacity);
     transform: translateY(0) scale(1);
@@ -563,6 +577,7 @@ const styles = `
   }
 
   .sp-player.is-volume-unavailable .sp-volume-slot.is-volume-open .sp-volume-popover,
+  .sp-player:not(.has-volume-slider-control) .sp-volume-slot.is-volume-open .sp-volume-popover,
   .sp-player.is-volume-unavailable .sp-volume-popover.is-scrubbing-volume {
     opacity: 0;
     pointer-events: none;
@@ -729,6 +744,15 @@ const styles = `
   .sp-player.is-scrubbing .sp-time {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+
+  .sp-button:focus-visible,
+  .sp-progress:focus-visible,
+  .sp-control-button:focus-visible,
+  .sp-volume-track:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.92);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.32);
   }
 
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
@@ -937,10 +961,12 @@ export class SimplePlayer extends HTMLElement {
     'aspect-ratio',
     'preload-margin',
     'disable-volume',
+    'disable-volume-slider',
     'disable-picture-in-picture',
     'disable-pip',
     'disable-fullscreen',
     'no-volume',
+    'no-volume-slider',
     'no-picture-in-picture',
     'no-pip',
     'no-fullscreen',
@@ -986,6 +1012,7 @@ export class SimplePlayer extends HTMLElement {
   #loadingStateTimer = 0;
   #initialProgressSettleTimer = 0;
   #suppressTouchButtonClickUntil = 0;
+  #suppressTouchControlClickUntil = 0;
   #hasDecodedFirstFrame = false;
   #hasPresentedFirstFrame = false;
   #firstFrameRequestPending = false;
@@ -1066,6 +1093,20 @@ export class SimplePlayer extends HTMLElement {
 
   set volumeEnabled(value: boolean) {
     this.#setDisabledControlAttributes('volume', value);
+  }
+
+  get volumeSliderEnabled() {
+    return !this.hasAttribute('disable-volume-slider') && !this.hasAttribute('no-volume-slider');
+  }
+
+  set volumeSliderEnabled(value: boolean) {
+    if (value) {
+      this.removeAttribute('disable-volume-slider');
+      this.removeAttribute('no-volume-slider');
+      return;
+    }
+
+    this.setAttribute('disable-volume-slider', '');
   }
 
   get pictureInPictureEnabled() {
@@ -1235,8 +1276,9 @@ export class SimplePlayer extends HTMLElement {
 
     this.style.setProperty('--sp-enabled-controls-count', `${index}`);
     this.style.setProperty('--sp-control-tray-display', index > 0 ? 'block' : 'none');
+    this.#player.classList.toggle('has-volume-slider-control', this.volumeEnabled && this.volumeSliderEnabled);
 
-    if (!this.volumeEnabled) {
+    if (!this.volumeEnabled || !this.volumeSliderEnabled) {
       this.#closeVolumePopover();
       this.#releaseVolumePointer(this.#activeVolumePointerId);
       this.#isVolumeScrubbing = false;
@@ -1273,6 +1315,8 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#controlTray, 'pointerleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#controlTray, 'mouseenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#controlTray, 'mouseleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#root, 'focusin', this.#handleControlSurfaceFocusIn);
+    this.#listen(this.#root, 'focusout', this.#handleControlSurfaceFocusOut);
     this.#listen(this.#player, 'pointerdown', this.#handlePlayerPointerDown);
     this.#listen(this.#player, 'dragstart', this.#preventNativeVideoAction);
     this.#listen(this.#player, 'selectstart', this.#preventNativeVideoAction);
@@ -1282,6 +1326,7 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#progressTrack, 'pointermove', this.#handleProgressPointerMove);
     this.#listen(this.#progressTrack, 'pointerup', this.#handleProgressPointerUp);
     this.#listen(this.#progressTrack, 'pointercancel', this.#handleProgressPointerCancel);
+    this.#listen(this.#progressTrack, 'keydown', this.#handleProgressKeyDown);
     this.#listen(this.#volumeControl, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumeControl, 'pointerleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
@@ -1451,6 +1496,25 @@ export class SimplePlayer extends HTMLElement {
     );
   }
 
+  #areControlsVisible() {
+    return (
+      this.#player.classList.contains('is-controls-visible') ||
+      this.#player.classList.contains('is-pointer-active') ||
+      this.#root.activeElement instanceof HTMLElement
+    );
+  }
+
+  #shouldSuppressControlAction() {
+    return this.#isTouchControls() && performance.now() < this.#suppressTouchControlClickUntil;
+  }
+
+  #isUnavailableControlButton(button: HTMLElement | null) {
+    return (
+      button instanceof HTMLButtonElement &&
+      (button.disabled || (button === this.#volumeControl && (!this.volumeEnabled || !this.#hasAudioTrack)))
+    );
+  }
+
   #syncPointerControlsFromLastPosition() {
     if (!this.#lastPointerWasTouch && this.#isPointInsidePlayer(this.#lastPointerClientX, this.#lastPointerClientY)) {
       this.#showPointerControls(true);
@@ -1491,8 +1555,27 @@ export class SimplePlayer extends HTMLElement {
     this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
   };
 
+  #handleControlSurfaceFocusIn = () => {
+    if (this.#isTouchControls()) {
+      this.#player.classList.add('is-controls-visible');
+    } else {
+      this.#player.classList.add('is-pointer-active');
+    }
+
+    this.#clearControlsHideTimer();
+  };
+
+  #handleControlSurfaceFocusOut = () => {
+    this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
+  };
+
   #handleControlButtonPointerEnter = (event: Event) => {
     const target = event.currentTarget as HTMLElement | null;
+    if (this.#isUnavailableControlButton(target)) {
+      this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
+      return;
+    }
+
     const index = Number(target?.dataset.spControlIndex ?? 0);
     this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
   };
@@ -1513,7 +1596,7 @@ export class SimplePlayer extends HTMLElement {
     if (!(event instanceof PointerEvent) || event.pointerType !== 'touch') return;
 
     const target = event.currentTarget as HTMLButtonElement | null;
-    if (!target) return;
+    if (!target || !this.#areControlsVisible() || this.#isUnavailableControlButton(target)) return;
 
     const index = Number(target.dataset.spControlIndex ?? 0);
     this.#clearControlTapTimer();
@@ -1896,6 +1979,10 @@ export class SimplePlayer extends HTMLElement {
     this.#syncVisualProgressClock(this.#pausedVisualProgressTime);
     this.#setProgressVisual(frozenProgress);
     this.#progressTrack.setAttribute('aria-valuenow', `${this.#pausedVisualProgressTime}`);
+    this.#progressTrack.setAttribute(
+      'aria-valuetext',
+      `${this.#formatVideoTime(this.#pausedVisualProgressTime)} of ${this.#formatVideoTime(this.#video.duration)}`,
+    );
   }
 
   #getVisualProgressTime() {
@@ -2022,6 +2109,10 @@ export class SimplePlayer extends HTMLElement {
       this.#progressTrack.setAttribute('aria-valuemin', '0');
       this.#progressTrack.setAttribute('aria-valuemax', `${this.#video.duration}`);
       this.#progressTrack.setAttribute('aria-valuenow', `${frozenTime}`);
+      this.#progressTrack.setAttribute(
+        'aria-valuetext',
+        `${this.#formatVideoTime(frozenTime)} of ${this.#formatVideoTime(this.#video.duration)}`,
+      );
       return;
     }
 
@@ -2032,6 +2123,10 @@ export class SimplePlayer extends HTMLElement {
     this.#progressTrack.setAttribute('aria-valuemin', '0');
     this.#progressTrack.setAttribute('aria-valuemax', hasDuration ? `${this.#video.duration}` : '0');
     this.#progressTrack.setAttribute('aria-valuenow', hasDuration ? `${renderedTime}` : '0');
+    this.#progressTrack.setAttribute(
+      'aria-valuetext',
+      hasDuration ? `${this.#formatVideoTime(renderedTime)} of ${this.#formatVideoTime(this.#video.duration)}` : 'Loading video',
+    );
   }
 
   #previewSeekFromClientX(clientX: number, shouldSnap = this.#isScrubbing) {
@@ -2045,6 +2140,10 @@ export class SimplePlayer extends HTMLElement {
     this.#player.style.setProperty('--sp-scrub-preview-left', `${this.#getProgressXFromPercent(scrubPoint.percent, rect)}px`);
     this.#scrubTimeText.textContent = this.#formatVideoTime(scrubPoint.targetTime);
     this.#progressTrack.setAttribute('aria-valuenow', `${scrubPoint.targetTime}`);
+    this.#progressTrack.setAttribute(
+      'aria-valuetext',
+      `${this.#formatVideoTime(scrubPoint.targetTime)} of ${this.#formatVideoTime(this.#video.duration)}`,
+    );
     this.#syncControlsCollision();
     return scrubPoint.targetTime;
   }
@@ -2155,6 +2254,7 @@ export class SimplePlayer extends HTMLElement {
     if (!this.volumeEnabled) {
       this.#player.classList.remove('is-volume-unavailable', 'is-volume-muted', 'is-volume-sound', 'is-volume-icon-animating');
       this.#volumeControl.disabled = true;
+      this.#volumeControl.setAttribute('aria-disabled', 'true');
       return;
     }
 
@@ -2175,11 +2275,13 @@ export class SimplePlayer extends HTMLElement {
     this.#player.classList.toggle('is-volume-sound', !isMuted);
     this.#player.style.setProperty('--sp-volume-level', `${volumePercent}%`);
     this.#volumeControl.disabled = !this.#hasAudioTrack;
+    this.#volumeControl.setAttribute('aria-disabled', `${!this.#hasAudioTrack}`);
     this.#volumeControl.setAttribute(
       'aria-label',
       !this.#hasAudioTrack ? 'Video has no audio' : isMuted ? 'Unmute video' : 'Mute video',
     );
     this.#volumeTrack.setAttribute('aria-valuenow', `${volumePercent}`);
+    this.#volumeTrack.setAttribute('aria-valuetext', `${volumePercent}%`);
   };
 
   #setVolumeFromClientY(clientY: number) {
@@ -2445,10 +2547,26 @@ export class SimplePlayer extends HTMLElement {
       event.clientX <= buttonRect.right &&
       event.clientY >= buttonRect.top &&
       event.clientY <= buttonRect.bottom;
+    const controlTrayRect = this.#controlTray.getBoundingClientRect();
+    const isInsideControlTray =
+      event.clientX >= controlTrayRect.left &&
+      event.clientX <= controlTrayRect.right &&
+      event.clientY >= controlTrayRect.top &&
+      event.clientY <= controlTrayRect.bottom;
+    const progressRect = this.#progressTrack.getBoundingClientRect();
+    const isInsideProgress =
+      event.clientX >= progressRect.left &&
+      event.clientX <= progressRect.right &&
+      event.clientY >= progressRect.top &&
+      event.clientY <= progressRect.bottom;
     const didRevealControls = this.#showTouchControls();
 
     if (didRevealControls && isInsideButton) {
       this.#suppressTouchButtonClickUntil = performance.now() + 260;
+    }
+
+    if (didRevealControls && (isInsideControlTray || isInsideProgress)) {
+      this.#suppressTouchControlClickUntil = performance.now() + 260;
     }
 
     void this.#hydrateVideoSource();
@@ -2465,7 +2583,7 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #openVolumePopover() {
-    if (!this.volumeEnabled || !this.#hasAudioTrack) return;
+    if (!this.volumeEnabled || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
     this.#clearVolumeCloseTimer();
     this.#volumeControl.classList.add('is-volume-open');
   }
@@ -2482,13 +2600,13 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #handleVolumePointerEnter = () => {
-    if (this.#isTouchControls()) return;
+    if (this.#isTouchControls() || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
     this.#isVolumeHovering = true;
     this.#openVolumePopover();
   };
 
   #handleVolumePointerLeave = () => {
-    if (this.#isTouchControls()) return;
+    if (this.#isTouchControls() || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
     this.#isVolumeHovering = false;
     this.#scheduleVolumePopoverClose();
   };
@@ -2497,6 +2615,7 @@ export class SimplePlayer extends HTMLElement {
     if (!this.volumeEnabled || !this.#hasAudioTrack) return;
     event.preventDefault();
     event.stopPropagation();
+    if (!this.#areControlsVisible() || this.#shouldSuppressControlAction()) return;
     this.#showTouchControls();
     this.#closeVolumePopover();
     if (this.#video.muted || this.#video.volume <= 0) {
@@ -2512,7 +2631,7 @@ export class SimplePlayer extends HTMLElement {
 
   #handleVolumePointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
-    if (!this.volumeEnabled || !this.#hasAudioTrack) return;
+    if (!this.volumeEnabled || !this.volumeSliderEnabled || !this.#hasAudioTrack || this.#isTouchControls()) return;
     event.preventDefault();
     event.stopPropagation();
     this.#showTouchControls();
@@ -2573,6 +2692,7 @@ export class SimplePlayer extends HTMLElement {
     };
 
     if (!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !video.requestPictureInPicture) return;
+    if (!this.#areControlsVisible() || this.#shouldSuppressControlAction()) return;
     this.#showTouchControls();
 
     try {
@@ -2594,6 +2714,7 @@ export class SimplePlayer extends HTMLElement {
     if (!this.#isFullscreenSupported()) return;
     event.preventDefault();
     event.stopPropagation();
+    if (!this.#areControlsVisible() || this.#shouldSuppressControlAction()) return;
     this.#trackPointerPosition(event);
     this.#showTouchControls();
 
@@ -2626,6 +2747,15 @@ export class SimplePlayer extends HTMLElement {
   #handleProgressPointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
     event.preventDefault();
+
+    if (!this.#areControlsVisible() || this.#shouldSuppressControlAction()) {
+      this.#showTouchControls();
+      if (this.#isTouchControls()) {
+        this.#suppressTouchControlClickUntil = performance.now() + 260;
+      }
+      return;
+    }
+
     this.#showTouchControls();
     this.#clearControlsHideTimer();
     this.#finishInitialProgressSettle();
@@ -2640,6 +2770,34 @@ export class SimplePlayer extends HTMLElement {
     this.#scrubTargetTime = this.#previewSeekFromClientX(event.clientX, false);
     this.#clearScrubLongPressTimer();
     this.#scrubLongPressTimer = window.setTimeout(this.#enterScrubMode, this.#scrubLongPressDelay);
+  };
+
+  #handleProgressKeyDown = (event: Event) => {
+    if (!(event instanceof KeyboardEvent)) return;
+    if (!Number.isFinite(this.#video.duration) || this.#video.duration <= 0) return;
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.#handleControlSurfaceFocusIn();
+
+    const baseTime = this.#getVisualProgressTime();
+    const smallStep = event.shiftKey ? 10 : 5;
+    const largeStep = Math.max(10, this.#video.duration * 0.1);
+    const nextTime =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? this.#video.duration
+          : event.key === 'PageUp'
+            ? baseTime + largeStep
+            : event.key === 'PageDown'
+              ? baseTime - largeStep
+              : baseTime + (event.key === 'ArrowRight' ? smallStep : -smallStep);
+
+    this.#video.currentTime = Math.min(this.#video.duration, Math.max(0, nextTime));
+    this.#syncVisualProgressClock(this.#video.currentTime);
+    this.#updateProgress(this.#video.currentTime);
   };
 
   #handleProgressPointerMove = (event: Event) => {

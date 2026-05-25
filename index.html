@@ -701,21 +701,6 @@ import '@grizzshutsdown/simpleplayer';
         const src = mode === 'loading' ? '' : ` src="${bunnyVideo}"`;
         const controls = mode === 'controls' ? '' : ' disable-volume disable-picture-in-picture disable-fullscreen';
         playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
-
-        if (mode !== 'controls') return;
-
-        const player = playerCard.querySelector('simple-player');
-        window.requestAnimationFrame(() => {
-          player.style.setProperty('--sp-control-icon-delay-1', '0ms');
-          player.style.setProperty('--sp-control-icon-delay-2', '0ms');
-          player.style.setProperty('--sp-control-icon-delay-3', '0ms');
-
-          window.requestAnimationFrame(() => {
-            const surface = player?.shadowRoot?.querySelector('[data-sp-player]');
-            surface?.classList.remove('is-progress-settling');
-            surface?.classList.add('has-loaded-once', 'is-pointer-active');
-          });
-        });
       };
 
       document.querySelectorAll('[data-install-tab]').forEach((button) => {

@@ -70,6 +70,7 @@ declare module 'react' {
         'aspect-ratio'?: string;
         'preload-margin'?: string;
         'disable-volume'?: boolean;
+        'disable-volume-slider'?: boolean;
         'disable-picture-in-picture'?: boolean;
         'disable-fullscreen'?: boolean;
       };
@@ -92,6 +93,7 @@ declare module 'react' {
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `disable-volume`: remove the volume control.
+- `disable-volume-slider`: keep the sound button, but make it only mute/unmute.
 - `disable-picture-in-picture`: remove the Picture-in-Picture control.
 - `disable-fullscreen`: remove the fullscreen control.
 
@@ -104,6 +106,7 @@ player.src = '/next-video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
 player.volumeEnabled = false;
+player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = false;
 player.fullscreenEnabled = false;
 ```
