@@ -633,13 +633,13 @@ export function App() {
           <div class="section-head">
             <h2 class="title" id="example-title">Previews</h2>
             <div class="tabs" role="tablist" aria-label="Preview state">
-              <button class="tab is-active text" type="button" role="tab" aria-selected="true" data-example-tab="loading">Loading</button>
-              <button class="tab text" type="button" role="tab" aria-selected="false" data-example-tab="default">Default</button>
+              <button class="tab is-active text" type="button" role="tab" aria-selected="true" data-example-tab="default">Default</button>
               <button class="tab text" type="button" role="tab" aria-selected="false" data-example-tab="controls">Controls</button>
+              <button class="tab text" type="button" role="tab" aria-selected="false" data-example-tab="loading">Loading</button>
             </div>
           </div>
-          <div class="player-card is-loading-preview" data-preview-state="loading" aria-busy="true" data-player-card>
-            <simple-player aspect-ratio="16 / 9"></simple-player>
+          <div class="player-card" data-preview-state="default" aria-busy="false" data-player-card>
+            <simple-player src="https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4" aspect-ratio="16 / 9"></simple-player>
           </div>
         </section>
 
