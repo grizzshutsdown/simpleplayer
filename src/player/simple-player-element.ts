@@ -26,6 +26,8 @@ export class SimplePlayer extends HTMLElement {
   #progressTrack!: HTMLElement;
   #controlTray!: HTMLElement;
   #controlTraySlots!: HTMLElement;
+  #trayTime!: HTMLElement;
+  #trayTimeText!: HTMLElement;
   #scrubTime!: HTMLElement;
   #scrubTimeText!: HTMLElement;
   #volumeControl!: HTMLButtonElement;
@@ -84,6 +86,8 @@ export class SimplePlayer extends HTMLElement {
   #volumeIconAnimationTimer = 0;
   #controlTapTimer = 0;
   #volumeIconState: 'sound' | 'muted' | null = null;
+  #showRemainingTime = false;
+  #timeAnimationTimer = 0;
 
   readonly #scrubDragThreshold = 4;
   readonly #scrubSnapDistance = 3.5;
@@ -229,6 +233,8 @@ export class SimplePlayer extends HTMLElement {
     this.#progressTrack = this.#root.querySelector('[data-sp-progress-track]')!;
     this.#controlTray = this.#root.querySelector('[data-sp-control-tray]')!;
     this.#controlTraySlots = this.#root.querySelector('[data-sp-control-tray-slots]')!;
+    this.#trayTime = this.#root.querySelector('[data-sp-tray-time]')!;
+    this.#trayTimeText = this.#root.querySelector('[data-sp-tray-time-text]')!;
     this.#scrubTime = this.#root.querySelector('[data-sp-time]')!;
     this.#scrubTimeText = this.#root.querySelector('[data-sp-time-text]')!;
     this.#volumeControl = this.#root.querySelector('[data-sp-volume-control]')!;
@@ -418,12 +424,15 @@ export class SimplePlayer extends HTMLElement {
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
   }
 
+  get #hasPinnedTime() {
+    return this.timeVisible && this.controlsEnabled;
+  }
+
   #syncTimeVisibility() {
     if (!this.#player) return;
 
-    const hasPinnedTime = this.timeVisible && this.controlsEnabled;
-    this.#player.classList.toggle('has-pinned-time', hasPinnedTime);
-    if (hasPinnedTime) {
+    this.#player.classList.toggle('has-pinned-time', this.#hasPinnedTime);
+    if (this.#hasPinnedTime) {
       this.#syncPinnedTimeText();
     }
   }
@@ -483,6 +492,7 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#volumeTrack, 'keydown', this.#handleVolumeKeyDown);
     this.#listen(this.#pictureInPictureControl, 'click', this.#handlePictureInPictureClick);
     this.#listen(this.#fullscreenControl, 'click', this.#handleFullscreenClick);
+    this.#listen(this.#trayTimeText, 'click', this.#handleTimeToggleClick);
     for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerenter', this.#handleControlButtonPointerEnter);
       this.#listen(control, 'mouseenter', this.#handleControlButtonPointerEnter);
@@ -1282,9 +1292,9 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #syncPinnedTimeText(time = this.#getVisualProgressTime()) {
-    if (!this.timeVisible || this.#isProgressHoverPreviewing || this.#isScrubPreviewLocked()) return;
+    if (!this.#hasPinnedTime || this.#isProgressHoverPreviewing || this.#isScrubPreviewLocked()) return;
 
-    this.#scrubTimeText.textContent = formatVideoTime(time);
+    this.#trayTimeText.textContent = this.#formatTimeForDisplay(time);
   }
 
   #updateProgress(time = this.#getVisualProgressTime()) {
@@ -1329,11 +1339,12 @@ export class SimplePlayer extends HTMLElement {
       this.#setProgressVisual(scrubPoint.percent);
     }
 
-    if (!this.timeVisible) {
+    if (!this.#hasPinnedTime) {
       this.#player.style.setProperty('--sp-scrub-preview-left', `${this.#getProgressXFromPercent(scrubPoint.percent, rect)}px`);
     }
 
     this.#scrubTimeText.textContent = formatVideoTime(scrubPoint.targetTime);
+    this.#trayTimeText.textContent = this.#formatTimeForDisplay(scrubPoint.targetTime);
 
     if (updateVisual) {
       this.#progressTrack.setAttribute('aria-valuenow', `${scrubPoint.targetTime}`);
@@ -1353,7 +1364,7 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #syncControlsCollision() {
-    if ((!this.#isScrubbing && !this.#isProgressHoverPreviewing) || !this.#controlTray || !this.#scrubTime) {
+    if ((!this.#isScrubbing && !this.#isProgressHoverPreviewing) || !this.#controlTray || !this.#scrubTime || this.#hasPinnedTime) {
       this.#clearControlsCollision();
       return;
     }
@@ -1643,6 +1654,43 @@ export class SimplePlayer extends HTMLElement {
 
     this.#scheduleTouchControlsHide();
   }
+
+  #formatTimeForDisplay(time: number) {
+    if (!this.#showRemainingTime) return formatVideoTime(time);
+    const duration = Number.isFinite(this.#video.duration) ? this.#video.duration : 0;
+    if (duration <= 0) return formatVideoTime(time);
+    return `-${formatVideoTime(Math.max(0, duration - time))}`;
+  }
+
+  #clearTimeAnimationTimer() {
+    if (!this.#timeAnimationTimer) return;
+    window.clearTimeout(this.#timeAnimationTimer);
+    this.#timeAnimationTimer = 0;
+  }
+
+  #animateTimeSwap() {
+    this.#clearTimeAnimationTimer();
+    this.#trayTimeText.classList.remove('is-time-animating');
+    void this.#trayTimeText.offsetWidth;
+    this.#trayTimeText.classList.add('is-time-animating');
+    this.#timeAnimationTimer = window.setTimeout(() => {
+      this.#timeAnimationTimer = 0;
+      this.#trayTimeText.classList.remove('is-time-animating');
+    }, 240);
+  }
+
+  #handleTimeToggleClick = (event: Event) => {
+    event.stopPropagation();
+    this.#showRemainingTime = !this.#showRemainingTime;
+    this.#animateTimeSwap();
+    if (this.#isScrubPreviewLocked() || this.#isProgressHoverPreviewing) {
+      if (this.#trayTimeText) {
+         this.#trayTimeText.textContent = this.#formatTimeForDisplay(this.#scrubTargetTime);
+      }
+    } else {
+      this.#syncPinnedTimeText(this.#getVisualProgressTime());
+    }
+  };
 
   #handleButtonClick = async () => {
     if (performance.now() < this.#suppressTouchButtonClickUntil) {

@@ -35,6 +35,13 @@ template.innerHTML = `
         <span class="sp-progress-fill" data-sp-progress></span>
         <span class="sp-progress-marker" aria-hidden="true"></span>
       </div>
+      <span class="sp-tray-time" data-sp-tray-time>
+        <span class="sp-control-tray sp-tray-time-holder">
+          <span class="sp-control-tray-slots">
+            <button class="sp-control-button sp-tray-time-text" type="button" tabindex="-1" data-sp-tray-time-text>0:00</button>
+          </span>
+        </span>
+      </span>
       <span class="sp-control-tray" data-sp-control-tray>
         <span class="sp-control-tray-slots" data-sp-control-tray-slots>
           <button class="sp-control-button sp-volume-slot" type="button" aria-label="Toggle sound" data-sp-volume-control>

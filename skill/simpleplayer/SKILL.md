@@ -20,7 +20,7 @@ import '@grizzshutsdown/simpleplayer';
 - `src`: video URL.
 - `aspect-ratio`: CSS aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin. Default: `360px 0px`.
-- `show-time`: keep the timestamp visible in a left glass holder when `controls` is enabled.
+- `show-time`: shows a pinned timestamp tray when `controls` are enabled, or a hover tooltip over the scrubber when `controls` are disabled.
 - `disable-volume`: removes the volume control.
 - `disable-picture-in-picture`: removes Picture-in-Picture.
 - `disable-fullscreen`: removes fullscreen.

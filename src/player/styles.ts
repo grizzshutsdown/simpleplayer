@@ -88,6 +88,7 @@ export const styles: string = `
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+    font-variant-numeric: tabular-nums;
   }
 
   .sp-player:fullscreen {
@@ -680,6 +681,9 @@ export const styles: string = `
   .sp-time {
     position: absolute;
     display: block;
+    bottom: calc(100% + var(--space));
+    left: var(--sp-scrub-preview-left);
+    z-index: 2;
     padding: 2px calc(var(--space) * 1.5);
     color: var(--white);
     background: transparent;
@@ -689,15 +693,9 @@ export const styles: string = `
     pointer-events: none;
     opacity: 0;
     transition: transform 120ms ease;
+    transform: translateX(-50%) translateY(2px);
     white-space: nowrap;
     font: 500 12px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
-
-  .sp-time {
-    bottom: calc(100% + var(--space));
-    left: var(--sp-scrub-preview-left);
-    z-index: 2;
-    transform: translateX(-50%) translateY(2px);
   }
 
   .sp-time-surface {
@@ -720,34 +718,85 @@ export const styles: string = `
 
   .sp-progress:hover .sp-time,
   .sp-player.is-progress-hovering .sp-time,
-  .sp-player.is-scrubbing .sp-time,
-  .sp-player.has-pinned-time .sp-time {
+  .sp-player.is-scrubbing .sp-time {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
 
   .sp-player.has-pinned-time .sp-time {
-    box-sizing: border-box;
-    display: grid;
-    place-items: center;
-    min-width: calc((var(--sp-control-slot-size) * 1.65) + (var(--sp-control-tray-padding) * 2));
-    height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
-    padding: 0 calc(var(--space) * 2);
+    display: none !important;
+  }
+
+  .sp-tray-time {
+    position: absolute;
+    display: none;
     bottom: calc(((var(--space) * 2) - 2px) + var(--sp-progress-height) + 8px);
     left: 0;
-    border-radius: 5px;
-    color: rgb(var(--white-rgb) / var(--sp-control-icon-opacity));
+    z-index: 3;
+    color: var(--white);
+    isolation: isolate;
+    overflow: visible;
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 0;
+    filter: blur(0.8px);
+    transform: translateY(4px) scale(0.96);
+    transform-origin: left bottom;
+    transition:
+      bottom 180ms ease,
+      opacity 220ms ease,
+      filter 260ms ease,
+      transform 300ms cubic-bezier(0.18, 0.9, 0.22, 1);
+  }
+
+  .sp-player.has-pinned-time .sp-tray-time {
+    display: block;
+  }
+
+  .sp-player.has-pinned-time.is-pointer-active .sp-tray-time,
+  .sp-player.has-pinned-time.is-controls-visible .sp-tray-time,
+  :host(:hover) .sp-player.has-pinned-time .sp-tray-time {
+    opacity: 1;
+    pointer-events: auto;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+
+  .sp-tray-time-holder {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: max-content;
+    transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .sp-tray-time-holder .sp-control-tray-slots {
+    position: relative;
+    width: max-content;
+  }
+
+  .sp-tray-time-holder .sp-control-tray-slots::before {
+    width: calc(100% - (var(--sp-control-tray-padding) * 2));
+  }
+
+  .sp-tray-time-holder .sp-tray-time-text {
+    aspect-ratio: auto;
+    min-width: max-content;
+    width: auto;
+    padding: 0 8px;
     font: 600 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    transform: translateX(0) translateY(0);
   }
 
-  .sp-player.has-pinned-time .sp-time .sp-time-surface {
-    background: var(--sp-control-glass-surface);
-    opacity: var(--sp-control-glass-opacity);
-    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+  .sp-tray-time-text {
+    pointer-events: auto;
+    cursor: pointer;
   }
 
-  .sp-player.is-loading:not(.has-loaded-once) .sp-time {
+  .sp-tray-time-text.is-time-animating {
+    animation: sp-volume-icon-swap 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-player.is-loading:not(.has-loaded-once) .sp-tray-time {
     opacity: 0;
   }
 
@@ -798,24 +847,10 @@ export const styles: string = `
       --sp-progress-height: 4px;
     }
 
-    .sp-progress:hover .sp-time,
-    .sp-player.is-progress-hovering .sp-time {
-      opacity: 0;
-      transform: translateX(-50%) translateY(2px);
-    }
-
-    .sp-player.has-pinned-time .sp-time {
+    .sp-player.has-pinned-time.is-controls-visible .sp-tray-time {
       opacity: 1;
-      transform: translateX(0) translateY(0);
-    }
-
-    .sp-player.is-scrubbing .sp-time {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .sp-player.has-pinned-time.is-scrubbing .sp-time {
-      transform: translateX(0) translateY(0);
+      filter: blur(0);
+      transform: translateY(0) scale(1);
     }
 
     .sp-player.is-scrubbing .sp-progress-cluster {

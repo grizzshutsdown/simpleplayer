@@ -99,7 +99,7 @@ declare module 'react' {
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `controls`: add volume, Picture-in-Picture, and fullscreen controls.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
-- `show-time`: keep the timestamp visible in a left glass holder when `controls` is enabled.
+- `show-time`: shows a pinned timestamp tray when `controls` are enabled, or a hover tooltip over the scrubber when `controls` are disabled.
 
 The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls.
 
