@@ -69,6 +69,7 @@ declare module 'react' {
         src?: string;
         'aspect-ratio'?: string;
         'preload-margin'?: string;
+        'disable-autoplay'?: boolean;
         'disable-volume'?: boolean;
         'disable-volume-slider'?: boolean;
         'disable-picture-in-picture'?: boolean;
@@ -92,6 +93,7 @@ declare module 'react' {
 - `src`: video URL.
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
+- `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
 - `disable-volume`: remove the volume control.
 - `disable-volume-slider`: keep the sound button, but make it only mute/unmute.
 - `disable-picture-in-picture`: remove the Picture-in-Picture control.
@@ -105,6 +107,7 @@ const player = document.querySelector('simple-player');
 player.src = '/next-video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
+player.autoplayEnabled = false;
 player.volumeEnabled = false;
 player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = false;

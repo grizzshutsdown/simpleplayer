@@ -879,6 +879,8 @@ template.innerHTML = `
   <div class="sp-player is-loading" data-sp-player>
     <video
       class="sp-video sp-asset"
+      autoplay
+      muted
       playsinline
       loop
       preload="none"
@@ -960,11 +962,13 @@ export class SimplePlayer extends HTMLElement {
     'src',
     'aspect-ratio',
     'preload-margin',
+    'disable-autoplay',
     'disable-volume',
     'disable-volume-slider',
     'disable-picture-in-picture',
     'disable-pip',
     'disable-fullscreen',
+    'no-autoplay',
     'no-volume',
     'no-volume-slider',
     'no-picture-in-picture',
@@ -1088,6 +1092,20 @@ export class SimplePlayer extends HTMLElement {
     this.#setStringAttribute('preload-margin', value);
   }
 
+  get autoplayEnabled() {
+    return !this.hasAttribute('disable-autoplay') && !this.hasAttribute('no-autoplay');
+  }
+
+  set autoplayEnabled(value: boolean) {
+    if (value) {
+      this.removeAttribute('disable-autoplay');
+      this.removeAttribute('no-autoplay');
+      return;
+    }
+
+    this.setAttribute('disable-autoplay', '');
+  }
+
   get volumeEnabled() {
     return !this.hasAttribute('disable-volume') && !this.hasAttribute('no-volume');
   }
@@ -1161,6 +1179,7 @@ export class SimplePlayer extends HTMLElement {
       this.#initialized = true;
     }
 
+    this.#syncAutoplayState();
     this.#setupLazyLoading();
     this.#syncOptionalControls();
     this.#syncVideoLoading();
@@ -1219,6 +1238,13 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
+    if ((name === 'disable-autoplay' || name === 'no-autoplay') && this.isConnected) {
+      this.#syncAutoplayState();
+      this.#syncAudioControlState();
+      this.#syncVideoState();
+      return;
+    }
+
     if ((name.startsWith('disable-') || name.startsWith('no-')) && this.isConnected) {
       this.#syncOptionalControls();
       this.#syncAudioControlState();
@@ -1252,6 +1278,27 @@ export class SimplePlayer extends HTMLElement {
 
   #syncAspectRatio() {
     this.style.setProperty('--simple-player-aspect-ratio', this.aspectRatio);
+  }
+
+  #syncAutoplayState() {
+    if (!this.#video) return;
+
+    const isEnabled = this.autoplayEnabled;
+    this.#video.autoplay = isEnabled;
+
+    if (isEnabled) {
+      this.#video.muted = true;
+      this.#video.setAttribute('autoplay', '');
+      this.#video.setAttribute('muted', '');
+      return;
+    }
+
+    this.#video.removeAttribute('autoplay');
+
+    if (!this.#videoSourceLoaded) {
+      this.#video.muted = false;
+      this.#video.removeAttribute('muted');
+    }
   }
 
   #syncOptionalControls() {
@@ -1690,6 +1737,7 @@ export class SimplePlayer extends HTMLElement {
     this.#firstFramePresentationPending = false;
     this.#firstFrameRequestToken += 1;
     this.#player.classList.remove('has-visible-frame');
+    this.#syncAutoplayState();
     this.#video.src = source;
     this.#video.preload = 'auto';
     this.#video.load();
@@ -2982,6 +3030,7 @@ export class SimplePlayer extends HTMLElement {
     this.#video.pause();
     this.#video.removeAttribute('src');
     this.#video.preload = 'none';
+    this.#syncAutoplayState();
     this.#video.load();
     this.#setProgressVisual(0);
     this.#syncAudioControlState();

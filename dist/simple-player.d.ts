@@ -8,6 +8,8 @@ export declare class SimplePlayer extends HTMLElement {
     set aspectRatio(value: string);
     get preloadMargin(): string;
     set preloadMargin(value: string);
+    get autoplayEnabled(): boolean;
+    set autoplayEnabled(value: boolean);
     get volumeEnabled(): boolean;
     set volumeEnabled(value: boolean);
     get volumeSliderEnabled(): boolean;
