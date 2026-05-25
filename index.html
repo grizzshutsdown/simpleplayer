@@ -833,7 +833,7 @@ import '@grizzshutsdown/simpleplayer';
         playerCard.setAttribute('aria-busy', isLoading ? 'true' : 'false');
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
         const src = isLoading ? '' : ` src="${previewVideo}"`;
-        const controls = hasControls ? ' controls' : '';
+        const controls = hasControls ? ' controls show-time' : '';
         playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
       };
 
