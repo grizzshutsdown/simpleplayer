@@ -75,7 +75,7 @@
           --author-hover-background: rgb(255 255 255 / 0.1);
           --logo-filter: invert(1);
           --bear-filter: invert(1);
-          --bear-opacity: 0.45;
+          --bear-opacity: 1;
 
           color-scheme: dark;
         }
@@ -381,6 +381,7 @@
         height: 18px;
         filter: var(--bear-filter);
         opacity: var(--bear-opacity);
+        transform: scaleX(-1);
         transition: filter 160ms ease, opacity 160ms ease;
       }
 
@@ -412,6 +413,17 @@
         .author:hover .bear img {
           filter: none;
           opacity: 1;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          .author:hover .bear {
+            background: #000;
+          }
+
+          .author:hover .bear img {
+            filter: invert(1);
+            opacity: 1;
+          }
         }
 
         .footer-link:hover {
@@ -567,8 +579,9 @@
   <body>
     <main class="page">
       <div class="shell">
+        <img class="logo" src="./assets/logo.svg" alt="SimplePlayer" />
+
         <header class="intro">
-          <img class="logo" src="./assets/logo.svg" alt="SimplePlayer" />
           <p class="text">Framework-free Web Component.</p>
           <p class="text">
             It gives you a clean default video player with custom overlay
@@ -639,7 +652,7 @@ export function App() {
             </div>
           </div>
           <div class="player-card" data-preview-state="default" aria-busy="false" data-player-card>
-            <simple-player src="https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4" aspect-ratio="16 / 9"></simple-player>
+            <simple-player src="https://disk.sample.cat/samples/mp4/1416529-hd_1280_720_30fps.mp4" aspect-ratio="16 / 9"></simple-player>
           </div>
         </section>
 
@@ -710,7 +723,7 @@ import '@grizzshutsdown/simpleplayer';
       const playerCard = document.querySelector('[data-player-card]');
       const frameworkTabs = document.querySelector('.framework-tabs');
       const copyTimers = new WeakMap();
-      const bunnyVideo = 'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4';
+      const previewVideo = 'https://disk.sample.cat/samples/mp4/1416529-hd_1280_720_30fps.mp4';
 
       const setActiveTab = (selector, activeButton) => {
         document.querySelectorAll(selector).forEach((button) => {
@@ -819,7 +832,7 @@ import '@grizzshutsdown/simpleplayer';
         playerCard.dataset.previewState = mode;
         playerCard.setAttribute('aria-busy', isLoading ? 'true' : 'false');
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
-        const src = isLoading ? '' : ` src="${bunnyVideo}"`;
+        const src = isLoading ? '' : ` src="${previewVideo}"`;
         const controls = hasControls ? ' controls' : '';
         playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
       };
