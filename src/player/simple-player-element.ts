@@ -58,6 +58,7 @@ export class SimplePlayer extends HTMLElement {
   #initialProgressSettleTimer = 0;
   #suppressTouchButtonClickUntil = 0;
   #suppressTouchControlClickUntil = 0;
+  #timeWidthObserver: ResizeObserver | null = null;
   #hasDecodedFirstFrame = false;
   #hasPresentedFirstFrame = false;
   #firstFrameRequestPending = false;
@@ -479,11 +480,15 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#progressTrack, 'pointerup', this.#handleProgressPointerUp);
     this.#listen(this.#progressTrack, 'pointercancel', this.#handleProgressPointerCancel);
     this.#listen(this.#progressTrack, 'keydown', this.#handleProgressKeyDown);
+    this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
     this.#listen(this.#volumeControl, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumeControl, 'pointerleave', this.#handleVolumePointerLeave);
-    this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
+    this.#listen(this.#volumeControl, 'mouseenter', this.#handleVolumePointerEnter);
+    this.#listen(this.#volumeControl, 'mouseleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumePopover, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumePopover, 'pointerleave', this.#handleVolumePointerLeave);
+    this.#listen(this.#volumePopover, 'mouseenter', this.#handleVolumePointerEnter);
+    this.#listen(this.#volumePopover, 'mouseleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeTrack, 'pointerdown', this.#handleVolumePointerDown);
     this.#listen(this.#volumeTrack, 'pointermove', this.#handleVolumePointerMove);
     this.#listen(this.#volumeTrack, 'pointerup', this.#handleVolumePointerUp);
@@ -496,6 +501,20 @@ export class SimplePlayer extends HTMLElement {
     for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerenter', this.#handleControlButtonPointerEnter);
       this.#listen(control, 'mouseenter', this.#handleControlButtonPointerEnter);
+    }
+
+    if ('ResizeObserver' in window) {
+      this.#timeWidthObserver = new ResizeObserver(() => {
+        this.#player.style.setProperty('--sp-tray-time-width', `${this.#trayTimeText.offsetWidth + 4}px`);
+      });
+      this.#timeWidthObserver.observe(this.#trayTimeText);
+      this.#cleanup.push(() => {
+        this.#timeWidthObserver?.disconnect();
+        this.#timeWidthObserver = null;
+      });
+    }
+
+    for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerdown', this.#handleControlButtonPointerDown);
     }
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);

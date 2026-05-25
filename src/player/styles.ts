@@ -48,6 +48,12 @@ export const styles: string = `
     background: #1E1E1E;
   }
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   .sp-video {
     display: block;
     width: 100%;
@@ -696,6 +702,7 @@ export const styles: string = `
     transform: translateX(-50%) translateY(2px);
     white-space: nowrap;
     font: 500 12px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-variant-numeric: tabular-nums;
   }
 
   .sp-time-surface {
@@ -766,8 +773,9 @@ export const styles: string = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: max-content;
+    width: var(--sp-tray-time-width, max-content);
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
   }
 
   .sp-tray-time-holder .sp-control-tray-slots {
@@ -783,8 +791,11 @@ export const styles: string = `
     aspect-ratio: auto;
     min-width: max-content;
     width: auto;
+    height: var(--sp-control-slot-size);
+    max-height: var(--sp-control-slot-size);
     padding: 0 8px;
-    font: 600 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-variant-numeric: tabular-nums;
   }
 
   .sp-tray-time-text {
