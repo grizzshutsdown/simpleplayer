@@ -181,13 +181,16 @@
       }
 
       .framework-tabs {
+        flex-wrap: nowrap;
         gap: 24px;
+        width: 100%;
       }
 
       .tab {
         display: inline-flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
         min-height: 24px;
         padding: 0;
         opacity: 0.4;
@@ -256,7 +259,8 @@
 
       .command-text.is-text-swapping,
       .code.is-text-swapping {
-        animation: text-swap 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        animation: text-swap 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform-origin: left center;
       }
 
       .copy {
@@ -272,6 +276,7 @@
         align-items: flex-start;
         min-height: 128px;
         padding: 16px;
+        transition: height 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       .code {
@@ -306,8 +311,13 @@
       }
 
       .preview-section {
-        width: min(60vw, 960px);
+        width: clamp(540px, 60vw, 960px);
         max-width: calc(100vw - 48px);
+        align-self: center;
+      }
+
+      .preview-section .section-head {
+        width: min(100%, 540px);
         align-self: center;
       }
 
@@ -414,10 +424,16 @@
           transform: scale(1);
         }
 
-        45% {
-          opacity: 0;
-          filter: blur(4px);
-          transform: scale(0.985);
+        48% {
+          opacity: 0.46;
+          filter: blur(5px);
+          transform: scale(0.999);
+        }
+
+        52% {
+          opacity: 0.46;
+          filter: blur(5px);
+          transform: scale(0.999);
         }
 
         100% {
@@ -442,7 +458,30 @@
         }
 
         .framework-tabs {
-          gap: 14px;
+          width: 90%;
+          gap: 24px;
+        }
+
+        .framework-tabs .tab {
+          font-size: 15px;
+          line-height: 20px;
+        }
+
+        .framework-tabs .tab-icon {
+          width: 24px;
+          height: 24px;
+        }
+
+        .framework-tabs .tab-icon.react {
+          width: 26.672px;
+        }
+
+        .framework-tabs .tab-icon.vue {
+          width: 27.801px;
+        }
+
+        .framework-tabs .tab-icon.svelte {
+          width: 19.948px;
         }
 
         .field {
@@ -467,6 +506,10 @@
           width: 100%;
           max-width: 100%;
         }
+
+        .preview-section .section-head {
+          width: 100%;
+        }
       }
 
       @media (max-width: 420px) {
@@ -489,10 +532,30 @@
         }
 
         .framework-tabs {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          width: 100%;
-          gap: 12px 18px;
+          width: 90%;
+          gap: 24px;
+        }
+
+        .framework-tabs .tab {
+          font-size: 14px;
+          line-height: 19px;
+        }
+
+        .framework-tabs .tab-icon {
+          width: 21px;
+          height: 21px;
+        }
+
+        .framework-tabs .tab-icon.react {
+          width: 23px;
+        }
+
+        .framework-tabs .tab-icon.vue {
+          width: 23px;
+        }
+
+        .framework-tabs .tab-icon.svelte {
+          width: 17.5px;
         }
       }
     </style>
@@ -571,7 +634,7 @@ export function App() {
               <button class="tab text" type="button" role="tab" aria-selected="false" data-example-tab="controls">Controls</button>
             </div>
           </div>
-          <div class="player-card is-loading-preview" data-player-card>
+          <div class="player-card is-loading-preview" data-preview-state="loading" aria-busy="true" data-player-card>
             <simple-player aspect-ratio="16 / 9"></simple-player>
           </div>
         </section>
@@ -691,8 +754,31 @@ import '@grizzshutsdown/simpleplayer';
         button.textContent = 'Copy';
       };
 
+      const prepareCodeBoxResize = (element, value) => {
+        const field = element.closest('.code-field');
+        if (!field) return null;
+
+        const currentText = element.textContent;
+        const startHeight = field.getBoundingClientRect().height;
+        const previousHeight = field.style.height;
+
+        field.style.height = 'auto';
+        element.textContent = value;
+        const endHeight = field.getBoundingClientRect().height;
+        element.textContent = currentText;
+        field.style.height = previousHeight;
+
+        field.style.height = `${startHeight}px`;
+        field.style.overflow = 'hidden';
+        void field.offsetHeight;
+
+        return { field, endHeight };
+      };
+
       const swapText = (element, value) => {
         if (!element || element.textContent === value) return;
+
+        const resize = prepareCodeBoxResize(element, value);
 
         element.classList.remove('is-text-swapping');
         void element.offsetWidth;
@@ -700,17 +786,29 @@ import '@grizzshutsdown/simpleplayer';
 
         window.setTimeout(() => {
           element.textContent = value;
-        }, 90);
+          if (resize) {
+            resize.field.style.height = `${resize.endHeight}px`;
+          }
+        }, 130);
 
         window.setTimeout(() => {
           element.classList.remove('is-text-swapping');
-        }, 240);
+          if (resize) {
+            resize.field.style.height = '';
+            resize.field.style.overflow = '';
+          }
+        }, 280);
       };
 
       const renderPlayerPreview = (mode) => {
+        const isLoading = mode === 'loading';
+        const hasControls = mode === 'controls';
+
+        playerCard.dataset.previewState = mode;
+        playerCard.setAttribute('aria-busy', isLoading ? 'true' : 'false');
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
-        const src = mode === 'loading' ? '' : ` src="${bunnyVideo}"`;
-        const controls = mode === 'controls' ? '' : ' disable-volume disable-picture-in-picture disable-fullscreen';
+        const src = isLoading ? '' : ` src="${bunnyVideo}"`;
+        const controls = hasControls ? '' : ' disable-volume disable-picture-in-picture disable-fullscreen';
         playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
       };
 
