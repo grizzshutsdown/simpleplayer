@@ -968,16 +968,13 @@ export class SimplePlayer extends HTMLElement {
     'disable-volume',
     'disable-volume-slider',
     'enable-picture-in-picture',
-    'enable-pip',
     'disable-picture-in-picture',
-    'disable-pip',
     'enable-fullscreen',
     'disable-fullscreen',
     'no-autoplay',
     'no-volume',
     'no-volume-slider',
     'no-picture-in-picture',
-    'no-pip',
     'no-fullscreen',
   ];
 
@@ -1111,6 +1108,19 @@ export class SimplePlayer extends HTMLElement {
     this.setAttribute('disable-autoplay', '');
   }
 
+  get controlsEnabled() {
+    return this.hasAttribute('controls');
+  }
+
+  set controlsEnabled(value: boolean) {
+    if (value) {
+      this.setAttribute('controls', '');
+      return;
+    }
+
+    this.removeAttribute('controls');
+  }
+
   get volumeEnabled() {
     return (
       (this.hasAttribute('controls') || this.hasAttribute('enable-volume')) &&
@@ -1141,26 +1151,15 @@ export class SimplePlayer extends HTMLElement {
     return (
       (
         this.hasAttribute('controls') ||
-        this.hasAttribute('enable-picture-in-picture') ||
-        this.hasAttribute('enable-pip')
+        this.hasAttribute('enable-picture-in-picture')
       ) &&
       !this.hasAttribute('disable-picture-in-picture') &&
-      !this.hasAttribute('disable-pip') &&
-      !this.hasAttribute('no-picture-in-picture') &&
-      !this.hasAttribute('no-pip')
+      !this.hasAttribute('no-picture-in-picture')
     );
   }
 
   set pictureInPictureEnabled(value: boolean) {
     this.#setOptionalControlAttributes('picture-in-picture', value);
-  }
-
-  get pipEnabled() {
-    return this.pictureInPictureEnabled;
-  }
-
-  set pipEnabled(value: boolean) {
-    this.pictureInPictureEnabled = value;
   }
 
   get fullscreenEnabled() {
@@ -1263,7 +1262,15 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
-    if ((name.startsWith('disable-') || name.startsWith('no-')) && this.isConnected) {
+    if (
+      (
+        name === 'controls' ||
+        name.startsWith('enable-') ||
+        name.startsWith('disable-') ||
+        name.startsWith('no-')
+      ) &&
+      this.isConnected
+    ) {
       this.#syncOptionalControls();
       this.#syncAudioControlState();
       this.#syncPictureInPictureState();
@@ -1285,18 +1292,10 @@ export class SimplePlayer extends HTMLElement {
       this.setAttribute(`enable-${name}`, '');
       this.removeAttribute(`disable-${name}`);
       this.removeAttribute(`no-${name}`);
-      if (name === 'picture-in-picture') {
-        this.setAttribute('enable-pip', '');
-        this.removeAttribute('disable-pip');
-        this.removeAttribute('no-pip');
-      }
       return;
     }
 
     this.removeAttribute(`enable-${name}`);
-    if (name === 'picture-in-picture') {
-      this.removeAttribute('enable-pip');
-    }
     this.setAttribute(`disable-${name}`, '');
   }
 

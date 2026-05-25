@@ -10,14 +10,14 @@ export declare class SimplePlayer extends HTMLElement {
     set preloadMargin(value: string);
     get autoplayEnabled(): boolean;
     set autoplayEnabled(value: boolean);
+    get controlsEnabled(): boolean;
+    set controlsEnabled(value: boolean);
     get volumeEnabled(): boolean;
     set volumeEnabled(value: boolean);
     get volumeSliderEnabled(): boolean;
     set volumeSliderEnabled(value: boolean);
     get pictureInPictureEnabled(): boolean;
     set pictureInPictureEnabled(value: boolean);
-    get pipEnabled(): boolean;
-    set pipEnabled(value: boolean);
     get fullscreenEnabled(): boolean;
     set fullscreenEnabled(value: boolean);
     connectedCallback(): void;

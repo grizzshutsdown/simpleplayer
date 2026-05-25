@@ -77,10 +77,6 @@ declare module 'react' {
         'preload-margin'?: string;
         controls?: boolean;
         'disable-autoplay'?: boolean;
-        'enable-volume'?: boolean;
-        'disable-volume-slider'?: boolean;
-        'enable-picture-in-picture'?: boolean;
-        'enable-fullscreen'?: boolean;
       };
     }
   }
@@ -102,14 +98,10 @@ declare module 'react' {
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `controls`: add volume, Picture-in-Picture, and fullscreen controls.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
-- `enable-volume`: add the volume control.
-- `disable-volume-slider`: keep the sound button, but make it only mute/unmute.
-- `enable-picture-in-picture`: add the Picture-in-Picture control.
-- `enable-fullscreen`: add the fullscreen control.
 
 The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls.
 
-You can also control it with JavaScript:
+Keep the HTML clean and manage controls with JavaScript:
 
 ```js
 const player = document.querySelector('simple-player');
@@ -118,10 +110,31 @@ player.src = '/next-video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
 player.autoplayEnabled = false;
+player.controlsEnabled = true;
 player.volumeEnabled = true;
 player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = true;
 player.fullscreenEnabled = true;
+```
+
+## Contributing
+
+```bash
+npm install
+npm run dev
+```
+
+The dev playground lives in `dev/` and imports `src/simple-player.ts` directly. Use it when changing the player itself. The production site demo is separate and runs with:
+
+```bash
+npm run demo
+```
+
+Before opening a pull request, run:
+
+```bash
+npm run build
+npm pack --dry-run
 ```
 
 ## Styling

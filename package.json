@@ -31,6 +31,7 @@
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/build-site.js",
+    "dev": "vite dev dev --host 127.0.0.1 --port 5174",
     "demo": "vite --host 127.0.0.1"
   },
   "keywords": [

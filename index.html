@@ -26,7 +26,7 @@
     />
     <meta name="twitter:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
     <link rel="icon" type="image/svg+xml" href="./assets/Favicon.svg" />
-    <script type="module" src="./dist/simple-player.js?v=0.1.0-controls-default"></script>
+    <script type="module" src="./dist/simple-player.js?v=0.1.0-clean-controls"></script>
     <style>
       @font-face {
         font-family: "SF Pro Demo";
@@ -184,6 +184,8 @@
         flex-wrap: nowrap;
         gap: 24px;
         width: 100%;
+        transform: scale(var(--framework-tabs-scale, 1));
+        transform-origin: left center;
       }
 
       .tab {
@@ -635,7 +637,7 @@ export function App() {
             </div>
           </div>
           <div class="player-card is-loading-preview" data-preview-state="loading" aria-busy="true" data-player-card>
-            <simple-player aspect-ratio="16 / 9" disable-volume disable-picture-in-picture disable-fullscreen></simple-player>
+            <simple-player aspect-ratio="16 / 9"></simple-player>
           </div>
         </section>
 
@@ -704,6 +706,7 @@ import '@grizzshutsdown/simpleplayer';
       const installCopy = document.querySelector('[data-copy-target="install"]');
       const usageCopy = document.querySelector('[data-copy-target="usage"]');
       const playerCard = document.querySelector('[data-player-card]');
+      const frameworkTabs = document.querySelector('.framework-tabs');
       const copyTimers = new WeakMap();
       const bunnyVideo = 'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4';
 
@@ -712,6 +715,13 @@ import '@grizzshutsdown/simpleplayer';
           button.classList.toggle('is-active', button === activeButton);
           button.setAttribute('aria-selected', button === activeButton ? 'true' : 'false');
         });
+      };
+
+      const syncFrameworkTabsScale = () => {
+        if (!frameworkTabs) return;
+        frameworkTabs.style.setProperty('--framework-tabs-scale', '1');
+        const scale = Math.min(1, frameworkTabs.clientWidth / Math.max(frameworkTabs.scrollWidth, 1));
+        frameworkTabs.style.setProperty('--framework-tabs-scale', `${scale}`);
       };
 
       const copyText = async (value) => {
@@ -849,6 +859,14 @@ import '@grizzshutsdown/simpleplayer';
           flashCopied(button);
         });
       });
+
+      if ('ResizeObserver' in window && frameworkTabs) {
+        new ResizeObserver(syncFrameworkTabsScale).observe(frameworkTabs);
+      }
+
+      window.addEventListener('load', syncFrameworkTabsScale);
+      window.addEventListener('resize', syncFrameworkTabsScale);
+      syncFrameworkTabsScale();
     </script>
   </body>
 </html>

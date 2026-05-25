@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimplePlayer Dev</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel">
+        <header class="header">
+          <p class="eyebrow">SimplePlayer Dev</p>
+          <h1>Source playground</h1>
+        </header>
+
+        <simple-player
+          id="player"
+          src="https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4">
+        </simple-player>
+
+        <form class="controls" id="settings">
+          <label>
+            <input type="checkbox" name="controlsEnabled" />
+            Controls tray
+          </label>
+          <label>
+            <input type="checkbox" name="volumeEnabled" />
+            Volume
+          </label>
+          <label>
+            <input type="checkbox" name="volumeSliderEnabled" checked />
+            Volume slider
+          </label>
+          <label>
+            <input type="checkbox" name="pictureInPictureEnabled" />
+            Picture-in-Picture
+          </label>
+          <label>
+            <input type="checkbox" name="fullscreenEnabled" />
+            Fullscreen
+          </label>
+          <label>
+            <input type="checkbox" name="autoplayEnabled" checked />
+            Autoplay
+          </label>
+        </form>
+      </section>
+    </main>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
