@@ -77,6 +77,7 @@ declare module 'react' {
         'preload-margin'?: string;
         controls?: boolean;
         'disable-autoplay'?: boolean;
+        'show-time'?: boolean;
       };
     }
   }
@@ -98,6 +99,7 @@ declare module 'react' {
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `controls`: add volume, Picture-in-Picture, and fullscreen controls.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
+- `show-time`: keep the timestamp visible in a left glass holder when `controls` is enabled.
 
 The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls.
 
@@ -111,6 +113,7 @@ player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
 player.autoplayEnabled = false;
 player.controlsEnabled = true;
+player.timeVisible = true;
 player.volumeEnabled = true;
 player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = true;

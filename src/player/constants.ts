@@ -14,6 +14,7 @@ export const OBSERVED_ATTRIBUTES = [
   'disable-picture-in-picture',
   'enable-fullscreen',
   'disable-fullscreen',
+  'show-time',
   'no-autoplay',
   'no-volume',
   'no-volume-slider',

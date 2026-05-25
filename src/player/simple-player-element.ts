@@ -71,6 +71,7 @@ export class SimplePlayer extends HTMLElement {
   #pausedVisualProgressTime: number | null = null;
   #pauseFrozenProgressPercent: number | null = null;
   #hasControlsCollision = false;
+  #isProgressHoverPreviewing = false;
   #hasAudioTrack = true;
   #isPointerOverControlSurface = false;
   #lastPointerClientX: number | null = null;
@@ -158,9 +159,22 @@ export class SimplePlayer extends HTMLElement {
     this.removeAttribute('controls');
   }
 
+  get timeVisible() {
+    return this.hasAttribute('show-time');
+  }
+
+  set timeVisible(value: boolean) {
+    if (value) {
+      this.setAttribute('show-time', '');
+      return;
+    }
+
+    this.removeAttribute('show-time');
+  }
+
   get volumeEnabled() {
     return (
-      (this.hasAttribute('controls') || this.hasAttribute('enable-volume')) &&
+      this.controlsEnabled &&
       !this.hasAttribute('disable-volume') &&
       !this.hasAttribute('no-volume')
     );
@@ -186,10 +200,7 @@ export class SimplePlayer extends HTMLElement {
 
   get pictureInPictureEnabled() {
     return (
-      (
-        this.hasAttribute('controls') ||
-        this.hasAttribute('enable-picture-in-picture')
-      ) &&
+      this.controlsEnabled &&
       !this.hasAttribute('disable-picture-in-picture') &&
       !this.hasAttribute('no-picture-in-picture')
     );
@@ -201,7 +212,7 @@ export class SimplePlayer extends HTMLElement {
 
   get fullscreenEnabled() {
     return (
-      (this.hasAttribute('controls') || this.hasAttribute('enable-fullscreen')) &&
+      this.controlsEnabled &&
       !this.hasAttribute('disable-fullscreen') &&
       !this.hasAttribute('no-fullscreen')
     );
@@ -236,6 +247,7 @@ export class SimplePlayer extends HTMLElement {
     this.#syncAutoplayState();
     this.#setupLazyLoading();
     this.#syncOptionalControls();
+    this.#syncTimeVisibility();
     this.#syncVideoLoading();
     this.#syncAudioControlState();
     this.#syncPictureInPictureState();
@@ -262,6 +274,8 @@ export class SimplePlayer extends HTMLElement {
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
     this.style.removeProperty('--sp-touch-control-hover-offset');
     this.#clearControlsCollision();
+    this.#isProgressHoverPreviewing = false;
+    this.#player.classList.remove('is-progress-hovering');
     this.#isVolumeScrubbing = false;
     this.#isVolumeHovering = false;
     this.#isPointerOverControlSurface = false;
@@ -299,6 +313,11 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
+    if (name === 'show-time' && this.isConnected) {
+      this.#syncTimeVisibility();
+      return;
+    }
+
     if (
       (
         name === 'controls' ||
@@ -312,6 +331,7 @@ export class SimplePlayer extends HTMLElement {
       this.#syncAudioControlState();
       this.#syncPictureInPictureState();
       this.#syncFullscreenState();
+      this.#syncTimeVisibility();
     }
   }
 
@@ -398,6 +418,16 @@ export class SimplePlayer extends HTMLElement {
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
   }
 
+  #syncTimeVisibility() {
+    if (!this.#player) return;
+
+    const hasPinnedTime = this.timeVisible && this.controlsEnabled;
+    this.#player.classList.toggle('has-pinned-time', hasPinnedTime);
+    if (hasPinnedTime) {
+      this.#syncPinnedTimeText();
+    }
+  }
+
   #bindEvents() {
     this.#listen(this.#button, 'click', this.#handleButtonClick);
     this.#listen(this, 'pointerenter', this.#handlePlayerPointerEnter);
@@ -420,6 +450,10 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#progressTrack, 'pointerleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#progressTrack, 'mouseenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#progressTrack, 'mouseleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#progressTrack, 'pointerenter', this.#handleProgressPointerEnter);
+    this.#listen(this.#progressTrack, 'pointerleave', this.#handleProgressPointerLeave);
+    this.#listen(this.#progressTrack, 'mouseenter', this.#handleProgressPointerEnter);
+    this.#listen(this.#progressTrack, 'mouseleave', this.#handleProgressPointerLeave);
     this.#listen(this.#controlTray, 'pointerenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#controlTray, 'pointerleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#controlTray, 'mouseenter', this.#handleControlSurfacePointerEnter);
@@ -605,6 +639,50 @@ export class SimplePlayer extends HTMLElement {
     );
   }
 
+  #isPointInsideElement(element: Element | null, clientX: number, clientY: number) {
+    if (!element) return false;
+
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return false;
+
+    return (
+      clientX >= rect.left &&
+      clientX <= rect.right &&
+      clientY >= rect.top &&
+      clientY <= rect.bottom
+    );
+  }
+
+  #clearProgressHoverPreview() {
+    if (!this.#isProgressHoverPreviewing) return;
+
+    this.#isProgressHoverPreviewing = false;
+    this.#player.classList.remove('is-progress-hovering');
+    this.#clearControlsCollision();
+    this.#syncPinnedTimeText();
+  }
+
+  #syncHoverTargetsFromPointer(clientX: number, clientY: number) {
+    if (this.#isTouchControls()) return;
+
+    if (!this.#isScrubPreviewLocked() && this.#isPointInsideElement(this.#progressTrack, clientX, clientY)) {
+      this.#isProgressHoverPreviewing = true;
+      this.#player.classList.add('is-progress-hovering');
+      this.#previewSeekFromClientX(clientX, false, false);
+    } else if (!this.#isScrubPreviewLocked()) {
+      this.#clearProgressHoverPreview();
+    }
+
+    const hoveredControl = this.#controlButtons.find((button) => {
+      return !button.hidden && !this.#isUnavailableControlButton(button) && this.#isPointInsideElement(button, clientX, clientY);
+    }) ?? null;
+
+    if (!hoveredControl) return;
+
+    const index = Number(hoveredControl.dataset.spControlIndex ?? 0);
+    this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
+  }
+
   #areControlsVisible() {
     return (
       this.#player.classList.contains('is-controls-visible') ||
@@ -640,11 +718,17 @@ export class SimplePlayer extends HTMLElement {
 
   #handlePlayerPointerMove = (event: Event) => {
     if (!this.#trackPointerPosition(event)) return;
+    if (event instanceof PointerEvent || event instanceof MouseEvent) {
+      this.#syncHoverTargetsFromPointer(event.clientX, event.clientY);
+    }
     this.#showPointerControls(true);
   };
 
   #handleDocumentPointerMove = (event: Event) => {
     if (!this.#trackPointerPosition(event)) return;
+    if (event instanceof PointerEvent || event instanceof MouseEvent) {
+      this.#syncHoverTargetsFromPointer(event.clientX, event.clientY);
+    }
     this.#syncPointerControlsFromLastPosition();
   };
 
@@ -685,7 +769,8 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
-    const index = Number(target?.dataset.spControlIndex ?? 0);
+    const button = target as HTMLButtonElement;
+    const index = Number(button.dataset.spControlIndex ?? 0);
     this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
   };
 
@@ -1196,6 +1281,12 @@ export class SimplePlayer extends HTMLElement {
     };
   }
 
+  #syncPinnedTimeText(time = this.#getVisualProgressTime()) {
+    if (!this.timeVisible || this.#isProgressHoverPreviewing || this.#isScrubPreviewLocked()) return;
+
+    this.#scrubTimeText.textContent = formatVideoTime(time);
+  }
+
   #updateProgress(time = this.#getVisualProgressTime()) {
     const hasDuration = Number.isFinite(this.#video.duration) && this.#video.duration > 0;
     if (hasDuration && this.#pauseFrozenProgressPercent !== null) {
@@ -1209,6 +1300,7 @@ export class SimplePlayer extends HTMLElement {
         'aria-valuetext',
         `${formatVideoTime(frozenTime)} of ${formatVideoTime(this.#video.duration)}`,
       );
+      this.#syncPinnedTimeText(frozenTime);
       return;
     }
 
@@ -1223,23 +1315,34 @@ export class SimplePlayer extends HTMLElement {
       'aria-valuetext',
       hasDuration ? `${formatVideoTime(renderedTime)} of ${formatVideoTime(this.#video.duration)}` : 'Loading video',
     );
+    this.#syncPinnedTimeText(renderedTime);
   }
 
-  #previewSeekFromClientX(clientX: number, shouldSnap = this.#isScrubbing) {
+  #previewSeekFromClientX(clientX: number, shouldSnap = this.#isScrubbing, updateVisual = true) {
     if (!Number.isFinite(this.#video.duration) || this.#video.duration <= 0) return this.#video.currentTime;
 
     const rect = this.#progressTrack.getBoundingClientRect();
     const percent = this.#getProgressPercentFromClientX(clientX, rect);
     const scrubPoint = this.#getScrubPoint(clientX, rect, percent, shouldSnap);
 
-    this.#setProgressVisual(scrubPoint.percent);
-    this.#player.style.setProperty('--sp-scrub-preview-left', `${this.#getProgressXFromPercent(scrubPoint.percent, rect)}px`);
+    if (updateVisual) {
+      this.#setProgressVisual(scrubPoint.percent);
+    }
+
+    if (!this.timeVisible) {
+      this.#player.style.setProperty('--sp-scrub-preview-left', `${this.#getProgressXFromPercent(scrubPoint.percent, rect)}px`);
+    }
+
     this.#scrubTimeText.textContent = formatVideoTime(scrubPoint.targetTime);
-    this.#progressTrack.setAttribute('aria-valuenow', `${scrubPoint.targetTime}`);
-    this.#progressTrack.setAttribute(
-      'aria-valuetext',
-      `${formatVideoTime(scrubPoint.targetTime)} of ${formatVideoTime(this.#video.duration)}`,
-    );
+
+    if (updateVisual) {
+      this.#progressTrack.setAttribute('aria-valuenow', `${scrubPoint.targetTime}`);
+      this.#progressTrack.setAttribute(
+        'aria-valuetext',
+        `${formatVideoTime(scrubPoint.targetTime)} of ${formatVideoTime(this.#video.duration)}`,
+      );
+    }
+
     this.#syncControlsCollision();
     return scrubPoint.targetTime;
   }
@@ -1250,7 +1353,7 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #syncControlsCollision() {
-    if (!this.#isScrubbing || !this.#controlTray || !this.#scrubTime) {
+    if ((!this.#isScrubbing && !this.#isProgressHoverPreviewing) || !this.#controlTray || !this.#scrubTime) {
       this.#clearControlsCollision();
       return;
     }
@@ -1355,6 +1458,7 @@ export class SimplePlayer extends HTMLElement {
     );
     this.#volumeTrack.setAttribute('aria-valuenow', `${volumePercent}`);
     this.#volumeTrack.setAttribute('aria-valuetext', `${volumePercent}%`);
+
   };
 
   #setVolumeFromClientY(clientY: number) {
@@ -1435,6 +1539,8 @@ export class SimplePlayer extends HTMLElement {
     this.#clearScrubLongPressTimer();
     this.#isTrackingScrub = false;
     this.#isScrubbing = false;
+    this.#isProgressHoverPreviewing = false;
+    this.#player.classList.remove('is-progress-hovering');
     this.#activeScrubPointerId = null;
     this.#isPointerOverControlSurface = false;
     this.#isVolumeHovering = false;
@@ -1491,6 +1597,8 @@ export class SimplePlayer extends HTMLElement {
     this.#clearScrubLongPressTimer();
     this.#isTrackingScrub = false;
     this.#isScrubbing = false;
+    this.#isProgressHoverPreviewing = false;
+    this.#player.classList.remove('is-progress-hovering');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();
@@ -1520,6 +1628,8 @@ export class SimplePlayer extends HTMLElement {
     this.#clearScrubLongPressTimer();
     this.#isTrackingScrub = false;
     this.#isScrubbing = false;
+    this.#isProgressHoverPreviewing = false;
+    this.#player.classList.remove('is-progress-hovering');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();
@@ -1766,6 +1876,21 @@ export class SimplePlayer extends HTMLElement {
     }
   };
 
+  #handleProgressPointerEnter = (event: Event) => {
+    if (this.#isTouchControls() || this.#isScrubPreviewLocked()) return;
+    if (!(event instanceof PointerEvent) && !(event instanceof MouseEvent)) return;
+
+    this.#isProgressHoverPreviewing = true;
+    this.#player.classList.add('is-progress-hovering');
+    this.#previewSeekFromClientX(event.clientX, false, false);
+  };
+
+  #handleProgressPointerLeave = () => {
+    if (this.#isScrubPreviewLocked()) return;
+
+    this.#clearProgressHoverPreview();
+  };
+
   #handleProgressPointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
     event.preventDefault();
@@ -1824,7 +1949,14 @@ export class SimplePlayer extends HTMLElement {
 
   #handleProgressPointerMove = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
-    if (!this.#isTrackingScrub) return;
+    if (!this.#isTrackingScrub) {
+      if (!this.#isTouchControls()) {
+        this.#isProgressHoverPreviewing = true;
+        this.#player.classList.add('is-progress-hovering');
+        this.#previewSeekFromClientX(event.clientX, false, false);
+      }
+      return;
+    }
     if (this.#activeScrubPointerId !== null && event.pointerId !== this.#activeScrubPointerId) return;
 
     if (!this.#isScrubbing && Math.abs(event.clientX - this.#scrubStartX) >= this.#scrubDragThreshold) {

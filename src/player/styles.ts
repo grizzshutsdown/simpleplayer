@@ -679,9 +679,6 @@ export const styles: string = `
 
   .sp-time {
     position: absolute;
-    bottom: calc(100% + var(--space));
-    left: var(--sp-scrub-preview-left);
-    z-index: 2;
     display: block;
     padding: 2px calc(var(--space) * 1.5);
     color: var(--white);
@@ -691,10 +688,16 @@ export const styles: string = `
     overflow: hidden;
     pointer-events: none;
     opacity: 0;
-    transform: translateX(-50%) translateY(2px);
     transition: transform 120ms ease;
     white-space: nowrap;
     font: 500 12px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .sp-time {
+    bottom: calc(100% + var(--space));
+    left: var(--sp-scrub-preview-left);
+    z-index: 2;
+    transform: translateX(-50%) translateY(2px);
   }
 
   .sp-time-surface {
@@ -715,9 +718,37 @@ export const styles: string = `
     z-index: 1;
   }
 
-  .sp-player.is-scrubbing .sp-time {
+  .sp-progress:hover .sp-time,
+  .sp-player.is-progress-hovering .sp-time,
+  .sp-player.is-scrubbing .sp-time,
+  .sp-player.has-pinned-time .sp-time {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+
+  .sp-player.has-pinned-time .sp-time {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    min-width: calc((var(--sp-control-slot-size) * 1.65) + (var(--sp-control-tray-padding) * 2));
+    height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
+    padding: 0 calc(var(--space) * 2);
+    bottom: calc(((var(--space) * 2) - 2px) + var(--sp-progress-height) + 8px);
+    left: 0;
+    border-radius: 5px;
+    color: rgb(var(--white-rgb) / var(--sp-control-icon-opacity));
+    font: 600 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    transform: translateX(0) translateY(0);
+  }
+
+  .sp-player.has-pinned-time .sp-time .sp-time-surface {
+    background: var(--sp-control-glass-surface);
+    opacity: var(--sp-control-glass-opacity);
+    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+  }
+
+  .sp-player.is-loading:not(.has-loaded-once) .sp-time {
+    opacity: 0;
   }
 
   .sp-button:focus-visible,
@@ -765,6 +796,26 @@ export const styles: string = `
 
     .sp-progress-cluster:has(.sp-progress:hover) {
       --sp-progress-height: 4px;
+    }
+
+    .sp-progress:hover .sp-time,
+    .sp-player.is-progress-hovering .sp-time {
+      opacity: 0;
+      transform: translateX(-50%) translateY(2px);
+    }
+
+    .sp-player.has-pinned-time .sp-time {
+      opacity: 1;
+      transform: translateX(0) translateY(0);
+    }
+
+    .sp-player.is-scrubbing .sp-time {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .sp-player.has-pinned-time.is-scrubbing .sp-time {
+      transform: translateX(0) translateY(0);
     }
 
     .sp-player.is-scrubbing .sp-progress-cluster {

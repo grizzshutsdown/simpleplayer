@@ -9,6 +9,7 @@ const syncPlayerSetting = (input: HTMLInputElement) => {
 
   const key = input.name as
     | 'controlsEnabled'
+    | 'timeVisible'
     | 'volumeEnabled'
     | 'volumeSliderEnabled'
     | 'pictureInPictureEnabled'

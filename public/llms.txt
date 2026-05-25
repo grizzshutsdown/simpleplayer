@@ -51,6 +51,7 @@ Player with the extra control tray:
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `controls`: enables the extra control tray for volume, Picture-in-Picture, and fullscreen.
 - `disable-autoplay`: turns off default muted autoplay.
+- `show-time`: keeps the timestamp visible in a left glass holder when `controls` is enabled.
 
 ## JavaScript Properties
 
@@ -65,6 +66,7 @@ player.volumeSliderEnabled = false;
 player.pictureInPictureEnabled = true;
 player.fullscreenEnabled = true;
 player.autoplayEnabled = false;
+player.timeVisible = true;
 ```
 
 ## Useful Source Files

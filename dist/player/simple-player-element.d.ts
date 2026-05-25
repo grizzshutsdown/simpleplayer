@@ -1,6 +1,6 @@
 export declare class SimplePlayer extends HTMLElement {
     #private;
-    static observedAttributes: readonly ["src", "aspect-ratio", "preload-margin", "controls", "disable-autoplay", "enable-volume", "disable-volume", "disable-volume-slider", "enable-picture-in-picture", "disable-picture-in-picture", "enable-fullscreen", "disable-fullscreen", "no-autoplay", "no-volume", "no-volume-slider", "no-picture-in-picture", "no-fullscreen"];
+    static observedAttributes: readonly ["src", "aspect-ratio", "preload-margin", "controls", "disable-autoplay", "enable-volume", "disable-volume", "disable-volume-slider", "enable-picture-in-picture", "disable-picture-in-picture", "enable-fullscreen", "disable-fullscreen", "show-time", "no-autoplay", "no-volume", "no-volume-slider", "no-picture-in-picture", "no-fullscreen"];
     constructor();
     get src(): string;
     set src(value: string);
@@ -12,6 +12,8 @@ export declare class SimplePlayer extends HTMLElement {
     set autoplayEnabled(value: boolean);
     get controlsEnabled(): boolean;
     set controlsEnabled(value: boolean);
+    get timeVisible(): boolean;
+    set timeVisible(value: boolean);
     get volumeEnabled(): boolean;
     set volumeEnabled(value: boolean);
     get volumeSliderEnabled(): boolean;
