@@ -51,7 +51,10 @@ export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailabil
     video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
     video.currentTime > 0.25
   ) {
-    return webkitVideo.webkitAudioDecodedByteCount! > 0 ? 'available' : 'unavailable';
+    if (webkitVideo.webkitAudioDecodedByteCount! > 0) return 'available';
+    // Safari skips audio decoding for muted playback, so 0 decoded bytes
+    // does not prove absence of audio. Only trust it when unmuted.
+    if (!video.muted) return 'unavailable';
   }
 
   return 'unknown';

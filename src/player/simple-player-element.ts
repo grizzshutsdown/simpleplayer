@@ -502,6 +502,11 @@ export class SimplePlayer extends HTMLElement {
       this.#listen(control, 'pointerdown', this.#handleControlButtonPointerDown);
     }
 
+    const audioTracks = (this.#video as HTMLVideoElement & { audioTracks?: EventTarget }).audioTracks;
+    if (audioTracks && typeof audioTracks.addEventListener === 'function') {
+      this.#listen(audioTracks, 'addtrack', this.#handleAudioTrackAdded);
+    }
+
     if ('ResizeObserver' in window) {
       this.#timeWidthObserver = new ResizeObserver(() => {
         this.#syncTrayTimeWidth();
@@ -1475,6 +1480,13 @@ export class SimplePlayer extends HTMLElement {
     this.#volumeControl.classList.remove('is-volume-open', 'is-control-tap-active');
     this.#volumePopover.classList.remove('is-scrubbing-volume');
   }
+
+  #handleAudioTrackAdded = () => {
+    this.#hasCheckedAudioTrack = true;
+    this.#hasAudioTrack = true;
+    this.#syncOptionalControls();
+    this.#syncAudioControlState();
+  };
 
   #syncAudioControlState = () => {
     if (!this.volumeEnabled) {
