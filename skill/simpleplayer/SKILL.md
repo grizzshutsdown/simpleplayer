@@ -22,7 +22,7 @@ Attributes:
 - `src`: video URL.
 - `aspect-ratio`: CSS aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin. Default: `360px 0px`.
-- `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons. The volume control automatically disables itself if the video has no audio track.
+- `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons. The volume control automatically hides itself if the video has no audio track.
 - `disable-autoplay`: turns off muted autoplay.
 - `show-time`: dual-mode timestamp. With `controls`, shows a pinned glass timestamp tray in the bottom-left. Without `controls`, shows a hover tooltip above the scrubber while dragging or hovering. Clicking toggles between elapsed and remaining time. The tray automatically resizes to fit the text as the time changes during playback.
 - `disable-volume`: removes the volume control.

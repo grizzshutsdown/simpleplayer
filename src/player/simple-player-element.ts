@@ -392,7 +392,7 @@ export class SimplePlayer extends HTMLElement {
   #syncOptionalControls() {
     if (!this.#player) return;
 
-    const showVolumeControl = this.volumeEnabled;
+    const showVolumeControl = this.volumeEnabled && (!this.#hasCheckedAudioTrack || this.#hasAudioTrack);
     const controls = [
       { button: this.#volumeControl, enabled: showVolumeControl, className: 'has-volume-control' },
       { button: this.#pictureInPictureControl, enabled: this.pictureInPictureEnabled, className: 'has-picture-in-picture-control' },
@@ -1485,6 +1485,8 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
+    const wasChecked = this.#hasCheckedAudioTrack;
+
     if (!this.#hasCheckedAudioTrack) {
       const audioAvailability = this.#detectAudioAvailability();
       if (audioAvailability !== 'unknown') {
@@ -1497,6 +1499,10 @@ export class SimplePlayer extends HTMLElement {
         this.#hasCheckedAudioTrack = true;
         this.#hasAudioTrack = true;
       }
+    }
+
+    if (!wasChecked && this.#hasCheckedAudioTrack) {
+      this.#syncOptionalControls();
     }
 
     const hasUsableAudio = this.#isVolumeAvailable();
@@ -2247,6 +2253,7 @@ export class SimplePlayer extends HTMLElement {
     this.#clearPausedVisualProgress();
     this.#hasAudioTrack = false;
     this.#hasCheckedAudioTrack = false;
+    this.#syncOptionalControls();
     this.#clearVolumeInteractionState();
     this.#isCommittedScrubPending = false;
     this.#committedScrubWasPlaying = false;
