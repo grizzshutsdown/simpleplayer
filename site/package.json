@@ -2,6 +2,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@grizzshutsdown/simpleplayer": "latest"
+    "@grizzshutsdown/simpleplayer": "0.1.14-beta.1"
   }
 }
