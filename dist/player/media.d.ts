@@ -1,2 +1,4 @@
 export declare function formatVideoTime(time: number): string;
-export declare function detectAudioAvailability(video: HTMLVideoElement, fallback: boolean): boolean;
+export type AudioAvailability = 'available' | 'unavailable' | 'unknown';
+export declare function detectAudioAvailability(video: HTMLVideoElement): AudioAvailability;
+export declare function isAudioAvailabilityPending(video: HTMLVideoElement): boolean;

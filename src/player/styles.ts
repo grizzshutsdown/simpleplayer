@@ -458,11 +458,21 @@ export const styles: string = `
 
   .sp-player.is-volume-unavailable [data-sp-volume-control] {
     cursor: default;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   .sp-player.is-volume-unavailable .sp-volume-icon {
     transition: none;
+  }
+
+  .sp-player.is-volume-unavailable [data-sp-volume-control]:hover {
+    background: transparent;
+  }
+
+  .sp-player.is-volume-unavailable [data-sp-volume-control]:hover .sp-control-icon,
+  .sp-player.is-volume-unavailable [data-sp-volume-control].is-control-tap-active .sp-control-icon {
+    opacity: var(--sp-control-icon-hidden-opacity);
+    transform: var(--sp-control-icon-hidden-transform);
   }
 
   .sp-player.is-volume-unavailable .sp-control-tray-slots:has([data-sp-volume-control]:hover)::before,
@@ -773,29 +783,33 @@ export const styles: string = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: var(--sp-tray-time-width, max-content);
+    width: calc(var(--sp-tray-time-width, 40px) + (var(--sp-control-tray-padding) * 2));
+    height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
   }
 
   .sp-tray-time-holder .sp-control-tray-slots {
     position: relative;
-    width: max-content;
+    width: 100%;
+    height: 100%;
   }
 
   .sp-tray-time-holder .sp-control-tray-slots::before {
     width: calc(100% - (var(--sp-control-tray-padding) * 2));
+    opacity: var(--sp-control-hover-opacity);
   }
 
   .sp-tray-time-holder .sp-tray-time-text {
     aspect-ratio: auto;
-    min-width: max-content;
-    width: auto;
+    width: 100%;
     height: var(--sp-control-slot-size);
     max-height: var(--sp-control-slot-size);
     padding: 0 8px;
     font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-variant-numeric: tabular-nums;
+    color: var(--white);
+    border-radius: 3px;
   }
 
   .sp-tray-time-text {

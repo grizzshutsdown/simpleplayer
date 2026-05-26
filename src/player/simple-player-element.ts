@@ -7,7 +7,7 @@ import {
   requestPlayerFullscreen,
   requestVideoFullscreen,
 } from './fullscreen';
-import { detectAudioAvailability, formatVideoTime } from './media';
+import { detectAudioAvailability, formatVideoTime, isAudioAvailabilityPending } from './media';
 import { getProgressMetrics, getProgressPercentFromClientX, getProgressXFromPercent } from './progress';
 import { template } from './template';
 import type { Cleanup, PlaybackState } from './types';
@@ -75,7 +75,8 @@ export class SimplePlayer extends HTMLElement {
   #pauseFrozenProgressPercent: number | null = null;
   #hasControlsCollision = false;
   #isProgressHoverPreviewing = false;
-  #hasAudioTrack = true;
+  #hasAudioTrack = false;
+  #hasCheckedAudioTrack = false;
   #isPointerOverControlSurface = false;
   #lastPointerClientX: number | null = null;
   #lastPointerClientY: number | null = null;
@@ -502,7 +503,7 @@ export class SimplePlayer extends HTMLElement {
 
     if ('ResizeObserver' in window) {
       this.#timeWidthObserver = new ResizeObserver(() => {
-        this.#player.style.setProperty('--sp-tray-time-width', `${this.#trayTimeText.offsetWidth + 4}px`);
+        this.#syncTrayTimeWidth();
       });
       this.#timeWidthObserver.observe(this.#trayTimeText);
       this.#cleanup.push(() => {
@@ -543,6 +544,11 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#video, 'volumechange', this.#handleVideoVolumeChange);
     this.#listen(this.#video, 'enterpictureinpicture', this.#syncPictureInPictureState);
     this.#listen(this.#video, 'leavepictureinpicture', this.#syncPictureInPictureState);
+  }
+
+  #syncTrayTimeWidth() {
+    if (!this.#player || !this.#trayTimeText) return;
+    this.#player.style.setProperty('--sp-tray-time-width', `${Math.ceil(this.#trayTimeText.scrollWidth)}px`);
   }
 
   #listen(target: EventTarget, type: string, listener: EventListenerOrEventListenerObject) {
@@ -721,7 +727,7 @@ export class SimplePlayer extends HTMLElement {
   #isUnavailableControlButton(button: HTMLElement | null) {
     return (
       button instanceof HTMLButtonElement &&
-      (button.disabled || (button === this.#volumeControl && (!this.volumeEnabled || !this.#hasAudioTrack)))
+      (button.disabled || (button === this.#volumeControl && !this.#isVolumeAvailable()))
     );
   }
 
@@ -1308,6 +1314,7 @@ export class SimplePlayer extends HTMLElement {
     if (!this.#hasPinnedTime || this.#isProgressHoverPreviewing || this.#isScrubPreviewLocked()) return;
 
     this.#trayTimeText.textContent = this.#formatTimeForDisplay(time);
+    this.#syncTrayTimeWidth();
   }
 
   #updateProgress(time = this.#getVisualProgressTime()) {
@@ -1358,6 +1365,7 @@ export class SimplePlayer extends HTMLElement {
 
     this.#scrubTimeText.textContent = formatVideoTime(scrubPoint.targetTime);
     this.#trayTimeText.textContent = this.#formatTimeForDisplay(scrubPoint.targetTime);
+    this.#syncTrayTimeWidth();
 
     if (updateVisual) {
       this.#progressTrack.setAttribute('aria-valuenow', `${scrubPoint.targetTime}`);
@@ -1447,20 +1455,50 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #detectAudioAvailability() {
-    return detectAudioAvailability(this.#video, this.#hasAudioTrack);
+    return detectAudioAvailability(this.#video);
+  }
+
+  #isVolumeAvailable() {
+    return this.volumeEnabled && this.#hasCheckedAudioTrack && this.#hasAudioTrack;
+  }
+
+  #clearVolumeInteractionState() {
+    this.#clearVolumeCloseTimer();
+    this.#releaseVolumePointer(this.#activeVolumePointerId);
+    this.#isVolumeScrubbing = false;
+    this.#isVolumeHovering = false;
+    this.#activeVolumePointerId = null;
+    this.#volumeControl.classList.remove('is-volume-open', 'is-control-tap-active');
+    this.#volumePopover.classList.remove('is-scrubbing-volume');
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
   }
 
   #syncAudioControlState = () => {
     if (!this.volumeEnabled) {
       this.#player.classList.remove('is-volume-unavailable', 'is-volume-muted', 'is-volume-sound', 'is-volume-icon-animating');
+      this.#clearVolumeInteractionState();
       this.#volumeControl.disabled = true;
       this.#volumeControl.setAttribute('aria-disabled', 'true');
       return;
     }
 
-    this.#hasAudioTrack = this.#detectAudioAvailability();
-    const isMuted = !this.#hasAudioTrack || this.#video.muted || this.#video.volume <= 0;
-    const visualVolume = this.#hasAudioTrack && !this.#video.muted ? this.#video.volume : 0;
+    if (!this.#hasCheckedAudioTrack) {
+      const audioAvailability = this.#detectAudioAvailability();
+      if (audioAvailability !== 'unknown') {
+        this.#hasCheckedAudioTrack = true;
+        this.#hasAudioTrack = audioAvailability === 'available';
+      } else if (
+        this.#video.readyState >= HTMLMediaElement.HAVE_METADATA &&
+        !isAudioAvailabilityPending(this.#video)
+      ) {
+        this.#hasCheckedAudioTrack = true;
+        this.#hasAudioTrack = true;
+      }
+    }
+
+    const hasUsableAudio = this.#isVolumeAvailable();
+    const isMuted = !hasUsableAudio || this.#video.muted || this.#video.volume <= 0;
+    const visualVolume = hasUsableAudio && !this.#video.muted ? this.#video.volume : 0;
     const volumePercent = Math.round(visualVolume * 100);
     const nextIconState = isMuted ? 'muted' : 'sound';
 
@@ -1470,23 +1508,26 @@ export class SimplePlayer extends HTMLElement {
 
     this.#volumeIconState = nextIconState;
 
-    this.#player.classList.toggle('is-volume-unavailable', !this.#hasAudioTrack);
+    this.#player.classList.toggle('is-volume-unavailable', !hasUsableAudio);
     this.#player.classList.toggle('is-volume-muted', isMuted);
     this.#player.classList.toggle('is-volume-sound', !isMuted);
     this.#player.style.setProperty('--sp-volume-level', `${volumePercent}%`);
-    this.#volumeControl.disabled = !this.#hasAudioTrack;
-    this.#volumeControl.setAttribute('aria-disabled', `${!this.#hasAudioTrack}`);
+    this.#volumeControl.disabled = !hasUsableAudio;
+    this.#volumeControl.setAttribute('aria-disabled', `${!hasUsableAudio}`);
     this.#volumeControl.setAttribute(
       'aria-label',
-      !this.#hasAudioTrack ? 'Video has no audio' : isMuted ? 'Unmute video' : 'Mute video',
+      !hasUsableAudio ? 'Video has no audio' : isMuted ? 'Unmute video' : 'Mute video',
     );
     this.#volumeTrack.setAttribute('aria-valuenow', `${volumePercent}`);
     this.#volumeTrack.setAttribute('aria-valuetext', `${volumePercent}%`);
 
+    if (!hasUsableAudio) {
+      this.#clearVolumeInteractionState();
+    }
   };
 
   #setVolumeFromClientY(clientY: number) {
-    if (!this.#hasAudioTrack) return;
+    if (!this.#isVolumeAvailable()) return;
     const rect = this.#volumeTrack.getBoundingClientRect();
     const percent = Math.min(1, Math.max(0, 1 - ((clientY - rect.top) / rect.height)));
     const rounded = Math.round(percent * 100) / 100;
@@ -1699,6 +1740,7 @@ export class SimplePlayer extends HTMLElement {
     if (this.#isScrubPreviewLocked() || this.#isProgressHoverPreviewing) {
       if (this.#trayTimeText) {
          this.#trayTimeText.textContent = this.#formatTimeForDisplay(this.#scrubTargetTime);
+         this.#syncTrayTimeWidth();
       }
     } else {
       this.#syncPinnedTimeText(this.#getVisualProgressTime());
@@ -1782,7 +1824,10 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #openVolumePopover() {
-    if (!this.volumeEnabled || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
+    if (!this.#isVolumeAvailable() || !this.volumeSliderEnabled) {
+      this.#clearVolumeInteractionState();
+      return;
+    }
     this.#clearVolumeCloseTimer();
     this.#volumeControl.classList.add('is-volume-open');
   }
@@ -1799,21 +1844,32 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #handleVolumePointerEnter = () => {
-    if (this.#isTouchControls() || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
+    if (this.#isTouchControls()) return;
+    if (!this.#isVolumeAvailable() || !this.volumeSliderEnabled) {
+      this.#clearVolumeInteractionState();
+      return;
+    }
     this.#isVolumeHovering = true;
     this.#openVolumePopover();
   };
 
   #handleVolumePointerLeave = () => {
-    if (this.#isTouchControls() || !this.volumeSliderEnabled || !this.#hasAudioTrack) return;
+    if (this.#isTouchControls()) return;
+    if (!this.#isVolumeAvailable() || !this.volumeSliderEnabled) {
+      this.#clearVolumeInteractionState();
+      return;
+    }
     this.#isVolumeHovering = false;
     this.#scheduleVolumePopoverClose();
   };
 
   #handleVolumeControlClick = (event: Event) => {
-    if (!this.volumeEnabled || !this.#hasAudioTrack) return;
     event.preventDefault();
     event.stopPropagation();
+    if (!this.#isVolumeAvailable()) {
+      this.#clearVolumeInteractionState();
+      return;
+    }
     if (!this.#areControlsVisible() || this.#shouldSuppressControlAction()) return;
     this.#showTouchControls();
     this.#closeVolumePopover();
@@ -1830,9 +1886,12 @@ export class SimplePlayer extends HTMLElement {
 
   #handleVolumePointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
-    if (!this.volumeEnabled || !this.volumeSliderEnabled || !this.#hasAudioTrack || this.#isTouchControls()) return;
     event.preventDefault();
     event.stopPropagation();
+    if (!this.#isVolumeAvailable() || !this.volumeSliderEnabled || this.#isTouchControls()) {
+      this.#clearVolumeInteractionState();
+      return;
+    }
     this.#showTouchControls();
     this.#clearControlsHideTimer();
     this.#openVolumePopover();
@@ -1868,7 +1927,13 @@ export class SimplePlayer extends HTMLElement {
   };
 
   #handleVolumeKeyDown = (event: Event) => {
-    if (!(event instanceof KeyboardEvent) || !this.volumeEnabled || !this.#hasAudioTrack) return;
+    if (!(event instanceof KeyboardEvent)) return;
+    if (!this.#isVolumeAvailable()) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.#clearVolumeInteractionState();
+      return;
+    }
     if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
 
     event.preventDefault();
@@ -2101,7 +2166,6 @@ export class SimplePlayer extends HTMLElement {
 
   #handleVideoLoadedMetadata = () => {
     this.#clearPausedVisualProgress();
-    this.#hasAudioTrack = true;
     this.#syncAudioControlState();
     if (!this.#isScrubPreviewLocked()) this.#syncVisualProgressClock();
     this.#syncVideoLoading();
@@ -2176,7 +2240,9 @@ export class SimplePlayer extends HTMLElement {
     this.#hasInitialProgressSettled = false;
     this.#lastRenderedProgressTime = 0;
     this.#clearPausedVisualProgress();
-    this.#hasAudioTrack = true;
+    this.#hasAudioTrack = false;
+    this.#hasCheckedAudioTrack = false;
+    this.#clearVolumeInteractionState();
     this.#isCommittedScrubPending = false;
     this.#committedScrubWasPlaying = false;
     this.#optimisticPlaybackState = null;

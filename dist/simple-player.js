@@ -1,11 +1,4 @@
-var Ui = Object.defineProperty;
-var pi = (d) => {
-  throw TypeError(d);
-};
-var Yi = (d, p, i) => p in d ? Ui(d, p, { enumerable: !0, configurable: !0, writable: !0, value: i }) : d[p] = i;
-var di = (d, p, i) => Yi(d, typeof p != "symbol" ? p + "" : p, i), _e = (d, p, i) => p.has(d) || pi("Cannot " + i);
-var t = (d, p, i) => (_e(d, p, "read from private field"), i ? i.call(d) : p.get(d)), n = (d, p, i) => p.has(d) ? pi("Cannot add the same private member more than once") : p instanceof WeakSet ? p.add(d) : p.set(d, i), r = (d, p, i, a) => (_e(d, p, "write to private field"), a ? a.call(d, i) : p.set(d, i), i), e = (d, p, i) => (_e(d, p, "access private method"), i);
-const mi = "16 / 9", Xi = "360px 0px", _i = [
+const u = "16 / 9", m = "360px 0px", f = [
   "src",
   "aspect-ratio",
   "preload-margin",
@@ -25,60 +18,69 @@ const mi = "16 / 9", Xi = "360px 0px", _i = [
   "no-picture-in-picture",
   "no-fullscreen"
 ];
-function Wi(d) {
-  const p = document;
-  return d.fullscreenElement || document.fullscreenElement || p.webkitFullscreenElement || p.mozFullScreenElement || p.msFullscreenElement || null;
+function b(o) {
+  const t = document;
+  return o.fullscreenElement || document.fullscreenElement || t.webkitFullscreenElement || t.mozFullScreenElement || t.msFullscreenElement || null;
 }
-function ji(d, p, i) {
-  const a = document, l = p, u = i, f = !!((document.fullscreenEnabled ?? a.webkitFullscreenEnabled ?? a.mozFullScreenEnabled ?? a.msFullscreenEnabled ?? !1) && (l.requestFullscreen || l.webkitRequestFullscreen || l.mozRequestFullScreen || l.msRequestFullscreen)), v = !!(u.webkitSupportsFullscreen || u.webkitEnterFullscreen || u.webkitEnterFullScreen);
-  return !!(d && (f || v));
+function v(o, t, s) {
+  const e = document, i = t, r = s, n = !!((document.fullscreenEnabled ?? e.webkitFullscreenEnabled ?? e.mozFullScreenEnabled ?? e.msFullscreenEnabled ?? !1) && (i.requestFullscreen || i.webkitRequestFullscreen || i.mozRequestFullScreen || i.msRequestFullscreen)), l = !!(r.webkitSupportsFullscreen || r.webkitEnterFullscreen || r.webkitEnterFullScreen);
+  return !!(o && (n || l));
 }
-function Oi(d) {
-  const p = d, i = p.requestFullscreen || p.webkitRequestFullscreen || p.mozRequestFullScreen || p.msRequestFullscreen;
-  return Promise.resolve(i?.call(p));
+function y(o) {
+  const t = o, s = t.requestFullscreen || t.webkitRequestFullscreen || t.mozRequestFullScreen || t.msRequestFullscreen;
+  return Promise.resolve(s?.call(t));
 }
-function Zi(d) {
-  const p = d;
-  return typeof p.requestFullscreen == "function" || typeof p.webkitRequestFullscreen == "function" || typeof p.mozRequestFullScreen == "function" || typeof p.msRequestFullscreen == "function";
+function g(o) {
+  const t = o;
+  return typeof t.requestFullscreen == "function" || typeof t.webkitRequestFullscreen == "function" || typeof t.mozRequestFullScreen == "function" || typeof t.msRequestFullscreen == "function";
 }
-function Ki(d) {
-  const p = d;
-  (p.webkitEnterFullscreen || p.webkitEnterFullScreen)?.call(p);
+function w(o) {
+  const t = o;
+  (t.webkitEnterFullscreen || t.webkitEnterFullScreen)?.call(t);
 }
-function Gi() {
-  const d = document, p = document.exitFullscreen || d.webkitExitFullscreen || d.mozCancelFullScreen || d.msExitFullscreen;
-  return Promise.resolve(p?.call(d));
+function x() {
+  const o = document, t = document.exitFullscreen || o.webkitExitFullscreen || o.mozCancelFullScreen || o.msExitFullscreen;
+  return Promise.resolve(t?.call(o));
 }
-function q(d) {
-  if (!Number.isFinite(d) || d < 0) return "0:00";
-  const p = Math.floor(d), i = p % 60, a = Math.floor(p / 60), l = a % 60, u = Math.floor(a / 60);
-  return u > 0 ? u + ":" + String(l).padStart(2, "0") + ":" + String(i).padStart(2, "0") : l + ":" + String(i).padStart(2, "0");
+function a(o) {
+  if (!Number.isFinite(o) || o < 0) return "0:00";
+  const t = Math.floor(o), s = t % 60, e = Math.floor(t / 60), i = e % 60, r = Math.floor(e / 60);
+  return r > 0 ? r + ":" + String(i).padStart(2, "0") + ":" + String(s).padStart(2, "0") : i + ":" + String(s).padStart(2, "0");
 }
-function Ji(d, p) {
-  const i = d;
-  if (i.audioTracks && typeof i.audioTracks.length == "number")
-    return i.audioTracks.length > 0;
-  const a = d;
-  if (typeof a.mozHasAudio == "boolean")
-    return a.mozHasAudio;
-  const l = d;
-  return typeof l.webkitAudioDecodedByteCount == "number" && d.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !d.muted && d.currentTime > 0.25 ? l.webkitAudioDecodedByteCount > 0 : p;
+function k(o) {
+  const t = o;
+  if (t.audioTracks && typeof t.audioTracks.length == "number")
+    return t.audioTracks.length > 0 ? "available" : "unavailable";
+  const s = o;
+  if (typeof s.mozHasAudio == "boolean")
+    return s.mozHasAudio ? "available" : "unavailable";
+  const e = o, i = e.captureStream ?? e.mozCaptureStream;
+  if (i && o.readyState >= HTMLMediaElement.HAVE_METADATA)
+    try {
+      return i.call(o).getAudioTracks().length > 0 ? "available" : "unavailable";
+    } catch {
+    }
+  const r = o;
+  return typeof r.webkitAudioDecodedByteCount == "number" && o.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && o.currentTime > 0.25 ? r.webkitAudioDecodedByteCount > 0 ? "available" : "unavailable" : "unknown";
 }
-function ui(d) {
-  const p = Math.min(2, Math.max(0, d.width / 2)), i = Math.max(1, d.width - p * 2);
-  return { rect: d, sideInset: p, innerWidth: i };
+function P(o) {
+  return typeof o.webkitAudioDecodedByteCount == "number" && o.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && o.currentTime <= 0.25;
 }
-function Qi(d, p) {
-  const { sideInset: i, innerWidth: a } = ui(p), l = Math.min(1, Math.max(0, d));
-  return i + l * a;
+function c(o) {
+  const t = Math.min(2, Math.max(0, o.width / 2)), s = Math.max(1, o.width - t * 2);
+  return { rect: o, sideInset: t, innerWidth: s };
 }
-function tr(d, p) {
-  const { sideInset: i, innerWidth: a } = ui(p);
-  return Math.min(1, Math.max(0, (d - p.left - i) / a));
+function T(o, t) {
+  const { sideInset: s, innerWidth: e } = c(t), i = Math.min(1, Math.max(0, o));
+  return s + i * e;
 }
-const sr = `
+function E(o, t) {
+  const { sideInset: s, innerWidth: e } = c(t);
+  return Math.min(1, Math.max(0, (o - t.left - s) / e));
+}
+const C = `
   :host {
-    --simple-player-aspect-ratio: ${mi};
+    --simple-player-aspect-ratio: ${u};
     --space: 4px;
     --white: #fff;
     --black: #000;
@@ -534,11 +536,21 @@ const sr = `
 
   .sp-player.is-volume-unavailable [data-sp-volume-control] {
     cursor: default;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   .sp-player.is-volume-unavailable .sp-volume-icon {
     transition: none;
+  }
+
+  .sp-player.is-volume-unavailable [data-sp-volume-control]:hover {
+    background: transparent;
+  }
+
+  .sp-player.is-volume-unavailable [data-sp-volume-control]:hover .sp-control-icon,
+  .sp-player.is-volume-unavailable [data-sp-volume-control].is-control-tap-active .sp-control-icon {
+    opacity: var(--sp-control-icon-hidden-opacity);
+    transform: var(--sp-control-icon-hidden-transform);
   }
 
   .sp-player.is-volume-unavailable .sp-control-tray-slots:has([data-sp-volume-control]:hover)::before,
@@ -849,29 +861,33 @@ const sr = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: var(--sp-tray-time-width, max-content);
+    width: calc(var(--sp-tray-time-width, 40px) + (var(--sp-control-tray-padding) * 2));
+    height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
   }
 
   .sp-tray-time-holder .sp-control-tray-slots {
     position: relative;
-    width: max-content;
+    width: 100%;
+    height: 100%;
   }
 
   .sp-tray-time-holder .sp-control-tray-slots::before {
     width: calc(100% - (var(--sp-control-tray-padding) * 2));
+    opacity: var(--sp-control-hover-opacity);
   }
 
   .sp-tray-time-holder .sp-tray-time-text {
     aspect-ratio: auto;
-    min-width: max-content;
-    width: auto;
+    width: 100%;
     height: var(--sp-control-slot-size);
     max-height: var(--sp-control-slot-size);
     padding: 0 8px;
     font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-variant-numeric: tabular-nums;
+    color: var(--white);
+    border-radius: 3px;
   }
 
   .sp-tray-time-text {
@@ -1018,9 +1034,9 @@ const sr = `
       transform: translateY(0) scale(1);
     }
   }
-`, fi = document.createElement("template");
-fi.innerHTML = `
-  <style>${sr}</style>
+`, p = document.createElement("template");
+p.innerHTML = `
+  <style>${C}</style>
   <div class="sp-player is-loading" data-sp-player>
     <video
       class="sp-video sp-asset"
@@ -1105,402 +1121,124 @@ fi.innerHTML = `
     </div>
   </div>
 `;
-var b, St, H, ss, B, h, o, Y, m, X, j, Js, L, es, ks, w, O, T, et, it, rt, vt, g, R, ot, F, Mt, nt, Vt, _, gt, is, zt, P, S, rs, at, yt, wt, lt, Ps, os, It, $, N, Z, K, G, Rt, xt, Ts, Dt, Es, Cs, kt, D, ht, qt, M, y, J, ns, as, Ht, W, ct, x, Pt, Tt, Et, ls, hs, Ct, Qs, te, cs, se, ee, As, Bt, ie, re, oe, ne, ae, le, $t, he, ce, s, Bs, $s, We, ms, je, jt, Ns, vi, c, Us, Nt, U, ue, fs, Q, tt, Ys, bs, Ot, gi, Oe, Ze, Ke, Zt, vs, Xs, Ge, Ut, Yt, Ls, Xt, ut, pt, Fs, pe, Ss, _s, Ms, de, Je, gs, Ws, ys, Qe, yi, Vs, wi, dt, ti, xi, si, Kt, z, ki, E, Pi, ei, ii, Ti, _t, ri, k, st, oi, Ei, mt, ft, Ci, Ai, ws, Li, Fi, Si, Gt, I, bt, Jt, Mi, Qt, Vi, C, Ft, zi, V, ni, js, ts, At, Os, ai, Ii, Ri, Di, Wt, Lt, qi, zs, Zs, li, Ks, Gs, Hi, Bi, me, fe, be, ve, xs, hi, us, ci, Is, Rs, ge, ye, we, xe, ke, Pe, Te, Ee, Ds, qs, Ce, Ae, Le, Fe, Se, Me, Ve, ze, Ie, Re, De, qe, He, ps, Be, $e, Ne, Ue, Ye, Xe, A, $i;
-class bi extends HTMLElement {
+class A extends HTMLElement {
+  static observedAttributes = f;
+  #r;
+  #At = [];
+  #T = null;
+  #ts = !1;
+  #E = !1;
+  #s;
+  #t;
+  #M;
+  #i;
+  #V;
+  #z;
+  #oe;
+  #m;
+  #ss;
+  #Ts;
+  #n;
+  #I;
+  #p;
+  #O;
+  #Z;
+  #K = [];
+  #ot = 0;
+  #a = !1;
+  #x = !1;
+  #G = !1;
+  #f = 0;
+  #Lt = 0;
+  #J = 0;
+  #Ft = !1;
+  #R = !1;
+  #nt = !1;
+  #es = 0;
+  #St = 0;
+  #h = null;
+  #b = null;
+  #is = 0;
+  #Q = 0;
+  #at = 0;
+  #lt = 0;
+  #tt = 0;
+  #Es = 0;
+  #rs = 0;
+  #Mt = null;
+  #C = !1;
+  #A = !1;
+  #B = !1;
+  #$ = !1;
+  #U = 0;
+  #Vt = 0;
+  #ht = !1;
+  #Cs = 0;
+  #zt = !0;
+  #As = 0;
+  #Ls = performance.now();
+  #ct = 0;
+  #k = null;
+  #st = null;
+  #It = !1;
+  #v = !1;
+  #Rt = !1;
+  #ut = !1;
+  #N = !1;
+  #os = null;
+  #ns = null;
+  #Dt = !1;
+  #L = !1;
+  #Y = !1;
+  #o = null;
+  #pt = 0;
+  #dt = 0;
+  #mt = 0;
+  #as = null;
+  #ls = !1;
+  #ft = 0;
+  #ne = 4;
+  #ae = 3.5;
+  #hs = 6;
+  #le = 0.08;
+  #he = 240;
+  #Fs = 1200;
+  #Ht = 1600;
+  #ce = 140;
+  #ue = 380;
+  #pe = 650;
+  #de = 2e3;
+  #me = 3;
+  #fe = 10;
+  #qt = 0.18;
+  #be = 8;
+  #ve = 18;
   constructor() {
-    super();
-    n(this, s);
-    n(this, b);
-    n(this, St, []);
-    n(this, H, null);
-    n(this, ss, !1);
-    n(this, B, !1);
-    n(this, h);
-    n(this, o);
-    n(this, Y);
-    n(this, m);
-    n(this, X);
-    n(this, j);
-    n(this, Js);
-    n(this, L);
-    n(this, es);
-    n(this, ks);
-    n(this, w);
-    n(this, O);
-    n(this, T);
-    n(this, et);
-    n(this, it);
-    n(this, rt, []);
-    n(this, vt, 0);
-    n(this, g, !1);
-    n(this, R, !1);
-    n(this, ot, !1);
-    n(this, F, 0);
-    n(this, Mt, 0);
-    n(this, nt, 0);
-    n(this, Vt, !1);
-    n(this, _, !1);
-    n(this, gt, !1);
-    n(this, is, 0);
-    n(this, zt, 0);
-    n(this, P, null);
-    n(this, S, null);
-    n(this, rs, 0);
-    n(this, at, 0);
-    n(this, yt, 0);
-    n(this, wt, 0);
-    n(this, lt, 0);
-    n(this, Ps, 0);
-    n(this, os, 0);
-    n(this, It, null);
-    n(this, $, !1);
-    n(this, N, !1);
-    n(this, Z, !1);
-    n(this, K, !1);
-    n(this, G, 0);
-    n(this, Rt, 0);
-    n(this, xt, !1);
-    n(this, Ts, 0);
-    n(this, Dt, !0);
-    n(this, Es, 0);
-    n(this, Cs, performance.now());
-    n(this, kt, 0);
-    n(this, D, null);
-    n(this, ht, null);
-    n(this, qt, !1);
-    n(this, M, !1);
-    n(this, y, !0);
-    n(this, J, !1);
-    n(this, ns, null);
-    n(this, as, null);
-    n(this, Ht, !1);
-    n(this, W, !1);
-    n(this, ct, !1);
-    n(this, x, null);
-    n(this, Pt, 0);
-    n(this, Tt, 0);
-    n(this, Et, 0);
-    n(this, ls, null);
-    n(this, hs, !1);
-    n(this, Ct, 0);
-    n(this, Qs, 4);
-    n(this, te, 3.5);
-    n(this, cs, 6);
-    n(this, se, 0.08);
-    n(this, ee, 240);
-    n(this, As, 1200);
-    n(this, Bt, 1600);
-    n(this, ie, 140);
-    n(this, re, 380);
-    n(this, oe, 650);
-    n(this, ne, 2e3);
-    n(this, ae, 3);
-    n(this, le, 10);
-    n(this, $t, 0.18);
-    n(this, he, 8);
-    n(this, ce, 18);
-    n(this, Nt, (i) => {
-      i.preventDefault();
-    });
-    n(this, ue, () => {
-      if (r(this, yt, 0), !(t(this, R) || t(this, g) || t(this, W))) {
-        if (e(this, s, A).call(this)) {
-          t(this, h).classList.remove("is-controls-visible");
-          return;
-        }
-        t(this, J) || t(this, h).classList.remove("is-pointer-active");
-      }
-    });
-    n(this, Ut, (i) => {
-      e(this, s, Ot).call(this, i) && e(this, s, Ys).call(this, !0);
-    });
-    n(this, Yt, (i) => {
-      e(this, s, Ot).call(this, i) && ((i instanceof PointerEvent || i instanceof MouseEvent) && e(this, s, Ke).call(this, i.clientX, i.clientY), e(this, s, Ys).call(this, !0));
-    });
-    n(this, Ls, (i) => {
-      e(this, s, Ot).call(this, i) && ((i instanceof PointerEvent || i instanceof MouseEvent) && e(this, s, Ke).call(this, i.clientX, i.clientY), e(this, s, Ge).call(this));
-    });
-    n(this, Xt, () => {
-      e(this, s, bs).call(this);
-    });
-    n(this, ut, (i) => {
-      e(this, s, Ot).call(this, i) && (r(this, J, !0), t(this, h).classList.add("is-pointer-active"), e(this, s, U).call(this));
-    });
-    n(this, pt, () => {
-      r(this, J, !1), e(this, s, fs).call(this, t(this, Bt));
-    });
-    n(this, Fs, () => {
-      e(this, s, A).call(this) ? t(this, h).classList.add("is-controls-visible") : t(this, h).classList.add("is-pointer-active"), e(this, s, U).call(this);
-    });
-    n(this, pe, () => {
-      e(this, s, fs).call(this, t(this, Bt));
-    });
-    n(this, Ss, (i) => {
-      const a = i.currentTarget;
-      if (e(this, s, Xs).call(this, a)) {
-        t(this, j).style.removeProperty("--sp-control-hover-offset");
-        return;
-      }
-      const u = Number(a.dataset.spControlIndex ?? 0);
-      t(this, j).style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${u})`);
-    });
-    n(this, Ms, () => {
-      r(this, Et, 0), t(this, rt).forEach((i) => i.classList.remove("is-control-tap-active")), this.style.removeProperty("--sp-touch-control-hover-offset");
-    });
-    n(this, de, (i) => {
-      if (!(i instanceof PointerEvent) || i.pointerType !== "touch") return;
-      const a = i.currentTarget;
-      if (!a || !e(this, s, Zt).call(this) || e(this, s, Xs).call(this, a)) return;
-      const l = Number(a.dataset.spControlIndex ?? 0);
-      e(this, s, _s).call(this), t(this, rt).forEach((u) => u.classList.toggle("is-control-tap-active", u === a)), this.style.setProperty("--sp-touch-control-hover-offset", `calc(var(--sp-control-slot-size) * ${l})`), r(this, Et, window.setTimeout(t(this, Ms), 280));
-    });
-    n(this, Vs, () => {
-      if (t(this, lt) || t(this, h).classList.contains("is-progress-settling")) {
-        if (e(this, s, Ws).call(this), t(this, xt)) {
-          t(this, h).classList.remove("is-progress-settling");
-          return;
-        }
-        r(this, xt, !0), r(this, Ts, performance.now() + t(this, oe)), e(this, s, E).call(this) || e(this, s, k).call(this), e(this, s, I).call(this), t(this, h).classList.remove("is-progress-settling"), e(this, s, C).call(this);
-      }
-    });
-    n(this, z, () => {
-      if (t(this, o).error) {
-        e(this, s, Kt).call(this, !0, !0);
-        return;
-      }
-      e(this, s, Kt).call(this, !t(this, B) || !t(this, N) || t(this, o).readyState < HTMLMediaElement.HAVE_FUTURE_DATA);
-    });
-    n(this, _t, () => {
-      if (t(this, o).error || t(this, o).readyState < HTMLMediaElement.HAVE_CURRENT_DATA || t(this, o).videoWidth <= 0 || t(this, o).videoHeight <= 0)
-        return t(this, z).call(this), !1;
-      if (!t(this, $))
-        return e(this, s, Ti).call(this), t(this, z).call(this), !1;
-      const i = e(this, s, ii).call(this);
-      return t(this, V).call(this), i;
-    });
-    n(this, V, () => {
-      if (!this.volumeEnabled) {
-        t(this, h).classList.remove("is-volume-unavailable", "is-volume-muted", "is-volume-sound", "is-volume-icon-animating"), t(this, w).disabled = !0, t(this, w).setAttribute("aria-disabled", "true");
-        return;
-      }
-      r(this, y, e(this, s, zi).call(this));
-      const i = !t(this, y) || t(this, o).muted || t(this, o).volume <= 0, a = t(this, y) && !t(this, o).muted ? t(this, o).volume : 0, l = Math.round(a * 100), u = i ? "muted" : "sound";
-      t(this, ls) && t(this, ls) !== u && e(this, s, yi).call(this), r(this, ls, u), t(this, h).classList.toggle("is-volume-unavailable", !t(this, y)), t(this, h).classList.toggle("is-volume-muted", i), t(this, h).classList.toggle("is-volume-sound", !i), t(this, h).style.setProperty("--sp-volume-level", `${l}%`), t(this, w).disabled = !t(this, y), t(this, w).setAttribute("aria-disabled", `${!t(this, y)}`), t(this, w).setAttribute(
-        "aria-label",
-        t(this, y) ? i ? "Unmute video" : "Mute video" : "Video has no audio"
-      ), t(this, T).setAttribute("aria-valuenow", `${l}`), t(this, T).setAttribute("aria-valuetext", `${l}%`);
-    });
-    n(this, At, () => {
-      const i = document.pictureInPictureElement === t(this, o), a = t(this, o), l = !!(this.pictureInPictureEnabled && document.pictureInPictureEnabled && a.requestPictureInPicture);
-      t(this, h).classList.toggle("is-picture-in-picture", i), t(this, et).disabled = !l, t(this, et).setAttribute("aria-label", i ? "Exit picture in picture" : "Enter picture in picture");
-    });
-    n(this, Wt, () => {
-      const i = e(this, s, Os).call(this), a = i === t(this, h) || i === this, l = e(this, s, ai).call(this);
-      return t(this, h).classList.toggle("is-fullscreen", a), t(this, it).disabled = !l, t(this, it).setAttribute("aria-label", a ? "Exit fullscreen" : "Enter fullscreen"), a;
-    });
-    n(this, Lt, () => {
-      const i = t(this, Wt).call(this);
-      e(this, s, qi).call(this, i);
-    });
-    n(this, zs, () => {
-      !t(this, R) || t(this, g) || (e(this, s, st).call(this), e(this, s, U).call(this), e(this, s, Ft).call(this), r(this, g, !0), t(this, h).classList.add("is-scrubbing"), r(this, F, e(this, s, bt).call(this, t(this, is), !0)), t(this, ot) && t(this, o).pause(), t(this, o).currentTime = t(this, F), e(this, s, k).call(this, t(this, F)), e(this, s, I).call(this, t(this, F)), e(this, s, Qt).call(this), e(this, s, C).call(this));
-    });
-    n(this, me, (i) => {
-      i.stopPropagation(), r(this, hs, !t(this, hs)), e(this, s, Bi).call(this), e(this, s, E).call(this) || t(this, M) ? t(this, L) && (t(this, L).textContent = e(this, s, Gs).call(this, t(this, F))) : e(this, s, Gt).call(this, e(this, s, mt).call(this));
-    });
-    n(this, fe, async () => {
-      if (performance.now() < t(this, Ps))
-        return;
-      const i = t(this, S) ? t(this, S) !== "playing" : t(this, o).paused || t(this, o).ended, a = !i || e(this, s, ki).call(this);
-      e(this, s, tt).call(this), a && (r(this, S, i ? "playing" : "paused"), e(this, s, C).call(this)), i ? (e(this, s, st).call(this), await e(this, s, dt).call(this), await t(this, o).play().catch(() => {
-        r(this, S, null);
-      })) : (e(this, s, Ei).call(this), t(this, o).pause()), e(this, s, C).call(this), e(this, s, Q).call(this);
-    });
-    n(this, be, (i) => {
-      if (!(i instanceof PointerEvent)) return;
-      const a = t(this, Y).getBoundingClientRect(), l = i.clientX >= a.left && i.clientX <= a.right && i.clientY >= a.top && i.clientY <= a.bottom, u = t(this, X).getBoundingClientRect(), f = i.clientX >= u.left && i.clientX <= u.right && i.clientY >= u.top && i.clientY <= u.bottom, v = t(this, m).getBoundingClientRect(), Hs = i.clientX >= v.left && i.clientX <= v.right && i.clientY >= v.top && i.clientY <= v.bottom, ds = e(this, s, tt).call(this);
-      ds && l && r(this, Ps, performance.now() + 260), ds && (f || Hs) && r(this, os, performance.now() + 260), e(this, s, dt).call(this);
-    });
-    n(this, ve, (i) => {
-      i.stopPropagation();
-    });
-    n(this, us, () => {
-      r(this, Pt, 0), !(t(this, ct) || t(this, W)) && t(this, w).classList.remove("is-volume-open");
-    });
-    n(this, Is, () => {
-      e(this, s, A).call(this) || !this.volumeSliderEnabled || !t(this, y) || (r(this, ct, !0), e(this, s, hi).call(this));
-    });
-    n(this, Rs, () => {
-      e(this, s, A).call(this) || !this.volumeSliderEnabled || !t(this, y) || (r(this, ct, !1), e(this, s, ci).call(this));
-    });
-    n(this, ge, (i) => {
-      !this.volumeEnabled || !t(this, y) || (i.preventDefault(), i.stopPropagation(), !(!e(this, s, Zt).call(this) || e(this, s, vs).call(this)) && (e(this, s, tt).call(this), t(this, us).call(this), t(this, o).muted || t(this, o).volume <= 0 ? (t(this, o).volume <= 0 && (t(this, o).volume = 0.7), t(this, o).muted = !1) : t(this, o).muted = !0, t(this, V).call(this), e(this, s, Q).call(this)));
-    });
-    n(this, ye, (i) => {
-      i instanceof PointerEvent && (!this.volumeEnabled || !this.volumeSliderEnabled || !t(this, y) || e(this, s, A).call(this) || (i.preventDefault(), i.stopPropagation(), e(this, s, tt).call(this), e(this, s, U).call(this), e(this, s, hi).call(this), r(this, W, !0), r(this, x, i.pointerId), t(this, O).classList.add("is-scrubbing-volume"), t(this, T).setPointerCapture(i.pointerId), e(this, s, ni).call(this, i.clientY)));
-    });
-    n(this, we, (i) => {
-      i instanceof PointerEvent && t(this, W) && (t(this, x) !== null && i.pointerId !== t(this, x) || (i.preventDefault(), i.stopPropagation(), e(this, s, ni).call(this, i.clientY)));
-    });
-    n(this, xe, (i) => {
-      i instanceof PointerEvent && (t(this, x) !== null && i.pointerId !== t(this, x) || (i.stopPropagation(), e(this, s, ts).call(this, i.pointerId), e(this, s, Q).call(this)));
-    });
-    n(this, ke, (i) => {
-      i instanceof PointerEvent && (t(this, x) !== null && i.pointerId !== t(this, x) || (i.stopPropagation(), e(this, s, ts).call(this, i.pointerId)));
-    });
-    n(this, Pe, (i) => {
-      if (!(i instanceof KeyboardEvent) || !this.volumeEnabled || !t(this, y) || !["ArrowUp", "ArrowDown", "Home", "End"].includes(i.key)) return;
-      i.preventDefault(), i.stopPropagation();
-      const a = i.shiftKey ? 0.1 : 0.05, l = i.key === "Home" ? 0 : i.key === "End" ? 1 : t(this, o).volume + (i.key === "ArrowUp" ? a : -a);
-      t(this, o).volume = Math.min(1, Math.max(0, l)), t(this, o).muted = t(this, o).volume <= 0, t(this, V).call(this);
-    });
-    n(this, Te, async () => {
-      const i = t(this, o);
-      if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !i.requestPictureInPicture) && !(!e(this, s, Zt).call(this) || e(this, s, vs).call(this))) {
-        e(this, s, tt).call(this);
-        try {
-          await e(this, s, dt).call(this), document.pictureInPictureElement === t(this, o) ? await document.exitPictureInPicture() : await i.requestPictureInPicture();
-        } catch {
-        } finally {
-          t(this, At).call(this), e(this, s, Q).call(this);
-        }
-      }
-    });
-    n(this, Ee, async (i) => {
-      if (e(this, s, ai).call(this) && (i.preventDefault(), i.stopPropagation(), !(!e(this, s, Zt).call(this) || e(this, s, vs).call(this)))) {
-        e(this, s, Ot).call(this, i), e(this, s, tt).call(this);
-        try {
-          const a = e(this, s, Os).call(this);
-          a === t(this, h) || a === this ? await e(this, s, Di).call(this) : (await e(this, s, dt).call(this), Zi(t(this, h)) ? await e(this, s, Ii).call(this) : e(this, s, Ri).call(this));
-        } catch {
-        } finally {
-          t(this, Wt).call(this), e(this, s, Q).call(this);
-        }
-      }
-    });
-    n(this, Ds, (i) => {
-      e(this, s, A).call(this) || e(this, s, E).call(this) || !(i instanceof PointerEvent) && !(i instanceof MouseEvent) || (r(this, M, !0), t(this, h).classList.add("is-progress-hovering"), e(this, s, bt).call(this, i.clientX, !1, !1));
-    });
-    n(this, qs, () => {
-      e(this, s, E).call(this) || e(this, s, Ze).call(this);
-    });
-    n(this, Ce, (i) => {
-      if (i instanceof PointerEvent) {
-        if (i.preventDefault(), !e(this, s, Zt).call(this) || e(this, s, vs).call(this)) {
-          e(this, s, tt).call(this), e(this, s, A).call(this) && r(this, os, performance.now() + 260);
-          return;
-        }
-        e(this, s, tt).call(this), e(this, s, U).call(this), t(this, Vs).call(this), r(this, _, !1), r(this, gt, !1), e(this, s, Fi).call(this, e(this, s, mt).call(this)), r(this, R, !0), r(this, P, i.pointerId), r(this, is, i.clientX), r(this, ot, !t(this, o).paused && !t(this, o).ended), t(this, m).setPointerCapture(i.pointerId), r(this, F, e(this, s, bt).call(this, i.clientX, !1)), e(this, s, Ft).call(this), r(this, zt, window.setTimeout(t(this, zs), t(this, ee)));
-      }
-    });
-    n(this, Ae, (i) => {
-      if (!(i instanceof KeyboardEvent) || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(i.key)) return;
-      i.preventDefault(), i.stopPropagation(), t(this, Fs).call(this);
-      const a = e(this, s, mt).call(this), l = i.shiftKey ? 10 : 5, u = Math.max(10, t(this, o).duration * 0.1), f = i.key === "Home" ? 0 : i.key === "End" ? t(this, o).duration : i.key === "PageUp" ? a + u : i.key === "PageDown" ? a - u : a + (i.key === "ArrowRight" ? l : -l);
-      t(this, o).currentTime = Math.min(t(this, o).duration, Math.max(0, f)), e(this, s, k).call(this, t(this, o).currentTime), e(this, s, I).call(this, t(this, o).currentTime);
-    });
-    n(this, Le, (i) => {
-      if (i instanceof PointerEvent) {
-        if (!t(this, R)) {
-          e(this, s, A).call(this) || (r(this, M, !0), t(this, h).classList.add("is-progress-hovering"), e(this, s, bt).call(this, i.clientX, !1, !1));
-          return;
-        }
-        t(this, P) !== null && i.pointerId !== t(this, P) || (!t(this, g) && Math.abs(i.clientX - t(this, is)) >= t(this, Qs) && t(this, zs).call(this), t(this, g) && r(this, F, e(this, s, bt).call(this, i.clientX)));
-      }
-    });
-    n(this, Fe, (i) => {
-      i instanceof PointerEvent && (t(this, P) !== null && i.pointerId !== t(this, P) || e(this, s, li).call(this, i.clientX, i.pointerId, !0));
-    });
-    n(this, Se, (i) => {
-      i instanceof PointerEvent && (t(this, P) !== null && i.pointerId !== t(this, P) || e(this, s, Ks).call(this, i.pointerId));
-    });
-    n(this, Me, (i) => {
-      if (i instanceof PointerEvent) {
-        if (t(this, x) !== null && i.pointerId === t(this, x)) {
-          e(this, s, ts).call(this, i.pointerId);
-          return;
-        }
-        t(this, P) === null || i.pointerId !== t(this, P) || e(this, s, li).call(this, i.clientX, i.pointerId, !0);
-      }
-    });
-    n(this, Ve, (i) => {
-      if (i instanceof PointerEvent) {
-        if (t(this, x) !== null && i.pointerId === t(this, x)) {
-          e(this, s, ts).call(this, i.pointerId);
-          return;
-        }
-        t(this, P) === null || i.pointerId !== t(this, P) || e(this, s, Ks).call(this, i.pointerId);
-      }
-    });
-    n(this, ze, () => {
-      e(this, s, ts).call(this, t(this, x)), e(this, s, Ks).call(this, t(this, P));
-    });
-    n(this, Ie, () => {
-      e(this, s, Os).call(this) || e(this, s, bs).call(this);
-    });
-    n(this, Re, () => {
-      r(this, S, null), e(this, s, st).call(this), e(this, s, E).call(this) || e(this, s, k).call(this), e(this, s, C).call(this);
-    });
-    n(this, De, () => {
-      r(this, S, null), e(this, s, E).call(this) || e(this, s, oi).call(this), t(this, z).call(this), e(this, s, C).call(this);
-    });
-    n(this, qe, () => {
-      r(this, S, null), e(this, s, st).call(this), e(this, s, E).call(this) || e(this, s, k).call(this), e(this, s, C).call(this);
-    });
-    n(this, He, () => {
-      e(this, s, Kt).call(this, !0, !0);
-    });
-    n(this, ps, () => {
-      e(this, s, Kt).call(this, !0);
-    });
-    n(this, Be, () => {
-      e(this, s, st).call(this), r(this, y, !0), t(this, V).call(this), e(this, s, E).call(this) || e(this, s, k).call(this), t(this, z).call(this), e(this, s, I).call(this);
-    });
-    n(this, $e, () => {
-      const i = t(this, _t).call(this);
-      t(this, V).call(this), i && !e(this, s, E).call(this) && e(this, s, k).call(this), e(this, s, C).call(this);
-    });
-    n(this, Ne, () => {
-      if (e(this, s, st).call(this), t(this, z).call(this), t(this, _) && (!t(this, gt) || t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
-        e(this, s, ei).call(this), e(this, s, C).call(this);
-        return;
-      }
-      e(this, s, E).call(this) || e(this, s, k).call(this), e(this, s, I).call(this);
-    });
-    n(this, Ue, () => {
-      r(this, S, null), r(this, $, !1), r(this, N, !1), r(this, Z, !1), r(this, K, !1), r(this, G, t(this, G) + 1), t(this, h).classList.remove("has-visible-frame"), e(this, s, Kt).call(this, !0, !0), e(this, s, C).call(this), e(this, s, Pi).call(this);
-    });
-    n(this, Ye, () => {
-      t(this, V).call(this), e(this, s, I).call(this);
-    });
-    n(this, Xe, () => {
-      t(this, V).call(this);
-    });
-    r(this, b, this.attachShadow({ mode: "open" })), t(this, b).append(fi.content.cloneNode(!0));
+    super(), this.#r = this.attachShadow({ mode: "open" }), this.#r.append(p.content.cloneNode(!0));
   }
   get src() {
     return this.getAttribute("src") ?? "";
   }
-  set src(i) {
-    e(this, s, Bs).call(this, "src", i);
+  set src(t) {
+    this.#cs("src", t);
   }
   get aspectRatio() {
-    return this.getAttribute("aspect-ratio") || mi;
+    return this.getAttribute("aspect-ratio") || u;
   }
-  set aspectRatio(i) {
-    e(this, s, Bs).call(this, "aspect-ratio", i);
+  set aspectRatio(t) {
+    this.#cs("aspect-ratio", t);
   }
   get preloadMargin() {
-    return this.getAttribute("preload-margin") || Xi;
+    return this.getAttribute("preload-margin") || m;
   }
-  set preloadMargin(i) {
-    e(this, s, Bs).call(this, "preload-margin", i);
+  set preloadMargin(t) {
+    this.#cs("preload-margin", t);
   }
   get autoplayEnabled() {
     return !this.hasAttribute("disable-autoplay") && !this.hasAttribute("no-autoplay");
   }
-  set autoplayEnabled(i) {
-    if (i) {
+  set autoplayEnabled(t) {
+    if (t) {
       this.removeAttribute("disable-autoplay"), this.removeAttribute("no-autoplay");
       return;
     }
@@ -1509,8 +1247,8 @@ class bi extends HTMLElement {
   get controlsEnabled() {
     return this.hasAttribute("controls");
   }
-  set controlsEnabled(i) {
-    if (i) {
+  set controlsEnabled(t) {
+    if (t) {
       this.setAttribute("controls", "");
       return;
     }
@@ -1519,8 +1257,8 @@ class bi extends HTMLElement {
   get timeVisible() {
     return this.hasAttribute("show-time");
   }
-  set timeVisible(i) {
-    if (i) {
+  set timeVisible(t) {
+    if (t) {
       this.setAttribute("show-time", "");
       return;
     }
@@ -1529,14 +1267,14 @@ class bi extends HTMLElement {
   get volumeEnabled() {
     return this.controlsEnabled && !this.hasAttribute("disable-volume") && !this.hasAttribute("no-volume");
   }
-  set volumeEnabled(i) {
-    e(this, s, $s).call(this, "volume", i);
+  set volumeEnabled(t) {
+    this.#us("volume", t);
   }
   get volumeSliderEnabled() {
     return !this.hasAttribute("disable-volume-slider") && !this.hasAttribute("no-volume-slider");
   }
-  set volumeSliderEnabled(i) {
-    if (i) {
+  set volumeSliderEnabled(t) {
+    if (t) {
       this.removeAttribute("disable-volume-slider"), this.removeAttribute("no-volume-slider");
       return;
     }
@@ -1545,411 +1283,819 @@ class bi extends HTMLElement {
   get pictureInPictureEnabled() {
     return this.controlsEnabled && !this.hasAttribute("disable-picture-in-picture") && !this.hasAttribute("no-picture-in-picture");
   }
-  set pictureInPictureEnabled(i) {
-    e(this, s, $s).call(this, "picture-in-picture", i);
+  set pictureInPictureEnabled(t) {
+    this.#us("picture-in-picture", t);
   }
   get fullscreenEnabled() {
     return this.controlsEnabled && !this.hasAttribute("disable-fullscreen") && !this.hasAttribute("no-fullscreen");
   }
-  set fullscreenEnabled(i) {
-    e(this, s, $s).call(this, "fullscreen", i);
+  set fullscreenEnabled(t) {
+    this.#us("fullscreen", t);
   }
   connectedCallback() {
-    r(this, h, t(this, b).querySelector("[data-sp-player]")), r(this, o, t(this, b).querySelector("[data-sp-video]")), r(this, Y, t(this, b).querySelector("[data-sp-button]")), r(this, m, t(this, b).querySelector("[data-sp-progress-track]")), r(this, X, t(this, b).querySelector("[data-sp-control-tray]")), r(this, j, t(this, b).querySelector("[data-sp-control-tray-slots]")), r(this, Js, t(this, b).querySelector("[data-sp-tray-time]")), r(this, L, t(this, b).querySelector("[data-sp-tray-time-text]")), r(this, es, t(this, b).querySelector("[data-sp-time]")), r(this, ks, t(this, b).querySelector("[data-sp-time-text]")), r(this, w, t(this, b).querySelector("[data-sp-volume-control]")), r(this, O, t(this, b).querySelector("[data-sp-volume-popover]")), r(this, T, t(this, b).querySelector("[data-sp-volume-track]")), r(this, et, t(this, b).querySelector("[data-sp-picture-in-picture-control]")), r(this, it, t(this, b).querySelector("[data-sp-fullscreen-control]")), r(this, rt, [t(this, w), t(this, et), t(this, it)]), e(this, s, We).call(this), t(this, ss) || (e(this, s, vi).call(this), r(this, ss, !0)), e(this, s, ms).call(this), e(this, s, Us).call(this), e(this, s, je).call(this), e(this, s, Ns).call(this), t(this, z).call(this), t(this, V).call(this), t(this, At).call(this), t(this, Wt).call(this), e(this, s, C).call(this);
+    this.#s = this.#r.querySelector("[data-sp-player]"), this.#t = this.#r.querySelector("[data-sp-video]"), this.#M = this.#r.querySelector("[data-sp-button]"), this.#i = this.#r.querySelector("[data-sp-progress-track]"), this.#V = this.#r.querySelector("[data-sp-control-tray]"), this.#z = this.#r.querySelector("[data-sp-control-tray-slots]"), this.#oe = this.#r.querySelector("[data-sp-tray-time]"), this.#m = this.#r.querySelector("[data-sp-tray-time-text]"), this.#ss = this.#r.querySelector("[data-sp-time]"), this.#Ts = this.#r.querySelector("[data-sp-time-text]"), this.#n = this.#r.querySelector("[data-sp-volume-control]"), this.#I = this.#r.querySelector("[data-sp-volume-popover]"), this.#p = this.#r.querySelector("[data-sp-volume-track]"), this.#O = this.#r.querySelector("[data-sp-picture-in-picture-control]"), this.#Z = this.#r.querySelector("[data-sp-fullscreen-control]"), this.#K = [this.#n, this.#O, this.#Z], this.#Ss(), this.#ts || (this.#ye(), this.#ts = !0), this.#Bt(), this.#ds(), this.#Ms(), this.#ps(), this.#w(), this.#g(), this.#Tt(), this.#Qt(), this.#u();
   }
   disconnectedCallback() {
-    t(this, H)?.disconnect(), r(this, H, null), t(this, St).forEach((i) => i()), r(this, St, []), r(this, ss, !1), e(this, s, U).call(this), e(this, s, Je).call(this), e(this, s, gs).call(this), e(this, s, Ws).call(this), e(this, s, Ft).call(this), e(this, s, ys).call(this), e(this, s, xs).call(this), e(this, s, Qe).call(this), e(this, s, _s).call(this), t(this, h).classList.remove("is-volume-icon-animating"), t(this, j).style.removeProperty("--sp-control-hover-offset"), this.style.removeProperty("--sp-touch-control-hover-offset"), e(this, s, Jt).call(this), r(this, M, !1), t(this, h).classList.remove("is-progress-hovering"), r(this, W, !1), r(this, ct, !1), r(this, J, !1), r(this, x, null), t(this, w).classList.remove("is-volume-open"), t(this, rt).forEach((i) => i.classList.remove("is-control-tap-active")), t(this, h).classList.remove("is-pointer-active"), e(this, s, Qt).call(this);
+    this.#T?.disconnect(), this.#T = null, this.#At.forEach((t) => t()), this.#At = [], this.#ts = !1, this.#P(), this.#$s(), this.#Ot(), this.#vs(), this.#rt(), this.#Zt(), this.#Ct(), this.#Us(), this.#bs(), this.#s.classList.remove("is-volume-icon-animating"), this.#z.style.removeProperty("--sp-control-hover-offset"), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#xt(), this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#L = !1, this.#Y = !1, this.#N = !1, this.#o = null, this.#n.classList.remove("is-volume-open"), this.#K.forEach((t) => t.classList.remove("is-control-tap-active")), this.#s.classList.remove("is-pointer-active"), this.#kt();
   }
-  attributeChangedCallback(i, a, l) {
-    if (a !== l) {
-      if (i === "aspect-ratio") {
-        e(this, s, We).call(this);
+  attributeChangedCallback(t, s, e) {
+    if (s !== e) {
+      if (t === "aspect-ratio") {
+        this.#Ss();
         return;
       }
-      if (i === "preload-margin" && this.isConnected) {
-        t(this, H)?.disconnect(), e(this, s, Us).call(this);
+      if (t === "preload-margin" && this.isConnected) {
+        this.#T?.disconnect(), this.#ds();
         return;
       }
-      if (i === "src" && this.isConnected) {
-        e(this, s, $i).call(this), e(this, s, Us).call(this);
+      if (t === "src" && this.isConnected) {
+        this.#xi(), this.#ds();
         return;
       }
-      if ((i === "disable-autoplay" || i === "no-autoplay") && this.isConnected) {
-        e(this, s, ms).call(this), t(this, V).call(this), e(this, s, C).call(this);
+      if ((t === "disable-autoplay" || t === "no-autoplay") && this.isConnected) {
+        this.#Bt(), this.#g(), this.#u();
         return;
       }
-      if (i === "show-time" && this.isConnected) {
-        e(this, s, Ns).call(this);
+      if (t === "show-time" && this.isConnected) {
+        this.#ps();
         return;
       }
-      (i === "controls" || i.startsWith("enable-") || i.startsWith("disable-") || i.startsWith("no-")) && this.isConnected && (e(this, s, je).call(this), t(this, V).call(this), t(this, At).call(this), t(this, Wt).call(this), e(this, s, Ns).call(this));
+      (t === "controls" || t.startsWith("enable-") || t.startsWith("disable-") || t.startsWith("no-")) && this.isConnected && (this.#Ms(), this.#g(), this.#Tt(), this.#Qt(), this.#ps());
     }
   }
-}
-b = new WeakMap(), St = new WeakMap(), H = new WeakMap(), ss = new WeakMap(), B = new WeakMap(), h = new WeakMap(), o = new WeakMap(), Y = new WeakMap(), m = new WeakMap(), X = new WeakMap(), j = new WeakMap(), Js = new WeakMap(), L = new WeakMap(), es = new WeakMap(), ks = new WeakMap(), w = new WeakMap(), O = new WeakMap(), T = new WeakMap(), et = new WeakMap(), it = new WeakMap(), rt = new WeakMap(), vt = new WeakMap(), g = new WeakMap(), R = new WeakMap(), ot = new WeakMap(), F = new WeakMap(), Mt = new WeakMap(), nt = new WeakMap(), Vt = new WeakMap(), _ = new WeakMap(), gt = new WeakMap(), is = new WeakMap(), zt = new WeakMap(), P = new WeakMap(), S = new WeakMap(), rs = new WeakMap(), at = new WeakMap(), yt = new WeakMap(), wt = new WeakMap(), lt = new WeakMap(), Ps = new WeakMap(), os = new WeakMap(), It = new WeakMap(), $ = new WeakMap(), N = new WeakMap(), Z = new WeakMap(), K = new WeakMap(), G = new WeakMap(), Rt = new WeakMap(), xt = new WeakMap(), Ts = new WeakMap(), Dt = new WeakMap(), Es = new WeakMap(), Cs = new WeakMap(), kt = new WeakMap(), D = new WeakMap(), ht = new WeakMap(), qt = new WeakMap(), M = new WeakMap(), y = new WeakMap(), J = new WeakMap(), ns = new WeakMap(), as = new WeakMap(), Ht = new WeakMap(), W = new WeakMap(), ct = new WeakMap(), x = new WeakMap(), Pt = new WeakMap(), Tt = new WeakMap(), Et = new WeakMap(), ls = new WeakMap(), hs = new WeakMap(), Ct = new WeakMap(), Qs = new WeakMap(), te = new WeakMap(), cs = new WeakMap(), se = new WeakMap(), ee = new WeakMap(), As = new WeakMap(), Bt = new WeakMap(), ie = new WeakMap(), re = new WeakMap(), oe = new WeakMap(), ne = new WeakMap(), ae = new WeakMap(), le = new WeakMap(), $t = new WeakMap(), he = new WeakMap(), ce = new WeakMap(), s = new WeakSet(), Bs = function(i, a) {
-  if (a === "") {
-    this.removeAttribute(i);
-    return;
-  }
-  this.setAttribute(i, a);
-}, $s = function(i, a) {
-  if (a) {
-    this.setAttribute(`enable-${i}`, ""), this.removeAttribute(`disable-${i}`), this.removeAttribute(`no-${i}`);
-    return;
-  }
-  this.removeAttribute(`enable-${i}`), this.setAttribute(`disable-${i}`, "");
-}, We = function() {
-  this.style.setProperty("--simple-player-aspect-ratio", this.aspectRatio);
-}, ms = function() {
-  if (!t(this, o)) return;
-  const i = this.autoplayEnabled;
-  if (t(this, o).autoplay = i, i) {
-    t(this, o).muted = !0, t(this, o).setAttribute("autoplay", ""), t(this, o).setAttribute("muted", "");
-    return;
-  }
-  t(this, o).removeAttribute("autoplay"), t(this, B) || (t(this, o).muted = !1, t(this, o).removeAttribute("muted"));
-}, je = function() {
-  if (!t(this, h)) return;
-  const i = [
-    { button: t(this, w), enabled: this.volumeEnabled, className: "has-volume-control" },
-    { button: t(this, et), enabled: this.pictureInPictureEnabled, className: "has-picture-in-picture-control" },
-    { button: t(this, it), enabled: this.fullscreenEnabled, className: "has-fullscreen-control" }
-  ];
-  let a = 0;
-  for (const l of i)
-    t(this, h).classList.toggle(l.className, l.enabled), l.button.hidden = !l.enabled, l.enabled ? (l.button.dataset.spControlIndex = `${a}`, a += 1) : delete l.button.dataset.spControlIndex;
-  this.style.setProperty("--sp-enabled-controls-count", `${a}`), this.style.setProperty("--sp-control-tray-display", a > 0 ? "block" : "none"), t(this, h).classList.toggle("has-volume-slider-control", this.volumeEnabled && this.volumeSliderEnabled), (!this.volumeEnabled || !this.volumeSliderEnabled) && (t(this, us).call(this), e(this, s, js).call(this, t(this, x)), r(this, W, !1), r(this, ct, !1), t(this, O).classList.remove("is-scrubbing-volume")), t(this, j).style.removeProperty("--sp-control-hover-offset");
-}, jt = function() {
-  return this.timeVisible && this.controlsEnabled;
-}, Ns = function() {
-  t(this, h) && (t(this, h).classList.toggle("has-pinned-time", t(this, s, jt)), t(this, s, jt) && e(this, s, Gt).call(this));
-}, vi = function() {
-  e(this, s, c).call(this, t(this, Y), "click", t(this, fe)), e(this, s, c).call(this, this, "pointerenter", t(this, Ut)), e(this, s, c).call(this, this, "pointermove", t(this, Yt)), e(this, s, c).call(this, this, "pointerleave", t(this, Xt)), e(this, s, c).call(this, this, "mouseenter", t(this, Ut)), e(this, s, c).call(this, this, "mousemove", t(this, Yt)), e(this, s, c).call(this, this, "mouseleave", t(this, Xt)), e(this, s, c).call(this, t(this, h), "pointerenter", t(this, Ut)), e(this, s, c).call(this, t(this, h), "pointermove", t(this, Yt)), e(this, s, c).call(this, t(this, h), "pointerleave", t(this, Xt)), e(this, s, c).call(this, t(this, h), "mouseenter", t(this, Ut)), e(this, s, c).call(this, t(this, h), "mousemove", t(this, Yt)), e(this, s, c).call(this, t(this, h), "mouseleave", t(this, Xt)), e(this, s, c).call(this, t(this, Y), "pointerenter", t(this, ut)), e(this, s, c).call(this, t(this, Y), "pointerleave", t(this, pt)), e(this, s, c).call(this, t(this, Y), "mouseenter", t(this, ut)), e(this, s, c).call(this, t(this, Y), "mouseleave", t(this, pt)), e(this, s, c).call(this, t(this, m), "pointerenter", t(this, ut)), e(this, s, c).call(this, t(this, m), "pointerleave", t(this, pt)), e(this, s, c).call(this, t(this, m), "mouseenter", t(this, ut)), e(this, s, c).call(this, t(this, m), "mouseleave", t(this, pt)), e(this, s, c).call(this, t(this, m), "pointerenter", t(this, Ds)), e(this, s, c).call(this, t(this, m), "pointerleave", t(this, qs)), e(this, s, c).call(this, t(this, m), "mouseenter", t(this, Ds)), e(this, s, c).call(this, t(this, m), "mouseleave", t(this, qs)), e(this, s, c).call(this, t(this, X), "pointerenter", t(this, ut)), e(this, s, c).call(this, t(this, X), "pointerleave", t(this, pt)), e(this, s, c).call(this, t(this, X), "mouseenter", t(this, ut)), e(this, s, c).call(this, t(this, X), "mouseleave", t(this, pt)), e(this, s, c).call(this, t(this, b), "focusin", t(this, Fs)), e(this, s, c).call(this, t(this, b), "focusout", t(this, pe)), e(this, s, c).call(this, t(this, h), "pointerdown", t(this, be)), e(this, s, c).call(this, t(this, h), "dragstart", t(this, Nt)), e(this, s, c).call(this, t(this, h), "selectstart", t(this, Nt)), e(this, s, c).call(this, t(this, o), "dragstart", t(this, Nt)), e(this, s, c).call(this, t(this, o), "selectstart", t(this, Nt)), e(this, s, c).call(this, t(this, m), "pointerdown", t(this, Ce)), e(this, s, c).call(this, t(this, m), "pointermove", t(this, Le)), e(this, s, c).call(this, t(this, m), "pointerup", t(this, Fe)), e(this, s, c).call(this, t(this, m), "pointercancel", t(this, Se)), e(this, s, c).call(this, t(this, m), "keydown", t(this, Ae)), e(this, s, c).call(this, t(this, w), "pointerenter", t(this, Is)), e(this, s, c).call(this, t(this, w), "pointerleave", t(this, Rs)), e(this, s, c).call(this, t(this, w), "click", t(this, ge)), e(this, s, c).call(this, t(this, O), "pointerenter", t(this, Is)), e(this, s, c).call(this, t(this, O), "pointerleave", t(this, Rs)), e(this, s, c).call(this, t(this, T), "pointerdown", t(this, ye)), e(this, s, c).call(this, t(this, T), "pointermove", t(this, we)), e(this, s, c).call(this, t(this, T), "pointerup", t(this, xe)), e(this, s, c).call(this, t(this, T), "pointercancel", t(this, ke)), e(this, s, c).call(this, t(this, T), "click", t(this, ve)), e(this, s, c).call(this, t(this, T), "keydown", t(this, Pe)), e(this, s, c).call(this, t(this, et), "click", t(this, Te)), e(this, s, c).call(this, t(this, it), "click", t(this, Ee)), e(this, s, c).call(this, t(this, L), "click", t(this, me));
-  for (const i of t(this, rt))
-    e(this, s, c).call(this, i, "pointerenter", t(this, Ss)), e(this, s, c).call(this, i, "mouseenter", t(this, Ss)), e(this, s, c).call(this, i, "pointerdown", t(this, de));
-  "ResizeObserver" in window && (r(this, It, new ResizeObserver(() => {
-    t(this, h).style.setProperty("--sp-tray-time-width", `${t(this, L).offsetWidth + 4}px`);
-  })), t(this, It).observe(t(this, L)), t(this, St).push(() => {
-    t(this, It)?.disconnect(), r(this, It, null);
-  })), e(this, s, c).call(this, document, "pointerup", t(this, Me)), e(this, s, c).call(this, document, "pointercancel", t(this, Ve)), e(this, s, c).call(this, document, "pointermove", t(this, Ls)), e(this, s, c).call(this, document, "mousemove", t(this, Ls)), e(this, s, c).call(this, document, "fullscreenchange", t(this, Lt)), e(this, s, c).call(this, document, "webkitfullscreenchange", t(this, Lt)), e(this, s, c).call(this, document, "mozfullscreenchange", t(this, Lt)), e(this, s, c).call(this, document, "MSFullscreenChange", t(this, Lt)), e(this, s, c).call(this, t(this, b), "fullscreenchange", t(this, Lt)), e(this, s, c).call(this, window, "blur", t(this, ze)), e(this, s, c).call(this, window, "focus", t(this, Ie)), e(this, s, c).call(this, t(this, o), "play", t(this, Re)), e(this, s, c).call(this, t(this, o), "pause", t(this, De)), e(this, s, c).call(this, t(this, o), "ended", t(this, qe)), e(this, s, c).call(this, t(this, o), "loadstart", t(this, He)), e(this, s, c).call(this, t(this, o), "waiting", t(this, ps)), e(this, s, c).call(this, t(this, o), "stalled", t(this, ps)), e(this, s, c).call(this, t(this, o), "seeking", t(this, ps)), e(this, s, c).call(this, t(this, o), "loadeddata", t(this, _t)), e(this, s, c).call(this, t(this, o), "loadedmetadata", t(this, Be)), e(this, s, c).call(this, t(this, o), "canplay", t(this, _t)), e(this, s, c).call(this, t(this, o), "canplaythrough", t(this, _t)), e(this, s, c).call(this, t(this, o), "playing", t(this, $e)), e(this, s, c).call(this, t(this, o), "seeked", t(this, Ne)), e(this, s, c).call(this, t(this, o), "error", t(this, Ue)), e(this, s, c).call(this, t(this, o), "progress", t(this, z)), e(this, s, c).call(this, t(this, o), "suspend", t(this, z)), e(this, s, c).call(this, t(this, o), "timeupdate", t(this, Ye)), e(this, s, c).call(this, t(this, o), "volumechange", t(this, Xe)), e(this, s, c).call(this, t(this, o), "enterpictureinpicture", t(this, At)), e(this, s, c).call(this, t(this, o), "leavepictureinpicture", t(this, At));
-}, c = function(i, a, l) {
-  i.addEventListener(a, l), t(this, St).push(() => i.removeEventListener(a, l));
-}, Us = function() {
-  if (!(!this.src || t(this, B))) {
-    if (t(this, H)?.disconnect(), t(this, o).dataset.src = this.src, "IntersectionObserver" in window) {
-      r(this, H, new IntersectionObserver((i, a) => {
-        i.some((l) => l.isIntersecting) && (a.disconnect(), r(this, H, null), e(this, s, dt).call(this));
-      }, { rootMargin: this.preloadMargin })), t(this, H).observe(t(this, h));
+  #cs(t, s) {
+    if (s === "") {
+      this.removeAttribute(t);
       return;
     }
-    e(this, s, dt).call(this);
+    this.setAttribute(t, s);
   }
-}, Nt = new WeakMap(), U = function() {
-  t(this, yt) && (window.clearTimeout(t(this, yt)), r(this, yt, 0));
-}, ue = new WeakMap(), fs = function(i = e(this, s, A).call(this) ? t(this, As) : t(this, Bt)) {
-  e(this, s, U).call(this), r(this, yt, window.setTimeout(t(this, ue), i));
-}, Q = function() {
-  e(this, s, A).call(this) && e(this, s, fs).call(this, t(this, As));
-}, tt = function() {
-  if (!e(this, s, A).call(this)) return !1;
-  const i = t(this, h).classList.contains("is-controls-visible");
-  return t(this, h).classList.add("is-controls-visible"), e(this, s, Q).call(this), !i;
-}, Ys = function(i = !1) {
-  !i && e(this, s, A).call(this) || (t(this, h).classList.add("is-pointer-active"), t(this, J) ? e(this, s, U).call(this) : e(this, s, fs).call(this, i ? t(this, Bt) : void 0));
-}, bs = function() {
-  r(this, J, !1), e(this, s, U).call(this), t(this, h).classList.remove("is-pointer-active");
-}, Ot = function(i) {
-  return i instanceof PointerEvent ? (r(this, Ht, i.pointerType === "touch"), t(this, Ht) ? !1 : (r(this, ns, i.clientX), r(this, as, i.clientY), !0)) : i instanceof MouseEvent ? (r(this, Ht, !1), r(this, ns, i.clientX), r(this, as, i.clientY), !0) : !1;
-}, gi = function(i, a) {
-  if (i === null || a === null || i < 0 || a < 0 || i > window.innerWidth || a > window.innerHeight) return !1;
-  const l = this.getBoundingClientRect();
-  return l.width <= 0 || l.height <= 0 ? !1 : i >= l.left && i <= l.right && a >= l.top && a <= l.bottom;
-}, Oe = function(i, a, l) {
-  if (!i) return !1;
-  const u = i.getBoundingClientRect();
-  return u.width <= 0 || u.height <= 0 ? !1 : a >= u.left && a <= u.right && l >= u.top && l <= u.bottom;
-}, Ze = function() {
-  t(this, M) && (r(this, M, !1), t(this, h).classList.remove("is-progress-hovering"), e(this, s, Jt).call(this), e(this, s, Gt).call(this));
-}, Ke = function(i, a) {
-  if (e(this, s, A).call(this)) return;
-  !e(this, s, E).call(this) && e(this, s, Oe).call(this, t(this, m), i, a) ? (r(this, M, !0), t(this, h).classList.add("is-progress-hovering"), e(this, s, bt).call(this, i, !1, !1)) : e(this, s, E).call(this) || e(this, s, Ze).call(this);
-  const l = t(this, rt).find((f) => !f.hidden && !e(this, s, Xs).call(this, f) && e(this, s, Oe).call(this, f, i, a)) ?? null;
-  if (!l) return;
-  const u = Number(l.dataset.spControlIndex ?? 0);
-  t(this, j).style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${u})`);
-}, Zt = function() {
-  return t(this, h).classList.contains("is-controls-visible") || t(this, h).classList.contains("is-pointer-active") || t(this, b).activeElement instanceof HTMLElement;
-}, vs = function() {
-  return e(this, s, A).call(this) && performance.now() < t(this, os);
-}, Xs = function(i) {
-  return i instanceof HTMLButtonElement && (i.disabled || i === t(this, w) && (!this.volumeEnabled || !t(this, y)));
-}, Ge = function() {
-  if (!t(this, Ht) && e(this, s, gi).call(this, t(this, ns), t(this, as))) {
-    e(this, s, Ys).call(this, !0);
-    return;
-  }
-  e(this, s, bs).call(this);
-}, Ut = new WeakMap(), Yt = new WeakMap(), Ls = new WeakMap(), Xt = new WeakMap(), ut = new WeakMap(), pt = new WeakMap(), Fs = new WeakMap(), pe = new WeakMap(), Ss = new WeakMap(), _s = function() {
-  t(this, Et) && (window.clearTimeout(t(this, Et)), r(this, Et, 0));
-}, Ms = new WeakMap(), de = new WeakMap(), Je = function() {
-  t(this, wt) && (window.clearTimeout(t(this, wt)), r(this, wt, 0));
-}, gs = function() {
-  t(this, at) && (window.clearTimeout(t(this, at)), r(this, at, 0));
-}, Ws = function() {
-  t(this, lt) && (window.clearTimeout(t(this, lt)), r(this, lt, 0));
-}, ys = function() {
-  t(this, Rt) && (window.clearTimeout(t(this, Rt)), r(this, Rt, 0));
-}, Qe = function() {
-  t(this, Tt) && (window.clearTimeout(t(this, Tt)), r(this, Tt, 0));
-}, yi = function() {
-  e(this, s, Qe).call(this), t(this, h).classList.remove("is-volume-icon-animating"), t(this, w).offsetWidth, t(this, h).classList.add("is-volume-icon-animating"), r(this, Tt, window.setTimeout(() => {
-    r(this, Tt, 0), t(this, h).classList.remove("is-volume-icon-animating");
-  }, 240));
-}, Vs = new WeakMap(), wi = function() {
-  t(this, xt) || t(this, lt) || (t(this, h).classList.add("is-progress-settling"), e(this, s, ft).call(this, 0), r(this, lt, window.setTimeout(t(this, Vs), t(this, re))));
-}, dt = async function() {
-  if (t(this, B)) return;
-  const i = t(this, o).dataset.src || this.src;
-  i && (e(this, s, gs).call(this), e(this, s, ys).call(this), r(this, rs, t(this, rs) + 1), r(this, B, !0), r(this, $, !1), r(this, N, !1), r(this, Z, !1), r(this, K, !1), r(this, G, t(this, G) + 1), t(this, h).classList.remove("has-visible-frame"), e(this, s, ms).call(this), t(this, o).src = i, t(this, o).preload = "auto", t(this, o).load(), t(this, o).autoplay && t(this, o).muted && await t(this, o).play().catch(() => {
-  }));
-}, ti = function() {
-  return !t(this, o).loop || t(this, o).paused || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 ? !1 : t(this, o).currentTime < 0.28 || t(this, o).duration - t(this, o).currentTime < 0.28;
-}, xi = function(i = t(this, o).currentTime) {
-  if (!Number.isFinite(i)) return 0;
-  const a = Math.max(0, i);
-  try {
-    for (let l = 0; l < t(this, o).buffered.length; l += 1) {
-      const u = t(this, o).buffered.start(l), f = t(this, o).buffered.end(l);
-      if (a + t(this, $t) >= u && a <= f + t(this, $t))
-        return Math.max(0, f - a);
+  #us(t, s) {
+    if (s) {
+      this.setAttribute(`enable-${t}`, ""), this.removeAttribute(`disable-${t}`), this.removeAttribute(`no-${t}`);
+      return;
     }
-  } catch {
+    this.removeAttribute(`enable-${t}`), this.setAttribute(`disable-${t}`, "");
+  }
+  #Ss() {
+    this.style.setProperty("--simple-player-aspect-ratio", this.aspectRatio);
+  }
+  #Bt() {
+    if (!this.#t) return;
+    const t = this.autoplayEnabled;
+    if (this.#t.autoplay = t, t) {
+      this.#t.muted = !0, this.#t.setAttribute("autoplay", ""), this.#t.setAttribute("muted", "");
+      return;
+    }
+    this.#t.removeAttribute("autoplay"), this.#E || (this.#t.muted = !1, this.#t.removeAttribute("muted"));
+  }
+  #Ms() {
+    if (!this.#s) return;
+    const t = [
+      { button: this.#n, enabled: this.volumeEnabled, className: "has-volume-control" },
+      { button: this.#O, enabled: this.pictureInPictureEnabled, className: "has-picture-in-picture-control" },
+      { button: this.#Z, enabled: this.fullscreenEnabled, className: "has-fullscreen-control" }
+    ];
+    let s = 0;
+    for (const e of t)
+      this.#s.classList.toggle(e.className, e.enabled), e.button.hidden = !e.enabled, e.enabled ? (e.button.dataset.spControlIndex = `${s}`, s += 1) : delete e.button.dataset.spControlIndex;
+    this.style.setProperty("--sp-enabled-controls-count", `${s}`), this.style.setProperty("--sp-control-tray-display", s > 0 ? "block" : "none"), this.#s.classList.toggle("has-volume-slider-control", this.volumeEnabled && this.volumeSliderEnabled), (!this.volumeEnabled || !this.volumeSliderEnabled) && (this.#ks(), this.#Jt(this.#o), this.#L = !1, this.#Y = !1, this.#I.classList.remove("is-scrubbing-volume")), this.#z.style.removeProperty("--sp-control-hover-offset");
+  }
+  get #bt() {
+    return this.timeVisible && this.controlsEnabled;
+  }
+  #ps() {
+    this.#s && (this.#s.classList.toggle("has-pinned-time", this.#bt), this.#bt && this.#wt());
+  }
+  #ye() {
+    this.#e(this.#M, "click", this.#_e), this.#e(this, "pointerenter", this.#_t), this.#e(this, "pointermove", this.#Wt), this.#e(this, "pointerleave", this.#jt), this.#e(this, "mouseenter", this.#_t), this.#e(this, "mousemove", this.#Wt), this.#e(this, "mouseleave", this.#jt), this.#e(this.#s, "pointerenter", this.#_t), this.#e(this.#s, "pointermove", this.#Wt), this.#e(this.#s, "pointerleave", this.#jt), this.#e(this.#s, "mouseenter", this.#_t), this.#e(this.#s, "mousemove", this.#Wt), this.#e(this.#s, "mouseleave", this.#jt), this.#e(this.#M, "pointerenter", this.#et), this.#e(this.#M, "pointerleave", this.#it), this.#e(this.#M, "mouseenter", this.#et), this.#e(this.#M, "mouseleave", this.#it), this.#e(this.#i, "pointerenter", this.#et), this.#e(this.#i, "pointerleave", this.#it), this.#e(this.#i, "mouseenter", this.#et), this.#e(this.#i, "mouseleave", this.#it), this.#e(this.#i, "pointerenter", this.#ie), this.#e(this.#i, "pointerleave", this.#re), this.#e(this.#i, "mouseenter", this.#ie), this.#e(this.#i, "mouseleave", this.#re), this.#e(this.#V, "pointerenter", this.#et), this.#e(this.#V, "pointerleave", this.#it), this.#e(this.#V, "mouseenter", this.#et), this.#e(this.#V, "mouseleave", this.#it), this.#e(this.#r, "focusin", this.#Hs), this.#e(this.#r, "focusout", this.#xe), this.#e(this.#s, "pointerdown", this.#We), this.#e(this.#s, "dragstart", this.#Ut), this.#e(this.#s, "selectstart", this.#Ut), this.#e(this.#t, "dragstart", this.#Ut), this.#e(this.#t, "selectstart", this.#Ut), this.#e(this.#i, "pointerdown", this.#ei), this.#e(this.#i, "pointermove", this.#ri), this.#e(this.#i, "pointerup", this.#oi), this.#e(this.#i, "pointercancel", this.#ni), this.#e(this.#i, "keydown", this.#ii), this.#e(this.#n, "pointerenter", this.#se), this.#e(this.#n, "pointerleave", this.#ee), this.#e(this.#n, "click", this.#Oe), this.#e(this.#I, "pointerenter", this.#se), this.#e(this.#I, "pointerleave", this.#ee), this.#e(this.#p, "pointerdown", this.#Ze), this.#e(this.#p, "pointermove", this.#Ke), this.#e(this.#p, "pointerup", this.#Ge), this.#e(this.#p, "pointercancel", this.#Je), this.#e(this.#p, "click", this.#je), this.#e(this.#p, "keydown", this.#Qe), this.#e(this.#O, "click", this.#ti), this.#e(this.#Z, "click", this.#si), this.#e(this.#m, "click", this.#Xe);
+    for (const t of this.#K)
+      this.#e(t, "pointerenter", this.#qs), this.#e(t, "mouseenter", this.#qs), this.#e(t, "pointerdown", this.#ke);
+    "ResizeObserver" in window && (this.#Mt = new ResizeObserver(() => {
+      this.#$t();
+    }), this.#Mt.observe(this.#m), this.#At.push(() => {
+      this.#Mt?.disconnect(), this.#Mt = null;
+    })), this.#e(document, "pointerup", this.#ai), this.#e(document, "pointercancel", this.#li), this.#e(document, "pointermove", this.#Ds), this.#e(document, "mousemove", this.#Ds), this.#e(document, "fullscreenchange", this.#Et), this.#e(document, "webkitfullscreenchange", this.#Et), this.#e(document, "mozfullscreenchange", this.#Et), this.#e(document, "MSFullscreenChange", this.#Et), this.#e(this.#r, "fullscreenchange", this.#Et), this.#e(window, "blur", this.#hi), this.#e(window, "focus", this.#ci), this.#e(this.#t, "play", this.#ui), this.#e(this.#t, "pause", this.#pi), this.#e(this.#t, "ended", this.#di), this.#e(this.#t, "loadstart", this.#mi), this.#e(this.#t, "waiting", this.#Ps), this.#e(this.#t, "stalled", this.#Ps), this.#e(this.#t, "seeking", this.#Ps), this.#e(this.#t, "loadeddata", this.#Kt), this.#e(this.#t, "loadedmetadata", this.#fi), this.#e(this.#t, "canplay", this.#Kt), this.#e(this.#t, "canplaythrough", this.#Kt), this.#e(this.#t, "playing", this.#bi), this.#e(this.#t, "seeked", this.#vi), this.#e(this.#t, "error", this.#yi), this.#e(this.#t, "progress", this.#w), this.#e(this.#t, "suspend", this.#w), this.#e(this.#t, "timeupdate", this.#gi), this.#e(this.#t, "volumechange", this.#wi), this.#e(this.#t, "enterpictureinpicture", this.#Tt), this.#e(this.#t, "leavepictureinpicture", this.#Tt);
+  }
+  #$t() {
+    !this.#s || !this.#m || this.#s.style.setProperty("--sp-tray-time-width", `${Math.ceil(this.#m.scrollWidth)}px`);
+  }
+  #e(t, s, e) {
+    t.addEventListener(s, e), this.#At.push(() => t.removeEventListener(s, e));
+  }
+  #ds() {
+    if (!(!this.src || this.#E)) {
+      if (this.#T?.disconnect(), this.#t.dataset.src = this.src, "IntersectionObserver" in window) {
+        this.#T = new IntersectionObserver((t, s) => {
+          t.some((e) => e.isIntersecting) && (s.disconnect(), this.#T = null, this.#X());
+        }, { rootMargin: this.preloadMargin }), this.#T.observe(this.#s);
+        return;
+      }
+      this.#X();
+    }
+  }
+  #Ut = (t) => {
+    t.preventDefault();
+  };
+  #P() {
+    this.#at && (window.clearTimeout(this.#at), this.#at = 0);
+  }
+  #ge = () => {
+    if (this.#at = 0, !(this.#x || this.#a || this.#L)) {
+      if (this.#d()) {
+        this.#s.classList.remove("is-controls-visible");
+        return;
+      }
+      this.#N || this.#s.classList.remove("is-pointer-active");
+    }
+  };
+  #Nt(t = this.#d() ? this.#Fs : this.#Ht) {
+    this.#P(), this.#at = window.setTimeout(this.#ge, t);
+  }
+  #D() {
+    this.#d() && this.#Nt(this.#Fs);
+  }
+  #H() {
+    if (!this.#d()) return !1;
+    const t = this.#s.classList.contains("is-controls-visible");
+    return this.#s.classList.add("is-controls-visible"), this.#D(), !t;
+  }
+  #ms(t = !1) {
+    !t && this.#d() || (this.#s.classList.add("is-pointer-active"), this.#N ? this.#P() : this.#Nt(t ? this.#Ht : void 0));
+  }
+  #Yt() {
+    this.#N = !1, this.#P(), this.#s.classList.remove("is-pointer-active");
+  }
+  #vt(t) {
+    return t instanceof PointerEvent ? (this.#Dt = t.pointerType === "touch", this.#Dt ? !1 : (this.#os = t.clientX, this.#ns = t.clientY, !0)) : t instanceof MouseEvent ? (this.#Dt = !1, this.#os = t.clientX, this.#ns = t.clientY, !0) : !1;
+  }
+  #we(t, s) {
+    if (t === null || s === null || t < 0 || s < 0 || t > window.innerWidth || s > window.innerHeight) return !1;
+    const e = this.getBoundingClientRect();
+    return e.width <= 0 || e.height <= 0 ? !1 : t >= e.left && t <= e.right && s >= e.top && s <= e.bottom;
+  }
+  #Vs(t, s, e) {
+    if (!t) return !1;
+    const i = t.getBoundingClientRect();
+    return i.width <= 0 || i.height <= 0 ? !1 : s >= i.left && s <= i.right && e >= i.top && e <= i.bottom;
+  }
+  #zs() {
+    this.#v && (this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#xt(), this.#wt());
+  }
+  #Is(t, s) {
+    if (this.#d()) return;
+    !this.#c() && this.#Vs(this.#i, t, s) ? (this.#v = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t, !1, !1)) : this.#c() || this.#zs();
+    const e = this.#K.find((r) => !r.hidden && !this.#fs(r) && this.#Vs(r, t, s)) ?? null;
+    if (!e) return;
+    const i = Number(e.dataset.spControlIndex ?? 0);
+    this.#z.style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${i})`);
+  }
+  #yt() {
+    return this.#s.classList.contains("is-controls-visible") || this.#s.classList.contains("is-pointer-active") || this.#r.activeElement instanceof HTMLElement;
+  }
+  #Xt() {
+    return this.#d() && performance.now() < this.#rs;
+  }
+  #fs(t) {
+    return t instanceof HTMLButtonElement && (t.disabled || t === this.#n && !this.#F());
+  }
+  #Rs() {
+    if (!this.#Dt && this.#we(this.#os, this.#ns)) {
+      this.#ms(!0);
+      return;
+    }
+    this.#Yt();
+  }
+  #_t = (t) => {
+    this.#vt(t) && this.#ms(!0);
+  };
+  #Wt = (t) => {
+    this.#vt(t) && ((t instanceof PointerEvent || t instanceof MouseEvent) && this.#Is(t.clientX, t.clientY), this.#ms(!0));
+  };
+  #Ds = (t) => {
+    this.#vt(t) && ((t instanceof PointerEvent || t instanceof MouseEvent) && this.#Is(t.clientX, t.clientY), this.#Rs());
+  };
+  #jt = () => {
+    this.#Yt();
+  };
+  #et = (t) => {
+    this.#vt(t) && (this.#N = !0, this.#s.classList.add("is-pointer-active"), this.#P());
+  };
+  #it = () => {
+    this.#N = !1, this.#Nt(this.#Ht);
+  };
+  #Hs = () => {
+    this.#d() ? this.#s.classList.add("is-controls-visible") : this.#s.classList.add("is-pointer-active"), this.#P();
+  };
+  #xe = () => {
+    this.#Nt(this.#Ht);
+  };
+  #qs = (t) => {
+    const s = t.currentTarget;
+    if (this.#fs(s)) {
+      this.#z.style.removeProperty("--sp-control-hover-offset");
+      return;
+    }
+    const i = Number(s.dataset.spControlIndex ?? 0);
+    this.#z.style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${i})`);
+  };
+  #bs() {
+    this.#mt && (window.clearTimeout(this.#mt), this.#mt = 0);
+  }
+  #Bs = () => {
+    this.#mt = 0, this.#K.forEach((t) => t.classList.remove("is-control-tap-active")), this.style.removeProperty("--sp-touch-control-hover-offset");
+  };
+  #ke = (t) => {
+    if (!(t instanceof PointerEvent) || t.pointerType !== "touch") return;
+    const s = t.currentTarget;
+    if (!s || !this.#yt() || this.#fs(s)) return;
+    const e = Number(s.dataset.spControlIndex ?? 0);
+    this.#bs(), this.#K.forEach((i) => i.classList.toggle("is-control-tap-active", i === s)), this.style.setProperty("--sp-touch-control-hover-offset", `calc(var(--sp-control-slot-size) * ${e})`), this.#mt = window.setTimeout(this.#Bs, 280);
+  };
+  #$s() {
+    this.#lt && (window.clearTimeout(this.#lt), this.#lt = 0);
+  }
+  #Ot() {
+    this.#Q && (window.clearTimeout(this.#Q), this.#Q = 0);
+  }
+  #vs() {
+    this.#tt && (window.clearTimeout(this.#tt), this.#tt = 0);
+  }
+  #Zt() {
+    this.#Vt && (window.clearTimeout(this.#Vt), this.#Vt = 0);
+  }
+  #Us() {
+    this.#dt && (window.clearTimeout(this.#dt), this.#dt = 0);
+  }
+  #Pe() {
+    this.#Us(), this.#s.classList.remove("is-volume-icon-animating"), this.#n.offsetWidth, this.#s.classList.add("is-volume-icon-animating"), this.#dt = window.setTimeout(() => {
+      this.#dt = 0, this.#s.classList.remove("is-volume-icon-animating");
+    }, 240);
+  }
+  #Ns = () => {
+    if (this.#tt || this.#s.classList.contains("is-progress-settling")) {
+      if (this.#vs(), this.#ht) {
+        this.#s.classList.remove("is-progress-settling");
+        return;
+      }
+      this.#ht = !0, this.#Cs = performance.now() + this.#pe, this.#c() || this.#l(), this.#y(), this.#s.classList.remove("is-progress-settling"), this.#u();
+    }
+  };
+  #Te() {
+    this.#ht || this.#tt || (this.#s.classList.add("is-progress-settling"), this.#W(0), this.#tt = window.setTimeout(this.#Ns, this.#ue));
+  }
+  async #X() {
+    if (this.#E) return;
+    const t = this.#t.dataset.src || this.src;
+    t && (this.#Ot(), this.#Zt(), this.#is += 1, this.#E = !0, this.#C = !1, this.#A = !1, this.#B = !1, this.#$ = !1, this.#U += 1, this.#s.classList.remove("has-visible-frame"), this.#Bt(), this.#t.src = t, this.#t.preload = "auto", this.#t.load(), this.#t.autoplay && this.#t.muted && await this.#t.play().catch(() => {
+    }));
+  }
+  #Ys() {
+    return !this.#t.loop || this.#t.paused || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 ? !1 : this.#t.currentTime < 0.28 || this.#t.duration - this.#t.currentTime < 0.28;
+  }
+  #Ee(t = this.#t.currentTime) {
+    if (!Number.isFinite(t)) return 0;
+    const s = Math.max(0, t);
+    try {
+      for (let e = 0; e < this.#t.buffered.length; e += 1) {
+        const i = this.#t.buffered.start(e), r = this.#t.buffered.end(e);
+        if (s + this.#qt >= i && s <= r + this.#qt)
+          return Math.max(0, r - s);
+      }
+    } catch {
+      return 0;
+    }
     return 0;
   }
-  return 0;
-}, si = function(i = t(this, le)) {
-  if (!t(this, B) || t(this, o).error || !t(this, h).classList.contains("has-loaded-once") || !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return !1;
-  const a = Math.max(0, t(this, o).duration - t(this, o).currentTime), l = Math.min(i, a);
-  return l <= t(this, $t) || e(this, s, xi).call(this) + t(this, $t) >= l;
-}, Kt = function(i, a = !1) {
-  e(this, s, Je).call(this);
-  const l = i && !e(this, s, ti).call(this) && !e(this, s, si).call(this), f = i && !t(this, N) || l;
-  if (r(this, Dt, f), !f) {
-    t(this, h).classList.remove("is-loading");
-    return;
+  #Xs(t = this.#fe) {
+    if (!this.#E || this.#t.error || !this.#s.classList.contains("has-loaded-once") || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return !1;
+    const s = Math.max(0, this.#t.duration - this.#t.currentTime), e = Math.min(t, s);
+    return e <= this.#qt || this.#Ee() + this.#qt >= e;
   }
-  if (a) {
-    t(this, h).classList.add("is-loading");
-    return;
-  }
-  r(this, wt, window.setTimeout(() => {
-    if (r(this, wt, 0), !t(this, N) || !e(this, s, ti).call(this) && !e(this, s, si).call(this)) {
-      r(this, Dt, !0), t(this, h).classList.add("is-loading");
+  #gt(t, s = !1) {
+    this.#$s();
+    const e = t && !this.#Ys() && !this.#Xs(), r = t && !this.#A || e;
+    if (this.#zt = r, !r) {
+      this.#s.classList.remove("is-loading");
       return;
     }
-    r(this, Dt, !1), t(this, h).classList.remove("is-loading");
-  }, t(this, ie)));
-}, z = new WeakMap(), ki = function() {
-  return t(this, B) && !t(this, o).error && t(this, $) && (t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !t(this, h).classList.contains("is-loading"));
-}, E = function() {
-  return t(this, R) || t(this, g) || t(this, _);
-}, Pi = function() {
-  t(this, rs) >= t(this, ae) || t(this, at) || r(this, at, window.setTimeout(() => {
-    r(this, at, 0), e(this, s, ys).call(this), r(this, B, !1), r(this, $, !1), r(this, N, !1), r(this, Z, !1), r(this, K, !1), r(this, G, t(this, G) + 1), t(this, h).classList.remove("has-visible-frame"), t(this, h).classList.contains("has-loaded-once") || e(this, s, ft).call(this, 0), t(this, o).removeAttribute("src"), t(this, o).load(), e(this, s, dt).call(this);
-  }, t(this, ne)));
-}, ei = function() {
-  return t(this, _) ? (r(this, _, !1), r(this, gt, !1), e(this, s, k).call(this), e(this, s, I).call(this), !0) : !1;
-}, ii = function() {
-  return e(this, s, gs).call(this), !t(this, h).classList.contains("has-loaded-once") && e(this, s, wi).call(this), t(this, h).classList.add("has-loaded-once"), t(this, h).classList.add("has-visible-frame"), t(this, z).call(this), r(this, S, null), t(this, _) ? (e(this, s, ei).call(this), !0) : (e(this, s, E).call(this) || e(this, s, k).call(this), e(this, s, I).call(this), !0);
-}, Ti = function() {
-  if (t(this, $) || t(this, Z) || t(this, o).error) return;
-  r(this, Z, !0);
-  const i = t(this, G), a = () => {
-    if (i === t(this, G)) {
-      if (e(this, s, ys).call(this), r(this, Z, !1), r(this, $, !t(this, o).error && t(this, o).readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && t(this, o).videoWidth > 0 && t(this, o).videoHeight > 0), t(this, $)) {
-        if (t(this, K) || t(this, N)) return;
-        r(this, K, !0), window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => {
-            i === t(this, G) && (r(this, K, !1), r(this, N, !0), e(this, s, ii).call(this), e(this, s, C).call(this));
-          });
-        }), e(this, s, C).call(this);
+    if (s) {
+      this.#s.classList.add("is-loading");
+      return;
+    }
+    this.#lt = window.setTimeout(() => {
+      if (this.#lt = 0, !this.#A || !this.#Ys() && !this.#Xs()) {
+        this.#zt = !0, this.#s.classList.add("is-loading");
         return;
       }
-      t(this, z).call(this);
+      this.#zt = !1, this.#s.classList.remove("is-loading");
+    }, this.#ce);
+  }
+  #w = () => {
+    if (this.#t.error) {
+      this.#gt(!0, !0);
+      return;
+    }
+    this.#gt(
+      !this.#E || !this.#A || this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
+    );
+  };
+  #Ce() {
+    return this.#E && !this.#t.error && this.#C && (this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !this.#s.classList.contains("is-loading"));
+  }
+  #c() {
+    return this.#x || this.#a || this.#R;
+  }
+  #Ae() {
+    this.#is >= this.#me || this.#Q || (this.#Q = window.setTimeout(() => {
+      this.#Q = 0, this.#Zt(), this.#E = !1, this.#C = !1, this.#A = !1, this.#B = !1, this.#$ = !1, this.#U += 1, this.#s.classList.remove("has-visible-frame"), this.#s.classList.contains("has-loaded-once") || this.#W(0), this.#t.removeAttribute("src"), this.#t.load(), this.#X();
+    }, this.#de));
+  }
+  #_s() {
+    return this.#R ? (this.#R = !1, this.#nt = !1, this.#l(), this.#y(), !0) : !1;
+  }
+  #Ws() {
+    return this.#Ot(), !this.#s.classList.contains("has-loaded-once") && this.#Te(), this.#s.classList.add("has-loaded-once"), this.#s.classList.add("has-visible-frame"), this.#w(), this.#b = null, this.#R ? (this.#_s(), !0) : (this.#c() || this.#l(), this.#y(), !0);
+  }
+  #Le() {
+    if (this.#C || this.#B || this.#t.error) return;
+    this.#B = !0;
+    const t = this.#U, s = () => {
+      if (t === this.#U) {
+        if (this.#Zt(), this.#B = !1, this.#C = !this.#t.error && this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && this.#t.videoWidth > 0 && this.#t.videoHeight > 0, this.#C) {
+          if (this.#$ || this.#A) return;
+          this.#$ = !0, window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              t === this.#U && (this.#$ = !1, this.#A = !0, this.#Ws(), this.#u());
+            });
+          }), this.#u();
+          return;
+        }
+        this.#w();
+      }
+    };
+    if ("requestVideoFrameCallback" in this.#t) {
+      this.#t.requestVideoFrameCallback(s), this.#Vt = window.setTimeout(s, 180);
+      return;
+    }
+    window.requestAnimationFrame(s);
+  }
+  #Kt = () => {
+    if (this.#t.error || this.#t.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || this.#t.videoWidth <= 0 || this.#t.videoHeight <= 0)
+      return this.#w(), !1;
+    if (!this.#C)
+      return this.#Le(), this.#w(), !1;
+    const t = this.#Ws();
+    return this.#g(), t;
+  };
+  #js() {
+    return !this.#t.paused && (!this.#t.ended || this.#t.loop) && this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
+  }
+  #l(t = this.#t.currentTime) {
+    this.#As = Number.isFinite(t) ? Math.max(0, t) : 0, this.#Ls = performance.now();
+  }
+  #q() {
+    this.#k = null, this.#st = null;
+  }
+  #Os() {
+    if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) {
+      this.#k = null;
+      return;
+    }
+    const t = Number.isFinite(this.#t.currentTime) ? Math.max(0, this.#t.currentTime) : 0, s = Number.isFinite(this.#ct) ? this.#ct : t;
+    this.#k = Math.min(this.#t.duration, Math.max(t, s)), this.#l(this.#k);
+  }
+  #Fe() {
+    if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) {
+      this.#st = null, this.#Os();
+      return;
+    }
+    const t = this.#s.style.getPropertyValue("--sp-progress-inset"), s = Number.parseFloat(t), e = Number.isFinite(s) ? Math.min(1, Math.max(0, 1 - s / 100)) : null, i = this.#_(), r = Math.min(1, Math.max(0, i / this.#t.duration)), n = Math.max(e ?? 0, r);
+    this.#st = n, this.#k = n * this.#t.duration, this.#l(this.#k), this.#W(n), this.#i.setAttribute("aria-valuenow", `${this.#k}`), this.#i.setAttribute(
+      "aria-valuetext",
+      `${a(this.#k)} of ${a(this.#t.duration)}`
+    );
+  }
+  #_() {
+    if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return this.#t.currentTime || 0;
+    if (this.#c()) return this.#f;
+    if (this.#k !== null) return this.#k;
+    if (!this.#js()) return this.#t.currentTime || 0;
+    if (this.#zt || !this.#ht || performance.now() < this.#Cs)
+      return this.#l(), this.#t.currentTime || 0;
+    if (this.#s.classList.contains("is-loading") && this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA)
+      return this.#l(), this.#t.currentTime || 0;
+    const t = (performance.now() - this.#Ls) / 1e3, s = this.#As + t, e = this.#t.loop ? s % this.#t.duration : Math.min(s, this.#t.duration);
+    return !this.#t.loop && this.#t.currentTime - e > 0.45 ? (this.#l(), this.#t.currentTime) : e;
+  }
+  #W(t) {
+    const s = Math.min(1, Math.max(0, t)), e = (1 - s) * 100, { innerWidth: i } = this.#Me(), r = 1 / i, n = this.#a && this.#Ft && this.#J + r < s;
+    if (this.#s.style.setProperty("--sp-progress-inset", `${e}%`), this.#s.style.setProperty("--sp-return-marker-base-opacity", n ? "0" : "1"), n) {
+      const l = this.#Gt(this.#J), h = Math.max(0, i - 2), d = Math.min(h, Math.max(0, l - 3));
+      this.#s.style.setProperty("--sp-return-marker-hole-left", `${d}px`);
+    } else
+      this.#s.style.setProperty("--sp-return-marker-hole-left", "-9999px");
+  }
+  #Se(t) {
+    return !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 ? 0 : Math.min(1, Math.max(0, t / this.#t.duration));
+  }
+  #Me(t = this.#i.getBoundingClientRect()) {
+    return c(t);
+  }
+  #Gt(t, s = this.#i.getBoundingClientRect()) {
+    return T(t, s);
+  }
+  #Ve(t, s) {
+    return E(t, s);
+  }
+  #ze(t) {
+    this.#Lt = Number.isFinite(t) ? Math.max(0, t) : 0, this.#J = this.#Se(this.#Lt);
+    const s = this.#i.getBoundingClientRect(), e = this.#Gt(this.#J, s), i = e >= this.#hs && e <= Math.max(this.#hs, s.width - this.#hs);
+    this.#Ft = this.#Lt > this.#le && i, this.#s.classList.toggle("has-return-marker", this.#Ft), this.#s.style.setProperty("--sp-return-marker-left", `${e}px`);
+  }
+  #Ie(t, s, e, i = this.#a) {
+    const r = e * this.#t.duration;
+    if (!i || !this.#Ft)
+      return { percent: e, targetTime: r };
+    const n = s.left + this.#Gt(this.#J, s);
+    return Math.abs(t - n) <= this.#ae ? {
+      percent: this.#J,
+      targetTime: this.#Lt
+    } : { percent: e, targetTime: r };
+  }
+  #wt(t = this.#_()) {
+    !this.#bt || this.#v || this.#c() || (this.#m.textContent = this.#xs(t), this.#$t());
+  }
+  #y(t = this.#_()) {
+    const s = Number.isFinite(this.#t.duration) && this.#t.duration > 0;
+    if (s && this.#st !== null) {
+      const r = this.#st * this.#t.duration;
+      this.#ct = r, this.#W(this.#st), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", `${this.#t.duration}`), this.#i.setAttribute("aria-valuenow", `${r}`), this.#i.setAttribute(
+        "aria-valuetext",
+        `${a(r)} of ${a(this.#t.duration)}`
+      ), this.#wt(r);
+      return;
+    }
+    const e = s ? Math.min(this.#t.duration, Math.max(0, t)) : t, i = s ? e / this.#t.duration : 0;
+    this.#ct = Number.isFinite(e) ? Math.max(0, e) : 0, this.#W(i), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", s ? `${this.#t.duration}` : "0"), this.#i.setAttribute("aria-valuenow", s ? `${e}` : "0"), this.#i.setAttribute(
+      "aria-valuetext",
+      s ? `${a(e)} of ${a(this.#t.duration)}` : "Loading video"
+    ), this.#wt(e);
+  }
+  #j(t, s = this.#a, e = !0) {
+    if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return this.#t.currentTime;
+    const i = this.#i.getBoundingClientRect(), r = this.#Ve(t, i), n = this.#Ie(t, i, r, s);
+    return e && this.#W(n.percent), this.#bt || this.#s.style.setProperty("--sp-scrub-preview-left", `${this.#Gt(n.percent, i)}px`), this.#Ts.textContent = a(n.targetTime), this.#m.textContent = this.#xs(n.targetTime), this.#$t(), e && (this.#i.setAttribute("aria-valuenow", `${n.targetTime}`), this.#i.setAttribute(
+      "aria-valuetext",
+      `${a(n.targetTime)} of ${a(this.#t.duration)}`
+    )), this.#Re(), n.targetTime;
+  }
+  #xt() {
+    this.#It = !1, this.#s?.classList.remove("has-controls-collision");
+  }
+  #Re() {
+    if (!this.#a && !this.#v || !this.#V || !this.#ss || this.#bt) {
+      this.#xt();
+      return;
+    }
+    const t = this.#V.getBoundingClientRect(), s = this.#ss.getBoundingClientRect(), e = t.width > 0 && t.height > 0, i = this.#It ? this.#ve : this.#be, r = e && s.right >= t.left - i && s.left <= t.right + i && s.bottom >= t.top - i && s.top <= t.bottom + i;
+    this.#It = r, this.#s.classList.toggle("has-controls-collision", this.#It);
+  }
+  #kt() {
+    this.#ot && (window.cancelAnimationFrame(this.#ot), this.#ot = 0);
+  }
+  #De() {
+    this.#kt(), this.#l();
+    const t = () => {
+      this.#y(this.#_()), this.#js() && (this.#ot = window.requestAnimationFrame(t));
+    };
+    this.#ot = window.requestAnimationFrame(t);
+  }
+  #u() {
+    const t = !this.#t.paused && (!this.#t.ended || this.#t.loop) || this.#a && this.#G, s = this.#b ? this.#b === "playing" : t;
+    if (this.#s.classList.toggle("is-playing", s), this.#M.setAttribute("aria-label", s ? "Pause video" : "Play video"), this.#a) {
+      this.#kt();
+      return;
+    }
+    t && this.#s.classList.contains("has-loaded-once") && !this.#s.classList.contains("is-progress-settling") ? this.#De() : (this.#kt(), this.#y());
+  }
+  #rt() {
+    this.#St && (window.clearTimeout(this.#St), this.#St = 0);
+  }
+  #He() {
+    return k(this.#t);
+  }
+  #F() {
+    return this.volumeEnabled && this.#ut && this.#Rt;
+  }
+  #S() {
+    this.#Ct(), this.#Jt(this.#o), this.#L = !1, this.#Y = !1, this.#o = null, this.#n.classList.remove("is-volume-open", "is-control-tap-active"), this.#I.classList.remove("is-scrubbing-volume"), this.#z.style.removeProperty("--sp-control-hover-offset");
+  }
+  #g = () => {
+    if (!this.volumeEnabled) {
+      this.#s.classList.remove("is-volume-unavailable", "is-volume-muted", "is-volume-sound", "is-volume-icon-animating"), this.#S(), this.#n.disabled = !0, this.#n.setAttribute("aria-disabled", "true");
+      return;
+    }
+    if (!this.#ut) {
+      const n = this.#He();
+      n !== "unknown" ? (this.#ut = !0, this.#Rt = n === "available") : this.#t.readyState >= HTMLMediaElement.HAVE_METADATA && !P(this.#t) && (this.#ut = !0, this.#Rt = !0);
+    }
+    const t = this.#F(), s = !t || this.#t.muted || this.#t.volume <= 0, e = t && !this.#t.muted ? this.#t.volume : 0, i = Math.round(e * 100), r = s ? "muted" : "sound";
+    this.#as && this.#as !== r && this.#Pe(), this.#as = r, this.#s.classList.toggle("is-volume-unavailable", !t), this.#s.classList.toggle("is-volume-muted", s), this.#s.classList.toggle("is-volume-sound", !s), this.#s.style.setProperty("--sp-volume-level", `${i}%`), this.#n.disabled = !t, this.#n.setAttribute("aria-disabled", `${!t}`), this.#n.setAttribute(
+      "aria-label",
+      t ? s ? "Unmute video" : "Mute video" : "Video has no audio"
+    ), this.#p.setAttribute("aria-valuenow", `${i}`), this.#p.setAttribute("aria-valuetext", `${i}%`), t || this.#S();
+  };
+  #Zs(t) {
+    if (!this.#F()) return;
+    const s = this.#p.getBoundingClientRect(), e = Math.min(1, Math.max(0, 1 - (t - s.top) / s.height)), i = Math.round(e * 100) / 100;
+    this.#t.volume = i, this.#t.muted = i <= 0, this.#g();
+  }
+  #Jt(t) {
+    t !== null && this.#p.hasPointerCapture(t) && this.#p.releasePointerCapture(t);
+  }
+  #Pt(t) {
+    this.#L = !1, this.#o = null, this.#I.classList.remove("is-scrubbing-volume"), this.#p.blur(), this.#Jt(t), this.#te(260);
+  }
+  #Tt = () => {
+    const t = document.pictureInPictureElement === this.#t, s = this.#t, e = !!(this.pictureInPictureEnabled && document.pictureInPictureEnabled && s.requestPictureInPicture);
+    this.#s.classList.toggle("is-picture-in-picture", t), this.#O.disabled = !e, this.#O.setAttribute("aria-label", t ? "Exit picture in picture" : "Enter picture in picture");
+  };
+  #ys() {
+    return b(this.#r);
+  }
+  #Ks() {
+    return v(this.fullscreenEnabled, this.#s, this.#t);
+  }
+  #qe() {
+    return y(this.#s);
+  }
+  #Be() {
+    w(this.#t);
+  }
+  #$e() {
+    return x();
+  }
+  #Qt = () => {
+    const t = this.#ys(), s = t === this.#s || t === this, e = this.#Ks();
+    return this.#s.classList.toggle("is-fullscreen", s), this.#Z.disabled = !e, this.#Z.setAttribute("aria-label", s ? "Exit fullscreen" : "Enter fullscreen"), s;
+  };
+  #Et = () => {
+    const t = this.#Qt();
+    this.#Ue(t);
+  };
+  #Ue(t) {
+    this.#P(), this.#Ct(), this.#gs(this.#h), this.#Jt(this.#o), this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#h = null, this.#N = !1, this.#Y = !1, this.#L = !1, this.#o = null, this.#bs(), this.#Bs(), this.#z.style.removeProperty("--sp-control-hover-offset"), this.#n.classList.remove("is-volume-open"), this.#I.classList.remove("is-scrubbing-volume"), this.#s.classList.remove("is-scrubbing"), this.#s.classList.remove("is-pointer-active");
+    const s = this.#r.activeElement;
+    s instanceof HTMLElement && s.blur(), t ? this.#Rs() : this.#Yt();
+  }
+  #Gs = () => {
+    !this.#x || this.#a || (this.#q(), this.#P(), this.#rt(), this.#a = !0, this.#s.classList.add("is-scrubbing"), this.#f = this.#j(this.#es, !0), this.#G && this.#t.pause(), this.#t.currentTime = this.#f, this.#l(this.#f), this.#y(this.#f), this.#kt(), this.#u());
+  };
+  #gs(t) {
+    t !== null && this.#i.hasPointerCapture(t) && this.#i.releasePointerCapture(t);
+  }
+  async #Js(t, s, e) {
+    if (!this.#x && !this.#a) return;
+    const i = this.#a;
+    this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#gs(s), e && t !== null && (this.#q(), this.#f = this.#j(t, i), this.#R = !0, this.#nt = this.#G, this.#t.currentTime = this.#f, this.#l(this.#f)), this.#y(this.#f), i && this.#G && await this.#t.play(), this.#D();
+  }
+  #ws(t) {
+    !this.#x && !this.#a || (this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#gs(t), this.#l(), this.#y(), this.#G && this.#t.play(), this.#D());
+  }
+  #xs(t) {
+    if (!this.#ls) return a(t);
+    const s = Number.isFinite(this.#t.duration) ? this.#t.duration : 0;
+    return s <= 0 ? a(t) : `-${a(Math.max(0, s - t))}`;
+  }
+  #Ne() {
+    this.#ft && (window.clearTimeout(this.#ft), this.#ft = 0);
+  }
+  #Ye() {
+    this.#Ne(), this.#m.classList.remove("is-time-animating"), this.#m.offsetWidth, this.#m.classList.add("is-time-animating"), this.#ft = window.setTimeout(() => {
+      this.#ft = 0, this.#m.classList.remove("is-time-animating");
+    }, 240);
+  }
+  #Xe = (t) => {
+    t.stopPropagation(), this.#ls = !this.#ls, this.#Ye(), this.#c() || this.#v ? this.#m && (this.#m.textContent = this.#xs(this.#f), this.#$t()) : this.#wt(this.#_());
+  };
+  #_e = async () => {
+    if (performance.now() < this.#Es)
+      return;
+    const t = this.#b ? this.#b !== "playing" : this.#t.paused || this.#t.ended, s = !t || this.#Ce();
+    this.#H(), s && (this.#b = t ? "playing" : "paused", this.#u()), t ? (this.#q(), await this.#X(), await this.#t.play().catch(() => {
+      this.#b = null;
+    })) : (this.#Fe(), this.#t.pause()), this.#u(), this.#D();
+  };
+  #We = (t) => {
+    if (!(t instanceof PointerEvent)) return;
+    const s = this.#M.getBoundingClientRect(), e = t.clientX >= s.left && t.clientX <= s.right && t.clientY >= s.top && t.clientY <= s.bottom, i = this.#V.getBoundingClientRect(), r = t.clientX >= i.left && t.clientX <= i.right && t.clientY >= i.top && t.clientY <= i.bottom, n = this.#i.getBoundingClientRect(), l = t.clientX >= n.left && t.clientX <= n.right && t.clientY >= n.top && t.clientY <= n.bottom, h = this.#H();
+    h && e && (this.#Es = performance.now() + 260), h && (r || l) && (this.#rs = performance.now() + 260), this.#X();
+  };
+  #je = (t) => {
+    t.stopPropagation();
+  };
+  #Ct() {
+    this.#pt && (window.clearTimeout(this.#pt), this.#pt = 0);
+  }
+  #Qs() {
+    if (!this.#F() || !this.volumeSliderEnabled) {
+      this.#S();
+      return;
+    }
+    this.#Ct(), this.#n.classList.add("is-volume-open");
+  }
+  #ks = () => {
+    this.#pt = 0, !(this.#Y || this.#L) && this.#n.classList.remove("is-volume-open");
+  };
+  #te(t = 150) {
+    this.#Ct(), this.#pt = window.setTimeout(this.#ks, t);
+  }
+  #se = () => {
+    if (!this.#d()) {
+      if (!this.#F() || !this.volumeSliderEnabled) {
+        this.#S();
+        return;
+      }
+      this.#Y = !0, this.#Qs();
     }
   };
-  if ("requestVideoFrameCallback" in t(this, o)) {
-    t(this, o).requestVideoFrameCallback(a), r(this, Rt, window.setTimeout(a, 180));
-    return;
-  }
-  window.requestAnimationFrame(a);
-}, _t = new WeakMap(), ri = function() {
-  return !t(this, o).paused && (!t(this, o).ended || t(this, o).loop) && t(this, o).readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
-}, k = function(i = t(this, o).currentTime) {
-  r(this, Es, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, Cs, performance.now());
-}, st = function() {
-  r(this, D, null), r(this, ht, null);
-}, oi = function() {
-  if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) {
-    r(this, D, null);
-    return;
-  }
-  const i = Number.isFinite(t(this, o).currentTime) ? Math.max(0, t(this, o).currentTime) : 0, a = Number.isFinite(t(this, kt)) ? t(this, kt) : i;
-  r(this, D, Math.min(t(this, o).duration, Math.max(i, a))), e(this, s, k).call(this, t(this, D));
-}, Ei = function() {
-  if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) {
-    r(this, ht, null), e(this, s, oi).call(this);
-    return;
-  }
-  const i = t(this, h).style.getPropertyValue("--sp-progress-inset"), a = Number.parseFloat(i), l = Number.isFinite(a) ? Math.min(1, Math.max(0, 1 - a / 100)) : null, u = e(this, s, mt).call(this), f = Math.min(1, Math.max(0, u / t(this, o).duration)), v = Math.max(l ?? 0, f);
-  r(this, ht, v), r(this, D, v * t(this, o).duration), e(this, s, k).call(this, t(this, D)), e(this, s, ft).call(this, v), t(this, m).setAttribute("aria-valuenow", `${t(this, D)}`), t(this, m).setAttribute(
-    "aria-valuetext",
-    `${q(t(this, D))} of ${q(t(this, o).duration)}`
-  );
-}, mt = function() {
-  if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return t(this, o).currentTime || 0;
-  if (e(this, s, E).call(this)) return t(this, F);
-  if (t(this, D) !== null) return t(this, D);
-  if (!e(this, s, ri).call(this)) return t(this, o).currentTime || 0;
-  if (t(this, Dt) || !t(this, xt) || performance.now() < t(this, Ts))
-    return e(this, s, k).call(this), t(this, o).currentTime || 0;
-  if (t(this, h).classList.contains("is-loading") && t(this, o).readyState < HTMLMediaElement.HAVE_FUTURE_DATA)
-    return e(this, s, k).call(this), t(this, o).currentTime || 0;
-  const i = (performance.now() - t(this, Cs)) / 1e3, a = t(this, Es) + i, l = t(this, o).loop ? a % t(this, o).duration : Math.min(a, t(this, o).duration);
-  return !t(this, o).loop && t(this, o).currentTime - l > 0.45 ? (e(this, s, k).call(this), t(this, o).currentTime) : l;
-}, ft = function(i) {
-  const a = Math.min(1, Math.max(0, i)), l = (1 - a) * 100, { innerWidth: u } = e(this, s, Ai).call(this), f = 1 / u, v = t(this, g) && t(this, Vt) && t(this, nt) + f < a;
-  if (t(this, h).style.setProperty("--sp-progress-inset", `${l}%`), t(this, h).style.setProperty("--sp-return-marker-base-opacity", v ? "0" : "1"), v) {
-    const Hs = e(this, s, ws).call(this, t(this, nt)), ds = Math.max(0, u - 2), Ni = Math.min(ds, Math.max(0, Hs - 3));
-    t(this, h).style.setProperty("--sp-return-marker-hole-left", `${Ni}px`);
-  } else
-    t(this, h).style.setProperty("--sp-return-marker-hole-left", "-9999px");
-}, Ci = function(i) {
-  return !Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0 ? 0 : Math.min(1, Math.max(0, i / t(this, o).duration));
-}, Ai = function(i = t(this, m).getBoundingClientRect()) {
-  return ui(i);
-}, ws = function(i, a = t(this, m).getBoundingClientRect()) {
-  return Qi(i, a);
-}, Li = function(i, a) {
-  return tr(i, a);
-}, Fi = function(i) {
-  r(this, Mt, Number.isFinite(i) ? Math.max(0, i) : 0), r(this, nt, e(this, s, Ci).call(this, t(this, Mt)));
-  const a = t(this, m).getBoundingClientRect(), l = e(this, s, ws).call(this, t(this, nt), a), u = l >= t(this, cs) && l <= Math.max(t(this, cs), a.width - t(this, cs));
-  r(this, Vt, t(this, Mt) > t(this, se) && u), t(this, h).classList.toggle("has-return-marker", t(this, Vt)), t(this, h).style.setProperty("--sp-return-marker-left", `${l}px`);
-}, Si = function(i, a, l, u = t(this, g)) {
-  const f = l * t(this, o).duration;
-  if (!u || !t(this, Vt))
-    return { percent: l, targetTime: f };
-  const v = a.left + e(this, s, ws).call(this, t(this, nt), a);
-  return Math.abs(i - v) <= t(this, te) ? {
-    percent: t(this, nt),
-    targetTime: t(this, Mt)
-  } : { percent: l, targetTime: f };
-}, Gt = function(i = e(this, s, mt).call(this)) {
-  !t(this, s, jt) || t(this, M) || e(this, s, E).call(this) || (t(this, L).textContent = e(this, s, Gs).call(this, i));
-}, I = function(i = e(this, s, mt).call(this)) {
-  const a = Number.isFinite(t(this, o).duration) && t(this, o).duration > 0;
-  if (a && t(this, ht) !== null) {
-    const f = t(this, ht) * t(this, o).duration;
-    r(this, kt, f), e(this, s, ft).call(this, t(this, ht)), t(this, m).setAttribute("aria-valuemin", "0"), t(this, m).setAttribute("aria-valuemax", `${t(this, o).duration}`), t(this, m).setAttribute("aria-valuenow", `${f}`), t(this, m).setAttribute(
-      "aria-valuetext",
-      `${q(f)} of ${q(t(this, o).duration)}`
-    ), e(this, s, Gt).call(this, f);
-    return;
-  }
-  const l = a ? Math.min(t(this, o).duration, Math.max(0, i)) : i, u = a ? l / t(this, o).duration : 0;
-  r(this, kt, Number.isFinite(l) ? Math.max(0, l) : 0), e(this, s, ft).call(this, u), t(this, m).setAttribute("aria-valuemin", "0"), t(this, m).setAttribute("aria-valuemax", a ? `${t(this, o).duration}` : "0"), t(this, m).setAttribute("aria-valuenow", a ? `${l}` : "0"), t(this, m).setAttribute(
-    "aria-valuetext",
-    a ? `${q(l)} of ${q(t(this, o).duration)}` : "Loading video"
-  ), e(this, s, Gt).call(this, l);
-}, bt = function(i, a = t(this, g), l = !0) {
-  if (!Number.isFinite(t(this, o).duration) || t(this, o).duration <= 0) return t(this, o).currentTime;
-  const u = t(this, m).getBoundingClientRect(), f = e(this, s, Li).call(this, i, u), v = e(this, s, Si).call(this, i, u, f, a);
-  return l && e(this, s, ft).call(this, v.percent), t(this, s, jt) || t(this, h).style.setProperty("--sp-scrub-preview-left", `${e(this, s, ws).call(this, v.percent, u)}px`), t(this, ks).textContent = q(v.targetTime), t(this, L).textContent = e(this, s, Gs).call(this, v.targetTime), l && (t(this, m).setAttribute("aria-valuenow", `${v.targetTime}`), t(this, m).setAttribute(
-    "aria-valuetext",
-    `${q(v.targetTime)} of ${q(t(this, o).duration)}`
-  )), e(this, s, Mi).call(this), v.targetTime;
-}, Jt = function() {
-  r(this, qt, !1), t(this, h)?.classList.remove("has-controls-collision");
-}, Mi = function() {
-  if (!t(this, g) && !t(this, M) || !t(this, X) || !t(this, es) || t(this, s, jt)) {
-    e(this, s, Jt).call(this);
-    return;
-  }
-  const i = t(this, X).getBoundingClientRect(), a = t(this, es).getBoundingClientRect(), l = i.width > 0 && i.height > 0, u = t(this, qt) ? t(this, ce) : t(this, he), f = l && a.right >= i.left - u && a.left <= i.right + u && a.bottom >= i.top - u && a.top <= i.bottom + u;
-  r(this, qt, f), t(this, h).classList.toggle("has-controls-collision", t(this, qt));
-}, Qt = function() {
-  t(this, vt) && (window.cancelAnimationFrame(t(this, vt)), r(this, vt, 0));
-}, Vi = function() {
-  e(this, s, Qt).call(this), e(this, s, k).call(this);
-  const i = () => {
-    e(this, s, I).call(this, e(this, s, mt).call(this)), e(this, s, ri).call(this) && r(this, vt, window.requestAnimationFrame(i));
+  #ee = () => {
+    if (!this.#d()) {
+      if (!this.#F() || !this.volumeSliderEnabled) {
+        this.#S();
+        return;
+      }
+      this.#Y = !1, this.#te();
+    }
   };
-  r(this, vt, window.requestAnimationFrame(i));
-}, C = function() {
-  const i = !t(this, o).paused && (!t(this, o).ended || t(this, o).loop) || t(this, g) && t(this, ot), a = t(this, S) ? t(this, S) === "playing" : i;
-  if (t(this, h).classList.toggle("is-playing", a), t(this, Y).setAttribute("aria-label", a ? "Pause video" : "Play video"), t(this, g)) {
-    e(this, s, Qt).call(this);
-    return;
+  #Oe = (t) => {
+    if (t.preventDefault(), t.stopPropagation(), !this.#F()) {
+      this.#S();
+      return;
+    }
+    !this.#yt() || this.#Xt() || (this.#H(), this.#ks(), this.#t.muted || this.#t.volume <= 0 ? (this.#t.volume <= 0 && (this.#t.volume = 0.7), this.#t.muted = !1) : this.#t.muted = !0, this.#g(), this.#D());
+  };
+  #Ze = (t) => {
+    if (t instanceof PointerEvent) {
+      if (t.preventDefault(), t.stopPropagation(), !this.#F() || !this.volumeSliderEnabled || this.#d()) {
+        this.#S();
+        return;
+      }
+      this.#H(), this.#P(), this.#Qs(), this.#L = !0, this.#o = t.pointerId, this.#I.classList.add("is-scrubbing-volume"), this.#p.setPointerCapture(t.pointerId), this.#Zs(t.clientY);
+    }
+  };
+  #Ke = (t) => {
+    t instanceof PointerEvent && this.#L && (this.#o !== null && t.pointerId !== this.#o || (t.preventDefault(), t.stopPropagation(), this.#Zs(t.clientY)));
+  };
+  #Ge = (t) => {
+    t instanceof PointerEvent && (this.#o !== null && t.pointerId !== this.#o || (t.stopPropagation(), this.#Pt(t.pointerId), this.#D()));
+  };
+  #Je = (t) => {
+    t instanceof PointerEvent && (this.#o !== null && t.pointerId !== this.#o || (t.stopPropagation(), this.#Pt(t.pointerId)));
+  };
+  #Qe = (t) => {
+    if (!(t instanceof KeyboardEvent)) return;
+    if (!this.#F()) {
+      t.preventDefault(), t.stopPropagation(), this.#S();
+      return;
+    }
+    if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(t.key)) return;
+    t.preventDefault(), t.stopPropagation();
+    const s = t.shiftKey ? 0.1 : 0.05, e = t.key === "Home" ? 0 : t.key === "End" ? 1 : this.#t.volume + (t.key === "ArrowUp" ? s : -s);
+    this.#t.volume = Math.min(1, Math.max(0, e)), this.#t.muted = this.#t.volume <= 0, this.#g();
+  };
+  #ti = async () => {
+    const t = this.#t;
+    if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !t.requestPictureInPicture) && !(!this.#yt() || this.#Xt())) {
+      this.#H();
+      try {
+        await this.#X(), document.pictureInPictureElement === this.#t ? await document.exitPictureInPicture() : await t.requestPictureInPicture();
+      } catch {
+      } finally {
+        this.#Tt(), this.#D();
+      }
+    }
+  };
+  #si = async (t) => {
+    if (this.#Ks() && (t.preventDefault(), t.stopPropagation(), !(!this.#yt() || this.#Xt()))) {
+      this.#vt(t), this.#H();
+      try {
+        const s = this.#ys();
+        s === this.#s || s === this ? await this.#$e() : (await this.#X(), g(this.#s) ? await this.#qe() : this.#Be());
+      } catch {
+      } finally {
+        this.#Qt(), this.#D();
+      }
+    }
+  };
+  #ie = (t) => {
+    this.#d() || this.#c() || !(t instanceof PointerEvent) && !(t instanceof MouseEvent) || (this.#v = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t.clientX, !1, !1));
+  };
+  #re = () => {
+    this.#c() || this.#zs();
+  };
+  #ei = (t) => {
+    if (t instanceof PointerEvent) {
+      if (t.preventDefault(), !this.#yt() || this.#Xt()) {
+        this.#H(), this.#d() && (this.#rs = performance.now() + 260);
+        return;
+      }
+      this.#H(), this.#P(), this.#Ns(), this.#R = !1, this.#nt = !1, this.#ze(this.#_()), this.#x = !0, this.#h = t.pointerId, this.#es = t.clientX, this.#G = !this.#t.paused && !this.#t.ended, this.#i.setPointerCapture(t.pointerId), this.#f = this.#j(t.clientX, !1), this.#rt(), this.#St = window.setTimeout(this.#Gs, this.#he);
+    }
+  };
+  #ii = (t) => {
+    if (!(t instanceof KeyboardEvent) || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(t.key)) return;
+    t.preventDefault(), t.stopPropagation(), this.#Hs();
+    const s = this.#_(), e = t.shiftKey ? 10 : 5, i = Math.max(10, this.#t.duration * 0.1), r = t.key === "Home" ? 0 : t.key === "End" ? this.#t.duration : t.key === "PageUp" ? s + i : t.key === "PageDown" ? s - i : s + (t.key === "ArrowRight" ? e : -e);
+    this.#t.currentTime = Math.min(this.#t.duration, Math.max(0, r)), this.#l(this.#t.currentTime), this.#y(this.#t.currentTime);
+  };
+  #ri = (t) => {
+    if (t instanceof PointerEvent) {
+      if (!this.#x) {
+        this.#d() || (this.#v = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t.clientX, !1, !1));
+        return;
+      }
+      this.#h !== null && t.pointerId !== this.#h || (!this.#a && Math.abs(t.clientX - this.#es) >= this.#ne && this.#Gs(), this.#a && (this.#f = this.#j(t.clientX)));
+    }
+  };
+  #oi = (t) => {
+    t instanceof PointerEvent && (this.#h !== null && t.pointerId !== this.#h || this.#Js(t.clientX, t.pointerId, !0));
+  };
+  #ni = (t) => {
+    t instanceof PointerEvent && (this.#h !== null && t.pointerId !== this.#h || this.#ws(t.pointerId));
+  };
+  #ai = (t) => {
+    if (t instanceof PointerEvent) {
+      if (this.#o !== null && t.pointerId === this.#o) {
+        this.#Pt(t.pointerId);
+        return;
+      }
+      this.#h === null || t.pointerId !== this.#h || this.#Js(t.clientX, t.pointerId, !0);
+    }
+  };
+  #li = (t) => {
+    if (t instanceof PointerEvent) {
+      if (this.#o !== null && t.pointerId === this.#o) {
+        this.#Pt(t.pointerId);
+        return;
+      }
+      this.#h === null || t.pointerId !== this.#h || this.#ws(t.pointerId);
+    }
+  };
+  #hi = () => {
+    this.#Pt(this.#o), this.#ws(this.#h);
+  };
+  #ci = () => {
+    this.#ys() || this.#Yt();
+  };
+  #ui = () => {
+    this.#b = null, this.#q(), this.#c() || this.#l(), this.#u();
+  };
+  #pi = () => {
+    this.#b = null, this.#c() || this.#Os(), this.#w(), this.#u();
+  };
+  #di = () => {
+    this.#b = null, this.#q(), this.#c() || this.#l(), this.#u();
+  };
+  #mi = () => {
+    this.#gt(!0, !0);
+  };
+  #Ps = () => {
+    this.#gt(!0);
+  };
+  #fi = () => {
+    this.#q(), this.#g(), this.#c() || this.#l(), this.#w(), this.#y();
+  };
+  #bi = () => {
+    const t = this.#Kt();
+    this.#g(), t && !this.#c() && this.#l(), this.#u();
+  };
+  #vi = () => {
+    if (this.#q(), this.#w(), this.#R && (!this.#nt || this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
+      this.#_s(), this.#u();
+      return;
+    }
+    this.#c() || this.#l(), this.#y();
+  };
+  #yi = () => {
+    this.#b = null, this.#C = !1, this.#A = !1, this.#B = !1, this.#$ = !1, this.#U += 1, this.#s.classList.remove("has-visible-frame"), this.#gt(!0, !0), this.#u(), this.#Ae();
+  };
+  #gi = () => {
+    this.#g(), this.#y();
+  };
+  #wi = () => {
+    this.#g();
+  };
+  #d() {
+    return window.matchMedia("(max-width: 768px)").matches && window.matchMedia("(hover: none), (pointer: coarse)").matches;
   }
-  i && t(this, h).classList.contains("has-loaded-once") && !t(this, h).classList.contains("is-progress-settling") ? e(this, s, Vi).call(this) : (e(this, s, Qt).call(this), e(this, s, I).call(this));
-}, Ft = function() {
-  t(this, zt) && (window.clearTimeout(t(this, zt)), r(this, zt, 0));
-}, zi = function() {
-  return Ji(t(this, o), t(this, y));
-}, V = new WeakMap(), ni = function(i) {
-  if (!t(this, y)) return;
-  const a = t(this, T).getBoundingClientRect(), l = Math.min(1, Math.max(0, 1 - (i - a.top) / a.height)), u = Math.round(l * 100) / 100;
-  t(this, o).volume = u, t(this, o).muted = u <= 0, t(this, V).call(this);
-}, js = function(i) {
-  i !== null && t(this, T).hasPointerCapture(i) && t(this, T).releasePointerCapture(i);
-}, ts = function(i) {
-  r(this, W, !1), r(this, x, null), t(this, O).classList.remove("is-scrubbing-volume"), t(this, T).blur(), e(this, s, js).call(this, i), e(this, s, ci).call(this, 260);
-}, At = new WeakMap(), Os = function() {
-  return Wi(t(this, b));
-}, ai = function() {
-  return ji(this.fullscreenEnabled, t(this, h), t(this, o));
-}, Ii = function() {
-  return Oi(t(this, h));
-}, Ri = function() {
-  Ki(t(this, o));
-}, Di = function() {
-  return Gi();
-}, Wt = new WeakMap(), Lt = new WeakMap(), qi = function(i) {
-  e(this, s, U).call(this), e(this, s, xs).call(this), e(this, s, Zs).call(this, t(this, P)), e(this, s, js).call(this, t(this, x)), e(this, s, Ft).call(this), r(this, R, !1), r(this, g, !1), r(this, M, !1), t(this, h).classList.remove("is-progress-hovering"), r(this, P, null), r(this, J, !1), r(this, ct, !1), r(this, W, !1), r(this, x, null), e(this, s, _s).call(this), t(this, Ms).call(this), t(this, j).style.removeProperty("--sp-control-hover-offset"), t(this, w).classList.remove("is-volume-open"), t(this, O).classList.remove("is-scrubbing-volume"), t(this, h).classList.remove("is-scrubbing"), t(this, h).classList.remove("is-pointer-active");
-  const a = t(this, b).activeElement;
-  a instanceof HTMLElement && a.blur(), i ? e(this, s, Ge).call(this) : e(this, s, bs).call(this);
-}, zs = new WeakMap(), Zs = function(i) {
-  i !== null && t(this, m).hasPointerCapture(i) && t(this, m).releasePointerCapture(i);
-}, li = async function(i, a, l) {
-  if (!t(this, R) && !t(this, g)) return;
-  const u = t(this, g);
-  e(this, s, Ft).call(this), r(this, R, !1), r(this, g, !1), r(this, M, !1), t(this, h).classList.remove("is-progress-hovering"), r(this, P, null), t(this, h).classList.remove("is-scrubbing"), e(this, s, Jt).call(this), e(this, s, Zs).call(this, a), l && i !== null && (e(this, s, st).call(this), r(this, F, e(this, s, bt).call(this, i, u)), r(this, _, !0), r(this, gt, t(this, ot)), t(this, o).currentTime = t(this, F), e(this, s, k).call(this, t(this, F))), e(this, s, I).call(this, t(this, F)), u && t(this, ot) && await t(this, o).play(), e(this, s, Q).call(this);
-}, Ks = function(i) {
-  !t(this, R) && !t(this, g) || (e(this, s, Ft).call(this), r(this, R, !1), r(this, g, !1), r(this, M, !1), t(this, h).classList.remove("is-progress-hovering"), r(this, P, null), t(this, h).classList.remove("is-scrubbing"), e(this, s, Jt).call(this), e(this, s, Zs).call(this, i), e(this, s, k).call(this), e(this, s, I).call(this), t(this, ot) && t(this, o).play(), e(this, s, Q).call(this));
-}, Gs = function(i) {
-  if (!t(this, hs)) return q(i);
-  const a = Number.isFinite(t(this, o).duration) ? t(this, o).duration : 0;
-  return a <= 0 ? q(i) : `-${q(Math.max(0, a - i))}`;
-}, Hi = function() {
-  t(this, Ct) && (window.clearTimeout(t(this, Ct)), r(this, Ct, 0));
-}, Bi = function() {
-  e(this, s, Hi).call(this), t(this, L).classList.remove("is-time-animating"), t(this, L).offsetWidth, t(this, L).classList.add("is-time-animating"), r(this, Ct, window.setTimeout(() => {
-    r(this, Ct, 0), t(this, L).classList.remove("is-time-animating");
-  }, 240));
-}, me = new WeakMap(), fe = new WeakMap(), be = new WeakMap(), ve = new WeakMap(), xs = function() {
-  t(this, Pt) && (window.clearTimeout(t(this, Pt)), r(this, Pt, 0));
-}, hi = function() {
-  !this.volumeEnabled || !this.volumeSliderEnabled || !t(this, y) || (e(this, s, xs).call(this), t(this, w).classList.add("is-volume-open"));
-}, us = new WeakMap(), ci = function(i = 150) {
-  e(this, s, xs).call(this), r(this, Pt, window.setTimeout(t(this, us), i));
-}, Is = new WeakMap(), Rs = new WeakMap(), ge = new WeakMap(), ye = new WeakMap(), we = new WeakMap(), xe = new WeakMap(), ke = new WeakMap(), Pe = new WeakMap(), Te = new WeakMap(), Ee = new WeakMap(), Ds = new WeakMap(), qs = new WeakMap(), Ce = new WeakMap(), Ae = new WeakMap(), Le = new WeakMap(), Fe = new WeakMap(), Se = new WeakMap(), Me = new WeakMap(), Ve = new WeakMap(), ze = new WeakMap(), Ie = new WeakMap(), Re = new WeakMap(), De = new WeakMap(), qe = new WeakMap(), He = new WeakMap(), ps = new WeakMap(), Be = new WeakMap(), $e = new WeakMap(), Ne = new WeakMap(), Ue = new WeakMap(), Ye = new WeakMap(), Xe = new WeakMap(), A = function() {
-  return window.matchMedia("(max-width: 768px)").matches && window.matchMedia("(hover: none), (pointer: coarse)").matches;
-}, $i = function() {
-  t(this, o) && (t(this, H)?.disconnect(), r(this, H, null), e(this, s, gs).call(this), e(this, s, Ws).call(this), r(this, B, !1), r(this, rs, 0), r(this, $, !1), r(this, N, !1), r(this, Z, !1), r(this, K, !1), r(this, G, t(this, G) + 1), r(this, xt, !1), r(this, kt, 0), e(this, s, st).call(this), r(this, y, !0), r(this, _, !1), r(this, gt, !1), r(this, S, null), t(this, h).classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), t(this, o).dataset.src = this.src, t(this, o).pause(), t(this, o).removeAttribute("src"), t(this, o).preload = "none", e(this, s, ms).call(this), t(this, o).load(), e(this, s, ft).call(this, 0), t(this, V).call(this), t(this, z).call(this), e(this, s, C).call(this));
-}, di(bi, "observedAttributes", _i);
-customElements.get("simple-player") || customElements.define("simple-player", bi);
+  #xi() {
+    this.#t && (this.#T?.disconnect(), this.#T = null, this.#Ot(), this.#vs(), this.#E = !1, this.#is = 0, this.#C = !1, this.#A = !1, this.#B = !1, this.#$ = !1, this.#U += 1, this.#ht = !1, this.#ct = 0, this.#q(), this.#Rt = !1, this.#ut = !1, this.#S(), this.#R = !1, this.#nt = !1, this.#b = null, this.#s.classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), this.#t.dataset.src = this.src, this.#t.pause(), this.#t.removeAttribute("src"), this.#t.preload = "none", this.#Bt(), this.#t.load(), this.#W(0), this.#g(), this.#w(), this.#u());
+  }
+}
+customElements.get("simple-player") || customElements.define("simple-player", A);
 export {
-  bi as SimplePlayer
+  A as SimplePlayer
 };
 //# sourceMappingURL=simple-player.js.map
