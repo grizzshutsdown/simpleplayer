@@ -783,7 +783,7 @@ export const styles: string = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: calc(var(--sp-tray-time-width, 40px) + (var(--sp-control-tray-padding) * 2));
+    width: calc(var(--sp-tray-time-width, max-content) + (var(--sp-control-tray-padding) * 2));
     height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;

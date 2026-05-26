@@ -549,7 +549,10 @@ export class SimplePlayer extends HTMLElement {
 
   #syncTrayTimeWidth() {
     if (!this.#player || !this.#trayTimeText) return;
-    this.#player.style.setProperty('--sp-tray-time-width', `${Math.ceil(this.#trayTimeText.scrollWidth)}px`);
+    this.#trayTimeText.style.width = 'fit-content';
+    const width = Math.ceil(this.#trayTimeText.scrollWidth);
+    this.#trayTimeText.style.width = '';
+    this.#player.style.setProperty('--sp-tray-time-width', `${width}px`);
   }
 
   #listen(target: EventTarget, type: string, listener: EventListenerOrEventListenerObject) {

@@ -861,7 +861,7 @@ const C = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: calc(var(--sp-tray-time-width, 40px) + (var(--sp-control-tray-padding) * 2));
+    width: calc(var(--sp-tray-time-width, max-content) + (var(--sp-control-tray-padding) * 2));
     height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
@@ -1378,7 +1378,7 @@ class A extends HTMLElement {
     })), this.#e(document, "pointerup", this.#ai), this.#e(document, "pointercancel", this.#li), this.#e(document, "pointermove", this.#Ds), this.#e(document, "mousemove", this.#Ds), this.#e(document, "fullscreenchange", this.#Et), this.#e(document, "webkitfullscreenchange", this.#Et), this.#e(document, "mozfullscreenchange", this.#Et), this.#e(document, "MSFullscreenChange", this.#Et), this.#e(this.#r, "fullscreenchange", this.#Et), this.#e(window, "blur", this.#hi), this.#e(window, "focus", this.#ci), this.#e(this.#t, "play", this.#ui), this.#e(this.#t, "pause", this.#pi), this.#e(this.#t, "ended", this.#di), this.#e(this.#t, "loadstart", this.#mi), this.#e(this.#t, "waiting", this.#Ts), this.#e(this.#t, "stalled", this.#Ts), this.#e(this.#t, "seeking", this.#Ts), this.#e(this.#t, "loadeddata", this.#Kt), this.#e(this.#t, "loadedmetadata", this.#fi), this.#e(this.#t, "canplay", this.#Kt), this.#e(this.#t, "canplaythrough", this.#Kt), this.#e(this.#t, "playing", this.#bi), this.#e(this.#t, "seeked", this.#vi), this.#e(this.#t, "error", this.#gi), this.#e(this.#t, "progress", this.#w), this.#e(this.#t, "suspend", this.#w), this.#e(this.#t, "timeupdate", this.#yi), this.#e(this.#t, "volumechange", this.#wi), this.#e(this.#t, "enterpictureinpicture", this.#Tt), this.#e(this.#t, "leavepictureinpicture", this.#Tt);
   }
   #$t() {
-    !this.#s || !this.#m || this.#s.style.setProperty("--sp-tray-time-width", `${Math.ceil(this.#m.scrollWidth)}px`);
+    !this.#s || !this.#m || (this.#m.style.width = "fit-content", this.#s.style.setProperty("--sp-tray-time-width", `${Math.ceil(this.#m.scrollWidth)}px`), this.#m.style.width = "");
   }
   #e(t, s, e) {
     t.addEventListener(s, e), this.#At.push(() => t.removeEventListener(s, e));
