@@ -29,6 +29,8 @@ Attributes:
 - `disable-picture-in-picture`: removes Picture-in-Picture.
 - `disable-fullscreen`: removes fullscreen.
 
+The scrubber shows a translucent hover fill that follows the cursor, previewing the seek position.
+
 JavaScript properties mirror each attribute:
 
 ```js
