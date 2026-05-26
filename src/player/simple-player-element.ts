@@ -549,7 +549,10 @@ export class SimplePlayer extends HTMLElement {
 
   #syncTrayTimeWidth() {
     if (!this.#player || !this.#trayTimeText) return;
-    this.#player.style.setProperty('--sp-tray-time-width', `${Math.ceil(this.#trayTimeText.scrollWidth)}px`);
+    this.#trayTimeText.style.width = 'fit-content';
+    const width = Math.ceil(this.#trayTimeText.scrollWidth);
+    this.#trayTimeText.style.width = '';
+    this.#player.style.setProperty('--sp-tray-time-width', `${width}px`);
   }
 
   #listen(target: EventTarget, type: string, listener: EventListenerOrEventListenerObject) {
@@ -688,6 +691,7 @@ export class SimplePlayer extends HTMLElement {
 
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#clearControlsCollision();
     this.#syncPinnedTimeText();
   }
@@ -1353,6 +1357,8 @@ export class SimplePlayer extends HTMLElement {
     const percent = this.#getProgressPercentFromClientX(clientX, rect);
     const scrubPoint = this.#getScrubPoint(clientX, rect, percent, shouldSnap);
 
+    this.#player.style.setProperty('--sp-hover-fill-inset', `${(1 - percent) * 100}%`);
+
     if (updateVisual) {
       this.#setProgressVisual(scrubPoint.percent);
     }
@@ -1666,6 +1672,7 @@ export class SimplePlayer extends HTMLElement {
     this.#isScrubbing = false;
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();
@@ -1697,6 +1704,7 @@ export class SimplePlayer extends HTMLElement {
     this.#isScrubbing = false;
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();

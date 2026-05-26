@@ -24,10 +24,12 @@ Attributes:
 - `preload-margin`: lazy-load margin. Default: `360px 0px`.
 - `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons. The volume control automatically disables itself if the video has no audio track.
 - `disable-autoplay`: turns off muted autoplay.
-- `show-time`: dual-mode timestamp. With `controls`, shows a pinned glass timestamp tray in the bottom-left. Without `controls`, shows a hover tooltip above the scrubber while dragging or hovering. Clicking toggles between elapsed and remaining time.
+- `show-time`: dual-mode timestamp. With `controls`, shows a pinned glass timestamp tray in the bottom-left. Without `controls`, shows a hover tooltip above the scrubber while dragging or hovering. Clicking toggles between elapsed and remaining time. The tray automatically resizes to fit the text as the time changes during playback.
 - `disable-volume`: removes the volume control.
 - `disable-picture-in-picture`: removes Picture-in-Picture.
 - `disable-fullscreen`: removes fullscreen.
+
+The scrubber shows a translucent hover fill that follows the cursor, previewing the seek position.
 
 JavaScript properties mirror each attribute:
 

@@ -19,7 +19,8 @@ export type AudioAvailability = 'available' | 'unavailable' | 'unknown';
 export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailability {
   const audioTrackVideo = video as HTMLVideoElement & { audioTracks?: { length: number } };
   if (audioTrackVideo.audioTracks && typeof audioTrackVideo.audioTracks.length === 'number') {
-    return audioTrackVideo.audioTracks.length > 0 ? 'available' : 'unavailable';
+    if (audioTrackVideo.audioTracks.length > 0) return 'available';
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) return 'unavailable';
   }
 
   const firefoxVideo = video as HTMLVideoElement & { mozHasAudio?: boolean };
