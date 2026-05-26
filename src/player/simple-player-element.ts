@@ -691,6 +691,7 @@ export class SimplePlayer extends HTMLElement {
 
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#clearControlsCollision();
     this.#syncPinnedTimeText();
   }
@@ -1356,6 +1357,8 @@ export class SimplePlayer extends HTMLElement {
     const percent = this.#getProgressPercentFromClientX(clientX, rect);
     const scrubPoint = this.#getScrubPoint(clientX, rect, percent, shouldSnap);
 
+    this.#player.style.setProperty('--sp-hover-fill-inset', `${(1 - percent) * 100}%`);
+
     if (updateVisual) {
       this.#setProgressVisual(scrubPoint.percent);
     }
@@ -1669,6 +1672,7 @@ export class SimplePlayer extends HTMLElement {
     this.#isScrubbing = false;
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();
@@ -1700,6 +1704,7 @@ export class SimplePlayer extends HTMLElement {
     this.#isScrubbing = false;
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
+    this.#player.style.setProperty('--sp-hover-fill-inset', '100%');
     this.#activeScrubPointerId = null;
     this.#player.classList.remove('is-scrubbing');
     this.#clearControlsCollision();

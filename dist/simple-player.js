@@ -49,8 +49,10 @@ function a(o) {
 }
 function k(o) {
   const t = o;
-  if (t.audioTracks && typeof t.audioTracks.length == "number")
-    return t.audioTracks.length > 0 ? "available" : "unavailable";
+  if (t.audioTracks && typeof t.audioTracks.length == "number") {
+    if (t.audioTracks.length > 0) return "available";
+    if (o.readyState >= HTMLMediaElement.HAVE_METADATA) return "unavailable";
+  }
   const s = o;
   if (typeof s.mozHasAudio == "boolean")
     return s.mozHasAudio ? "available" : "unavailable";
@@ -164,6 +166,7 @@ const C = `
     min-height: 100%;
     overflow: hidden;
     --sp-progress-inset: 100%;
+    --sp-hover-fill-inset: 100%;
     --sp-scrub-preview-left: 0px;
     --sp-return-marker-left: 0px;
     --sp-return-marker-base-opacity: 1;
@@ -752,6 +755,28 @@ const C = `
     will-change: clip-path;
   }
 
+  .sp-progress-hover-fill {
+    position: absolute;
+    bottom: calc(var(--space) * 2);
+    left: 2px;
+    right: 2px;
+    z-index: 0;
+    height: var(--sp-progress-height);
+    border-radius: 3px;
+    background: var(--white);
+    opacity: 0;
+    pointer-events: none;
+    clip-path: inset(0 var(--sp-hover-fill-inset) 0 0 round 3px);
+    transform: translateZ(0);
+    transition: height 180ms ease, opacity 120ms ease;
+  }
+
+  .sp-progress:hover .sp-progress-hover-fill,
+  .sp-player.is-progress-hovering .sp-progress-hover-fill,
+  .sp-player.is-scrubbing .sp-progress-hover-fill {
+    opacity: 0.2;
+  }
+
   .sp-progress-marker {
     position: absolute;
     bottom: calc((var(--space) * 2) + 1.5px);
@@ -875,7 +900,6 @@ const C = `
 
   .sp-tray-time-holder .sp-control-tray-slots::before {
     width: calc(100% - (var(--sp-control-tray-padding) * 2));
-    opacity: var(--sp-control-hover-opacity);
   }
 
   .sp-tray-time-holder .sp-tray-time-text {
@@ -1067,6 +1091,7 @@ p.innerHTML = `
           <span class="sp-time-text" data-sp-time-text>0:00</span>
         </span>
         <span class="sp-progress-fill" data-sp-progress></span>
+        <span class="sp-progress-hover-fill" aria-hidden="true"></span>
         <span class="sp-progress-marker" aria-hidden="true"></span>
       </div>
       <span class="sp-tray-time" data-sp-tray-time>
@@ -1440,7 +1465,7 @@ class A extends HTMLElement {
     return i.width <= 0 || i.height <= 0 ? !1 : s >= i.left && s <= i.right && e >= i.top && e <= i.bottom;
   }
   #zs() {
-    this.#v && (this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#xt(), this.#wt());
+    this.#v && (this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#xt(), this.#wt());
   }
   #Is(t, s) {
     if (this.#d()) return;
@@ -1742,7 +1767,7 @@ class A extends HTMLElement {
   #W(t, s = this.#a, e = !0) {
     if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return this.#t.currentTime;
     const i = this.#i.getBoundingClientRect(), r = this.#Ve(t, i), n = this.#Ie(t, i, r, s);
-    return e && this.#_(n.percent), this.#bt || this.#s.style.setProperty("--sp-scrub-preview-left", `${this.#Gt(n.percent, i)}px`), this.#Es.textContent = a(n.targetTime), this.#m.textContent = this.#ks(n.targetTime), this.#$t(), e && (this.#i.setAttribute("aria-valuenow", `${n.targetTime}`), this.#i.setAttribute(
+    return this.#s.style.setProperty("--sp-hover-fill-inset", `${(1 - r) * 100}%`), e && this.#_(n.percent), this.#bt || this.#s.style.setProperty("--sp-scrub-preview-left", `${this.#Gt(n.percent, i)}px`), this.#Es.textContent = a(n.targetTime), this.#m.textContent = this.#ks(n.targetTime), this.#$t(), e && (this.#i.setAttribute("aria-valuenow", `${n.targetTime}`), this.#i.setAttribute(
       "aria-valuetext",
       `${a(n.targetTime)} of ${a(this.#t.duration)}`
     )), this.#Re(), n.targetTime;
@@ -1855,10 +1880,10 @@ class A extends HTMLElement {
   async #Js(t, s, e) {
     if (!this.#x && !this.#a) return;
     const i = this.#a;
-    this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#ws(s), e && t !== null && (this.#H(), this.#f = this.#W(t, i), this.#I = !0, this.#nt = this.#G, this.#t.currentTime = this.#f, this.#l(this.#f)), this.#g(this.#f), i && this.#G && await this.#t.play(), this.#R();
+    this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#ws(s), e && t !== null && (this.#H(), this.#f = this.#W(t, i), this.#I = !0, this.#nt = this.#G, this.#t.currentTime = this.#f, this.#l(this.#f)), this.#g(this.#f), i && this.#G && await this.#t.play(), this.#R();
   }
   #xs(t) {
-    !this.#x && !this.#a || (this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#ws(t), this.#l(), this.#g(), this.#G && this.#t.play(), this.#R());
+    !this.#x && !this.#a || (this.#rt(), this.#x = !1, this.#a = !1, this.#v = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#h = null, this.#s.classList.remove("is-scrubbing"), this.#xt(), this.#ws(t), this.#l(), this.#g(), this.#G && this.#t.play(), this.#R());
   }
   #ks(t) {
     if (!this.#ls) return a(t);

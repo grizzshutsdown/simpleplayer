@@ -33,6 +33,7 @@ template.innerHTML = `
           <span class="sp-time-text" data-sp-time-text>0:00</span>
         </span>
         <span class="sp-progress-fill" data-sp-progress></span>
+        <span class="sp-progress-hover-fill" aria-hidden="true"></span>
         <span class="sp-progress-marker" aria-hidden="true"></span>
       </div>
       <span class="sp-tray-time" data-sp-tray-time>
