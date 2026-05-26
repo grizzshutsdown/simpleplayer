@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  server: {
+    allowedHosts: ['.ngrok-free.app'],
+  },
   publicDir: false,
   build: {
     lib: {

@@ -392,7 +392,7 @@ export class SimplePlayer extends HTMLElement {
   #syncOptionalControls() {
     if (!this.#player) return;
 
-    const showVolumeControl = this.volumeEnabled && !(this.#hasCheckedAudioTrack && !this.#hasAudioTrack);
+    const showVolumeControl = this.volumeEnabled;
     const controls = [
       { button: this.#volumeControl, enabled: showVolumeControl, className: 'has-volume-control' },
       { button: this.#pictureInPictureControl, enabled: this.pictureInPictureEnabled, className: 'has-picture-in-picture-control' },
@@ -1526,10 +1526,6 @@ export class SimplePlayer extends HTMLElement {
 
     if (!hasUsableAudio) {
       this.#clearVolumeInteractionState();
-    }
-
-    if (this.#hasCheckedAudioTrack) {
-      this.#syncOptionalControls();
     }
   };
 
