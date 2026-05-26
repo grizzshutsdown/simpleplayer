@@ -18,9 +18,14 @@ export type AudioAvailability = 'available' | 'unavailable' | 'unknown';
 
 export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailability {
   const audioTrackVideo = video as HTMLVideoElement & { audioTracks?: { length: number } };
+  const webkitVideo = video as HTMLVideoElement & { webkitAudioDecodedByteCount?: number };
+  const isWebKit = typeof webkitVideo.webkitAudioDecodedByteCount === 'number';
   if (audioTrackVideo.audioTracks && typeof audioTrackVideo.audioTracks.length === 'number') {
     if (audioTrackVideo.audioTracks.length > 0) return 'available';
-    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) return 'unavailable';
+    // iOS Safari reports audioTracks.length === 0 at HAVE_METADATA even when
+    // audio is present. On WebKit, fall through to webkitAudioDecodedByteCount
+    // for a reliable answer after playback starts.
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA && !isWebKit) return 'unavailable';
   }
 
   const firefoxVideo = video as HTMLVideoElement & { mozHasAudio?: boolean };
@@ -41,13 +46,12 @@ export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailabil
     }
   }
 
-  const webkitVideo = video as HTMLVideoElement & { webkitAudioDecodedByteCount?: number };
   if (
-    typeof webkitVideo.webkitAudioDecodedByteCount === 'number' &&
+    isWebKit &&
     video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
     video.currentTime > 0.25
   ) {
-    return webkitVideo.webkitAudioDecodedByteCount > 0 ? 'available' : 'unavailable';
+    return webkitVideo.webkitAudioDecodedByteCount! > 0 ? 'available' : 'unavailable';
   }
 
   return 'unknown';
@@ -55,9 +59,7 @@ export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailabil
 
 export function isAudioAvailabilityPending(video: HTMLVideoElement): boolean {
   const webkitVideo = video as HTMLVideoElement & { webkitAudioDecodedByteCount?: number };
-  return (
-    typeof webkitVideo.webkitAudioDecodedByteCount === 'number' &&
-    video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
-    video.currentTime <= 0.25
-  );
+  if (typeof webkitVideo.webkitAudioDecodedByteCount !== 'number') return false;
+  if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return true;
+  return video.currentTime <= 0.25;
 }

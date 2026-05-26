@@ -48,25 +48,24 @@ function a(o) {
   return r > 0 ? r + ":" + String(i).padStart(2, "0") + ":" + String(s).padStart(2, "0") : i + ":" + String(s).padStart(2, "0");
 }
 function k(o) {
-  const t = o;
+  const t = o, s = o, e = typeof s.webkitAudioDecodedByteCount == "number";
   if (t.audioTracks && typeof t.audioTracks.length == "number") {
     if (t.audioTracks.length > 0) return "available";
-    if (o.readyState >= HTMLMediaElement.HAVE_METADATA) return "unavailable";
+    if (o.readyState >= HTMLMediaElement.HAVE_METADATA && !e) return "unavailable";
   }
-  const s = o;
-  if (typeof s.mozHasAudio == "boolean")
-    return s.mozHasAudio ? "available" : "unavailable";
-  const e = o, i = e.captureStream ?? e.mozCaptureStream;
-  if (i && o.readyState >= HTMLMediaElement.HAVE_METADATA)
+  const i = o;
+  if (typeof i.mozHasAudio == "boolean")
+    return i.mozHasAudio ? "available" : "unavailable";
+  const r = o, n = r.captureStream ?? r.mozCaptureStream;
+  if (n && o.readyState >= HTMLMediaElement.HAVE_METADATA)
     try {
-      if (i.call(o).getAudioTracks().length > 0) return "available";
+      if (n.call(o).getAudioTracks().length > 0) return "available";
     } catch {
     }
-  const r = o;
-  return typeof r.webkitAudioDecodedByteCount == "number" && o.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && o.currentTime > 0.25 ? r.webkitAudioDecodedByteCount > 0 ? "available" : "unavailable" : "unknown";
+  return e && o.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && o.currentTime > 0.25 ? s.webkitAudioDecodedByteCount > 0 ? "available" : "unavailable" : "unknown";
 }
 function P(o) {
-  return typeof o.webkitAudioDecodedByteCount == "number" && o.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && o.currentTime <= 0.25;
+  return typeof o.webkitAudioDecodedByteCount != "number" ? !1 : o.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ? !0 : o.currentTime <= 0.25;
 }
 function c(o) {
   const t = Math.min(2, Math.max(0, o.width / 2)), s = Math.max(1, o.width - t * 2);
