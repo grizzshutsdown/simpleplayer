@@ -480,9 +480,9 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#progressTrack, 'pointerup', this.#handleProgressPointerUp);
     this.#listen(this.#progressTrack, 'pointercancel', this.#handleProgressPointerCancel);
     this.#listen(this.#progressTrack, 'keydown', this.#handleProgressKeyDown);
-    this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
     this.#listen(this.#volumeControl, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumeControl, 'pointerleave', this.#handleVolumePointerLeave);
+    this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
     this.#listen(this.#volumePopover, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumePopover, 'pointerleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeTrack, 'pointerdown', this.#handleVolumePointerDown);
@@ -497,6 +497,7 @@ export class SimplePlayer extends HTMLElement {
     for (const control of this.#controlButtons) {
       this.#listen(control, 'pointerenter', this.#handleControlButtonPointerEnter);
       this.#listen(control, 'mouseenter', this.#handleControlButtonPointerEnter);
+      this.#listen(control, 'pointerdown', this.#handleControlButtonPointerDown);
     }
 
     if ('ResizeObserver' in window) {
@@ -510,9 +511,6 @@ export class SimplePlayer extends HTMLElement {
       });
     }
 
-    for (const control of this.#controlButtons) {
-      this.#listen(control, 'pointerdown', this.#handleControlButtonPointerDown);
-    }
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);
     this.#listen(document, 'pointercancel', this.#handleDocumentPointerCancel);
     this.#listen(document, 'pointermove', this.#handleDocumentPointerMove);

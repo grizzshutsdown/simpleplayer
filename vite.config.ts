@@ -8,7 +8,7 @@ export default defineConfig({
       formats: ['es'],
       fileName: () => 'simple-player.js',
     },
-    target: 'es2020',
+    target: 'es2022',
     sourcemap: true,
     emptyOutDir: true,
   },
