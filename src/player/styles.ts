@@ -471,8 +471,8 @@ export const styles: string = `
 
   .sp-player.is-volume-unavailable [data-sp-volume-control]:hover .sp-control-icon,
   .sp-player.is-volume-unavailable [data-sp-volume-control].is-control-tap-active .sp-control-icon {
-    opacity: var(--sp-control-icon-hidden-opacity);
-    transform: var(--sp-control-icon-hidden-transform);
+    opacity: var(--sp-control-icon-opacity);
+    transform: translateY(0) scale(1);
   }
 
   .sp-player.is-volume-unavailable .sp-control-tray-slots:has([data-sp-volume-control]:hover)::before,
