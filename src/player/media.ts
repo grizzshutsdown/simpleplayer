@@ -35,7 +35,7 @@ export function detectAudioAvailability(video: HTMLVideoElement): AudioAvailabil
   const captureStream = streamVideo.captureStream ?? streamVideo.mozCaptureStream;
   if (captureStream && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
     try {
-      return captureStream.call(video).getAudioTracks().length > 0 ? 'available' : 'unavailable';
+      if (captureStream.call(video).getAudioTracks().length > 0) return 'available';
     } catch {
       // Cross-origin media can block captureStream; keep probing with other browser hints.
     }

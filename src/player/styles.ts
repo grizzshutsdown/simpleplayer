@@ -447,6 +447,10 @@ export const styles: string = `
     outline: 0;
   }
 
+  .sp-control-button:disabled {
+    opacity: 1;
+  }
+
   .sp-control-button:hover {
     background: var(--sp-control-slot-hover-surface);
   }
@@ -765,6 +769,11 @@ export const styles: string = `
 
   .sp-player.has-pinned-time .sp-time {
     display: none !important;
+  }
+
+  .sp-player.is-loading:not(.has-loaded-once) .sp-time,
+  .sp-player.is-loading:not(.has-loaded-once) .sp-progress-hover-fill {
+    display: none;
   }
 
   .sp-tray-time {

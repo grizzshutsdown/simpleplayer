@@ -392,9 +392,9 @@ export class SimplePlayer extends HTMLElement {
   #syncOptionalControls() {
     if (!this.#player) return;
 
-    const hasVolumeControl = this.#isVolumeAvailable();
+    const showVolumeControl = this.volumeEnabled && !(this.#hasCheckedAudioTrack && !this.#hasAudioTrack);
     const controls = [
-      { button: this.#volumeControl, enabled: hasVolumeControl, className: 'has-volume-control' },
+      { button: this.#volumeControl, enabled: showVolumeControl, className: 'has-volume-control' },
       { button: this.#pictureInPictureControl, enabled: this.pictureInPictureEnabled, className: 'has-picture-in-picture-control' },
       { button: this.#fullscreenControl, enabled: this.fullscreenEnabled, className: 'has-fullscreen-control' },
     ];
@@ -414,9 +414,9 @@ export class SimplePlayer extends HTMLElement {
 
     this.style.setProperty('--sp-enabled-controls-count', `${index}`);
     this.style.setProperty('--sp-control-tray-display', index > 0 ? 'block' : 'none');
-    this.#player.classList.toggle('has-volume-slider-control', hasVolumeControl && this.volumeSliderEnabled);
+    this.#player.classList.toggle('has-volume-slider-control', showVolumeControl && this.volumeSliderEnabled);
 
-    if (!hasVolumeControl || !this.volumeSliderEnabled) {
+    if (!showVolumeControl || !this.volumeSliderEnabled) {
       this.#closeVolumePopover();
       this.#releaseVolumePointer(this.#activeVolumePointerId);
       this.#isVolumeScrubbing = false;
@@ -1499,7 +1499,6 @@ export class SimplePlayer extends HTMLElement {
       }
     }
 
-    const wasVolumeControlHidden = this.#volumeControl.hidden;
     const hasUsableAudio = this.#isVolumeAvailable();
     const isMuted = !hasUsableAudio || this.#video.muted || this.#video.volume <= 0;
     const visualVolume = hasUsableAudio && !this.#video.muted ? this.#video.volume : 0;
@@ -1529,7 +1528,7 @@ export class SimplePlayer extends HTMLElement {
       this.#clearVolumeInteractionState();
     }
 
-    if (wasVolumeControlHidden === hasUsableAudio) {
+    if (this.#hasCheckedAudioTrack) {
       this.#syncOptionalControls();
     }
   };
