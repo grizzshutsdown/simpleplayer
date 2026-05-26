@@ -86,6 +86,7 @@ export const styles: string = `
     min-height: 100%;
     overflow: hidden;
     --sp-progress-inset: 100%;
+    --sp-hover-fill-inset: 100%;
     --sp-scrub-preview-left: 0px;
     --sp-return-marker-left: 0px;
     --sp-return-marker-base-opacity: 1;
@@ -674,6 +675,28 @@ export const styles: string = `
     will-change: clip-path;
   }
 
+  .sp-progress-hover-fill {
+    position: absolute;
+    bottom: calc(var(--space) * 2);
+    left: 2px;
+    right: 2px;
+    z-index: 0;
+    height: var(--sp-progress-height);
+    border-radius: 3px;
+    background: var(--white);
+    opacity: 0;
+    pointer-events: none;
+    clip-path: inset(0 var(--sp-hover-fill-inset) 0 0 round 3px);
+    transform: translateZ(0);
+    transition: height 180ms ease, opacity 120ms ease;
+  }
+
+  .sp-progress:hover .sp-progress-hover-fill,
+  .sp-player.is-progress-hovering .sp-progress-hover-fill,
+  .sp-player.is-scrubbing .sp-progress-hover-fill {
+    opacity: 0.2;
+  }
+
   .sp-progress-marker {
     position: absolute;
     bottom: calc((var(--space) * 2) + 1.5px);
@@ -783,7 +806,7 @@ export const styles: string = `
     position: relative;
     right: auto;
     bottom: auto;
-    width: calc(var(--sp-tray-time-width, 40px) + (var(--sp-control-tray-padding) * 2));
+    width: calc(var(--sp-tray-time-width, max-content) + (var(--sp-control-tray-padding) * 2));
     height: calc(var(--sp-control-slot-size) + (var(--sp-control-tray-padding) * 2));
     transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
@@ -797,7 +820,6 @@ export const styles: string = `
 
   .sp-tray-time-holder .sp-control-tray-slots::before {
     width: calc(100% - (var(--sp-control-tray-padding) * 2));
-    opacity: var(--sp-control-hover-opacity);
   }
 
   .sp-tray-time-holder .sp-tray-time-text {
