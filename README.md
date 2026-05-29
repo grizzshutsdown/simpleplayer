@@ -101,7 +101,7 @@ declare module 'react' {
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
 - `show-time`: dual-mode timestamp. When used with `controls`, shows a pinned glass timestamp tray in the bottom-left alongside the controls tray. When used without `controls`, shows a hover tooltip above the scrubber as you drag or hover it. Clicking the timestamp toggles between elapsed and remaining time. The tray automatically resizes to fit the text as the time changes during playback.
 
-The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls. Hovering over the scrubber shows a translucent fill that follows the cursor, previewing the seek position.
+The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls. Hovering over the scrubber shows a translucent fill that follows the cursor, previewing the seek position. The controls and overlay automatically fade out after a brief period of inactivity (both windowed and fullscreen) and reappear instantly on movement or touch.
 
 Keep the HTML clean and manage controls with JavaScript:
 

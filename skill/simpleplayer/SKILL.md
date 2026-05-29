@@ -29,7 +29,7 @@ Attributes:
 - `disable-picture-in-picture`: removes Picture-in-Picture.
 - `disable-fullscreen`: removes fullscreen.
 
-The scrubber shows a translucent hover fill that follows the cursor, previewing the seek position.
+The scrubber shows a translucent hover fill that follows the cursor, previewing the seek position. Controls automatically hide after inactivity (1.6s on desktop, 1.2s on mobile) and reappear on movement. Entering fullscreen immediately displays the controls and temporarily disables hover states to prevent "sticky" hover issues on touch devices.
 
 JavaScript properties mirror each attribute:
 
