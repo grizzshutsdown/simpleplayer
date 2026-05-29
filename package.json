@@ -1,6 +1,6 @@
 {
   "name": "@grizzshutsdown/simpleplayer",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "A simple default video player created from Grizz's portfolio for others to use.",
   "type": "module",
   "homepage": "https://grizz.fyi",
