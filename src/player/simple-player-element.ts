@@ -666,7 +666,7 @@ export class SimplePlayer extends HTMLElement {
     if (clientX === null || clientY === null) return false;
     if (clientX < 0 || clientY < 0 || clientX > window.innerWidth || clientY > window.innerHeight) return false;
 
-    const rect = this.getBoundingClientRect();
+    const rect = this.#player.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return false;
 
     return (
@@ -765,6 +765,7 @@ export class SimplePlayer extends HTMLElement {
 
   #handleDocumentPointerMove = (event: Event) => {
     if (!this.#trackPointerPosition(event)) return;
+    this.#player.classList.remove('is-hover-disabled');
     if (event instanceof PointerEvent || event instanceof MouseEvent) {
       this.#syncHoverTargetsFromPointer(event.clientX, event.clientY);
     }
@@ -1640,13 +1641,21 @@ export class SimplePlayer extends HTMLElement {
     this.#player.classList.remove('is-scrubbing');
     this.#player.classList.remove('is-pointer-active');
 
+    // Prevent default hover state when controls shift under the mouse after fullscreen
+    this.#player.classList.add('is-hover-disabled');
+
     const activeElement = this.#root.activeElement;
     if (activeElement instanceof HTMLElement) {
       activeElement.blur();
     }
 
     if (isFullscreenActive) {
-      this.#syncPointerControlsFromLastPosition();
+      if (this.#isTouchControls()) {
+        this.#showTouchControls();
+      } else {
+        this.#showPointerControls(true);
+      }
+      this.#scheduleControlsHide(this.#isTouchControls() ? this.#controlsAutoHideDelay : this.#pointerControlsIdleDelay);
     } else {
       this.#hidePointerControls();
     }

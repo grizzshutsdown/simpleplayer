@@ -134,8 +134,7 @@ export const styles: string = `
   }
 
   .sp-player.is-pointer-active .sp-overlay,
-  .sp-player.is-controls-visible .sp-overlay,
-  :host(:hover) .sp-overlay {
+  .sp-player.is-controls-visible .sp-overlay {
     opacity: 1;
   }
 
@@ -172,8 +171,7 @@ export const styles: string = `
   }
 
   .sp-player.is-pointer-active .sp-button,
-  .sp-player.is-controls-visible .sp-button,
-  :host(:hover) .sp-button {
+  .sp-player.is-controls-visible .sp-button {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
@@ -346,8 +344,7 @@ export const styles: string = `
   }
 
   .sp-player.is-pointer-active .sp-control-tray,
-  .sp-player.is-controls-visible .sp-control-tray,
-  :host(:hover) .sp-control-tray {
+  .sp-player.is-controls-visible .sp-control-tray {
     opacity: 1;
     pointer-events: auto;
     filter: blur(0);
@@ -403,7 +400,7 @@ export const styles: string = `
       transform 240ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
-  .sp-control-tray-slots:has(.sp-control-button:hover)::before {
+  .sp-player:not(.is-hover-disabled) .sp-control-tray-slots:has(.sp-control-button:hover)::before {
     opacity: var(--sp-control-hover-opacity);
     transition:
       opacity 80ms ease 120ms,
@@ -451,7 +448,7 @@ export const styles: string = `
     opacity: 1;
   }
 
-  .sp-control-button:hover {
+  .sp-player:not(.is-hover-disabled) .sp-control-button:hover {
     background: var(--sp-control-slot-hover-surface);
   }
 
@@ -485,7 +482,7 @@ export const styles: string = `
     opacity: 0;
   }
 
-  .sp-control-button:hover .sp-control-icon {
+  .sp-player:not(.is-hover-disabled) .sp-control-button:hover .sp-control-icon {
     opacity: var(--sp-control-icon-hover-opacity);
     transform: translateY(0) scale(1);
   }
@@ -620,27 +617,23 @@ export const styles: string = `
   }
 
   .sp-player.is-pointer-active .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-icon,
-  :host(:hover) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-icon {
     opacity: var(--sp-control-icon-opacity);
     transform: translateY(0) scale(1);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(1) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(1) .sp-control-icon,
-  :host(:hover) .sp-control-button:nth-child(1) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(1) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-1);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(2) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(2) .sp-control-icon,
-  :host(:hover) .sp-control-button:nth-child(2) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(2) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-2);
   }
 
   .sp-player.is-pointer-active .sp-control-button:nth-child(3) .sp-control-icon,
-  .sp-player.is-controls-visible .sp-control-button:nth-child(3) .sp-control-icon,
-  :host(:hover) .sp-control-button:nth-child(3) .sp-control-icon {
+  .sp-player.is-controls-visible .sp-control-button:nth-child(3) .sp-control-icon {
     transition-delay: var(--sp-control-icon-delay-3);
   }
 
@@ -803,8 +796,7 @@ export const styles: string = `
   }
 
   .sp-player.has-pinned-time.is-pointer-active .sp-tray-time,
-  .sp-player.has-pinned-time.is-controls-visible .sp-tray-time,
-  :host(:hover) .sp-player.has-pinned-time .sp-tray-time {
+  .sp-player.has-pinned-time.is-controls-visible .sp-tray-time {
     opacity: 1;
     pointer-events: auto;
     filter: blur(0);
@@ -913,17 +905,6 @@ export const styles: string = `
       --sp-progress-height: 14px;
     }
 
-    :host(:hover) .sp-overlay,
-    :host(:hover) .sp-button,
-    :host(:hover) .sp-control-tray {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    :host(:hover) .sp-control-icon {
-      opacity: var(--sp-control-icon-hidden-opacity);
-      transform: var(--sp-control-icon-hidden-transform);
-    }
 
     .sp-player.is-controls-visible .sp-overlay,
     .sp-player.is-controls-visible .sp-button,
