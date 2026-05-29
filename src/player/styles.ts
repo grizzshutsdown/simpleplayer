@@ -400,12 +400,14 @@ export const styles: string = `
       transform 240ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
+  @media (hover: hover) and (pointer: fine) {
   .sp-player:not(.is-hover-disabled) .sp-control-tray-slots:has(.sp-control-button:hover)::before {
-    opacity: var(--sp-control-hover-opacity);
-    transition:
-      opacity 80ms ease 120ms,
-      transform 160ms cubic-bezier(0.18, 0.9, 0.22, 1);
-  }
+      opacity: var(--sp-control-hover-opacity);
+      transition:
+        opacity 80ms ease 120ms,
+        transform 160ms cubic-bezier(0.18, 0.9, 0.22, 1);
+    }
+}
 
   .sp-control-tray-slots:has(.sp-control-button.is-control-tap-active)::before {
     opacity: var(--sp-control-hover-opacity);
@@ -415,11 +417,13 @@ export const styles: string = `
       transform 160ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
+  @media (hover: hover) and (pointer: fine) {
   .sp-control-tray-slots:not(:has(.sp-control-button:hover))::before {
-    transition:
-      opacity 100ms ease,
-      transform 0ms linear 100ms;
-  }
+      transition:
+        opacity 100ms ease,
+        transform 0ms linear 100ms;
+    }
+}
 
   .sp-control-button {
     position: relative;
@@ -448,9 +452,11 @@ export const styles: string = `
     opacity: 1;
   }
 
+  @media (hover: hover) and (pointer: fine) {
   .sp-player:not(.is-hover-disabled) .sp-control-button:hover {
-    background: var(--sp-control-slot-hover-surface);
-  }
+      background: var(--sp-control-slot-hover-surface);
+    }
+}
 
   .sp-player:not(.has-volume-control) [data-sp-volume-control],
   .sp-player:not(.has-picture-in-picture-control) [data-sp-picture-in-picture-control],
@@ -482,10 +488,12 @@ export const styles: string = `
     opacity: 0;
   }
 
+  @media (hover: hover) and (pointer: fine) {
   .sp-player:not(.is-hover-disabled) .sp-control-button:hover .sp-control-icon {
-    opacity: var(--sp-control-icon-hover-opacity);
-    transform: translateY(0) scale(1);
-  }
+      opacity: var(--sp-control-icon-hover-opacity);
+      transform: translateY(0) scale(1);
+    }
+}
 
   .sp-control-button.is-control-tap-active .sp-control-icon {
     opacity: var(--sp-control-icon-hover-opacity);
@@ -866,7 +874,9 @@ export const styles: string = `
     .sp-player.is-pointer-active .sp-overlay,
     .sp-player.is-loading:not(.has-loaded-once).is-pointer-active .sp-overlay,
     .sp-player.is-pointer-active .sp-button,
-    .sp-player.is-loading:not(.has-loaded-once).is-pointer-active .sp-button {
+    .sp-player.is-loading:not(.has-loaded-once).is-pointer-active .sp-button,
+    .sp-player.is-pointer-active .sp-control-tray,
+    .sp-player.has-pinned-time.is-pointer-active .sp-tray-time {
       opacity: 0;
     }
 

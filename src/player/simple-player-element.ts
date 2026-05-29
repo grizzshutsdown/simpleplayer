@@ -644,8 +644,10 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #trackPointerPosition(event: Event) {
-    if (event instanceof PointerEvent) {
-      this.#lastPointerWasTouch = event.pointerType === 'touch';
+    if (this.#isTouchControls()) return false;
+
+    if (typeof PointerEvent !== 'undefined' && event instanceof PointerEvent) {
+      this.#lastPointerWasTouch = event.pointerType === 'touch' || event.pointerType === 'pen';
       if (this.#lastPointerWasTouch) return false;
       this.#lastPointerClientX = event.clientX;
       this.#lastPointerClientY = event.clientY;
@@ -653,7 +655,7 @@ export class SimplePlayer extends HTMLElement {
     }
 
     if (event instanceof MouseEvent) {
-      this.#lastPointerWasTouch = false;
+      if (this.#lastPointerWasTouch) return false;
       this.#lastPointerClientX = event.clientX;
       this.#lastPointerClientY = event.clientY;
       return true;
@@ -772,7 +774,8 @@ export class SimplePlayer extends HTMLElement {
     this.#syncPointerControlsFromLastPosition();
   };
 
-  #handlePlayerPointerLeave = () => {
+  #handlePlayerPointerLeave = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
     this.#hidePointerControls();
   };
 
@@ -783,7 +786,8 @@ export class SimplePlayer extends HTMLElement {
     this.#clearControlsHideTimer();
   };
 
-  #handleControlSurfacePointerLeave = () => {
+  #handleControlSurfacePointerLeave = (event: Event) => {
+    if (!this.#trackPointerPosition(event)) return;
     this.#isPointerOverControlSurface = false;
     this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
   };
@@ -791,14 +795,15 @@ export class SimplePlayer extends HTMLElement {
   #handleControlSurfaceFocusIn = () => {
     if (this.#isTouchControls()) {
       this.#player.classList.add('is-controls-visible');
-    } else {
-      this.#player.classList.add('is-pointer-active');
+      return;
     }
 
+    this.#player.classList.add('is-pointer-active');
     this.#clearControlsHideTimer();
   };
 
   #handleControlSurfaceFocusOut = () => {
+    if (this.#isTouchControls()) return;
     this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
   };
 
