@@ -2,6 +2,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@grizzshutsdown/simpleplayer": "latest"
+    "@grizzshutsdown/simpleplayer": "file:.."
   }
 }

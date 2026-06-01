@@ -132,7 +132,7 @@ npm run dev
 
 The dev playground lives in `dev/` and imports `src/simple-player.ts` directly. Use it when changing the player itself.
 
-The hosted demo is separate from the package source. It has its own consumer install in `site/`, then imports the published package the same way a user would:
+The hosted demo is separate from the package source. It has its own consumer install in `site/`, then imports the locally built package artifact so deploys always match the current checkout:
 
 ```bash
 npm install --prefix site
