@@ -14,6 +14,7 @@ import type { Cleanup, PlaybackState } from './types';
 
 export class SimplePlayer extends HTMLElement {
   static observedAttributes = OBSERVED_ATTRIBUTES;
+  static #mediaSessionOwner: SimplePlayer | null = null;
 
   #root: ShadowRoot;
   #cleanup: Cleanup[] = [];
@@ -60,6 +61,9 @@ export class SimplePlayer extends HTMLElement {
   #suppressTouchButtonClickUntil = 0;
   #suppressTouchControlClickUntil = 0;
   #isOverlayPointerDownEligible = false;
+  #shouldHidePointerControlsAfterOverlayClick = false;
+  #pointerControlsActivatedAt = 0;
+  #suppressPointerControlsUntil = 0;
   #timeWidthObserver: ResizeObserver | null = null;
   #hasDecodedFirstFrame = false;
   #hasPresentedFirstFrame = false;
@@ -89,6 +93,7 @@ export class SimplePlayer extends HTMLElement {
   #volumeCloseTimer = 0;
   #volumeIconAnimationTimer = 0;
   #controlTapTimer = 0;
+  #playbackPulseTimer = 0;
   #volumeIconState: 'sound' | 'muted' | null = null;
   #showRemainingTime = false;
   #timeAnimationTimer = 0;
@@ -109,6 +114,8 @@ export class SimplePlayer extends HTMLElement {
   readonly #bufferedRangeFuzz = 0.18;
   readonly #controlsCollisionEnterMargin = 8;
   readonly #controlsCollisionExitMargin = 18;
+  readonly #playbackPulseDuration = 620;
+  readonly #pointerControlsRevealGuardDelay = 260;
 
   constructor() {
     super();
@@ -294,7 +301,9 @@ export class SimplePlayer extends HTMLElement {
     this.#clearVolumeCloseTimer();
     this.#clearVolumeIconAnimationTimer();
     this.#clearControlTapTimer();
+    this.#clearPlaybackPulseTimer();
     this.#player.classList.remove('is-volume-icon-animating');
+    this.#player.classList.remove('is-playback-pulsing');
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
     this.style.removeProperty('--sp-touch-control-hover-offset');
     this.#clearControlsCollision();
@@ -304,10 +313,14 @@ export class SimplePlayer extends HTMLElement {
     this.#isVolumeHovering = false;
     this.#isPointerOverControlSurface = false;
     this.#isOverlayPointerDownEligible = false;
+    this.#shouldHidePointerControlsAfterOverlayClick = false;
+    this.#pointerControlsActivatedAt = 0;
+    this.#suppressPointerControlsUntil = 0;
     this.#activeVolumePointerId = null;
     this.#volumeControl.classList.remove('is-volume-open');
     this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
     this.#player.classList.remove('is-pointer-active');
+    this.#releaseMediaSession();
     this.#stopProgressLoop();
   }
 
@@ -495,6 +508,7 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#root, 'focusin', this.#handleControlSurfaceFocusIn);
     this.#listen(this.#root, 'focusout', this.#handleControlSurfaceFocusOut);
     this.#listen(this.#player, 'pointerdown', this.#handlePlayerPointerDown);
+    this.#listen(this.#player, 'keydown', this.#handlePlayerKeyDown);
     this.#listen(this.#player, 'dragstart', this.#preventNativeVideoAction);
     this.#listen(this.#player, 'selectstart', this.#preventNativeVideoAction);
     this.#listen(this.#video, 'dragstart', this.#preventNativeVideoAction);
@@ -651,6 +665,10 @@ export class SimplePlayer extends HTMLElement {
 
   #showPointerControls(forcePointer = false) {
     if (!forcePointer && this.#isTouchControls()) return;
+    if (performance.now() < this.#suppressPointerControlsUntil) return;
+    if (!this.#player.classList.contains('is-pointer-active')) {
+      this.#pointerControlsActivatedAt = performance.now();
+    }
     this.#player.classList.add('is-pointer-active');
     if (!this.#isPointerOverControlSurface) {
       this.#scheduleControlsHide(forcePointer ? this.#pointerControlsIdleDelay : undefined);
@@ -661,6 +679,7 @@ export class SimplePlayer extends HTMLElement {
 
   #hidePointerControls() {
     this.#isPointerOverControlSurface = false;
+    this.#pointerControlsActivatedAt = 0;
     this.#clearControlsHideTimer();
     this.#player.classList.remove('is-pointer-active');
   }
@@ -798,6 +817,7 @@ export class SimplePlayer extends HTMLElement {
 
   #handlePlayerPointerLeave = (event: Event) => {
     if (!this.#trackPointerPosition(event)) return;
+    this.#suppressPointerControlsUntil = 0;
     this.#hidePointerControls();
   };
 
@@ -814,7 +834,9 @@ export class SimplePlayer extends HTMLElement {
     this.#scheduleControlsHide(this.#pointerControlsIdleDelay);
   };
 
-  #handleControlSurfaceFocusIn = () => {
+  #handleControlSurfaceFocusIn = (event?: Event) => {
+    if (event?.target === this.#player) return;
+
     if (this.#isTouchControls()) {
       this.#player.classList.add('is-controls-visible');
       return;
@@ -892,6 +914,79 @@ export class SimplePlayer extends HTMLElement {
     window.clearTimeout(this.#volumeIconAnimationTimer);
     this.#volumeIconAnimationTimer = 0;
   }
+
+  #clearPlaybackPulseTimer() {
+    if (!this.#playbackPulseTimer) return;
+    window.clearTimeout(this.#playbackPulseTimer);
+    this.#playbackPulseTimer = 0;
+  }
+
+  #pulsePlaybackIcon() {
+    this.#clearPlaybackPulseTimer();
+    this.#player.classList.remove('is-playback-pulsing');
+    void this.#button.offsetWidth;
+    this.#player.classList.add('is-playback-pulsing');
+    this.#playbackPulseTimer = window.setTimeout(() => {
+      this.#playbackPulseTimer = 0;
+      this.#player.classList.remove('is-playback-pulsing');
+    }, this.#playbackPulseDuration);
+  }
+
+  #claimMediaSession() {
+    if (!('mediaSession' in navigator)) return;
+
+    SimplePlayer.#mediaSessionOwner = this;
+    try {
+      navigator.mediaSession.setActionHandler('play', this.#handleMediaSessionPlay);
+      navigator.mediaSession.setActionHandler('pause', this.#handleMediaSessionPause);
+    } catch {
+      // Some browsers expose Media Session without supporting every action.
+    }
+    this.#syncMediaSessionPlaybackState();
+  }
+
+  #releaseMediaSession() {
+    if (!('mediaSession' in navigator) || SimplePlayer.#mediaSessionOwner !== this) return;
+
+    try {
+      navigator.mediaSession.setActionHandler('play', null);
+      navigator.mediaSession.setActionHandler('pause', null);
+      navigator.mediaSession.playbackState = 'none';
+    } catch {
+      // Ignore partial Media Session implementations.
+    }
+    SimplePlayer.#mediaSessionOwner = null;
+  }
+
+  #syncMediaSessionPlaybackState() {
+    if (!('mediaSession' in navigator) || SimplePlayer.#mediaSessionOwner !== this) return;
+
+    try {
+      navigator.mediaSession.playbackState = this.#video.paused || this.#video.ended ? 'paused' : 'playing';
+    } catch {
+      // Ignore partial Media Session implementations.
+    }
+  }
+
+  #handleMediaSessionPlay = () => {
+    if (!this.#video.paused && !this.#video.ended) {
+      this.#syncMediaSessionPlaybackState();
+      return;
+    }
+
+    this.#pulsePlaybackIcon();
+    void this.#handleButtonClick();
+  };
+
+  #handleMediaSessionPause = () => {
+    if (this.#video.paused || this.#video.ended) {
+      this.#syncMediaSessionPlaybackState();
+      return;
+    }
+
+    this.#pulsePlaybackIcon();
+    void this.#handleButtonClick();
+  };
 
   #animateVolumeIconSwap() {
     this.#clearVolumeIconAnimationTimer();
@@ -1811,6 +1906,7 @@ export class SimplePlayer extends HTMLElement {
       return;
     }
 
+    this.#claimMediaSession();
     const shouldPlay = this.#optimisticPlaybackState
       ? this.#optimisticPlaybackState !== 'playing'
       : this.#video.paused || this.#video.ended;
@@ -1839,22 +1935,29 @@ export class SimplePlayer extends HTMLElement {
   };
 
   #handleOverlayPointerDown = (event: Event) => {
-    const opacity = Number.parseFloat(getComputedStyle(this.#overlay).opacity);
     this.#isOverlayPointerDownEligible = (
       event instanceof PointerEvent &&
       event.pointerType === 'mouse' &&
       event.button === 0 &&
       this.pauseOnOverlayClick &&
-      !this.#isTouchControls() &&
-      opacity >= 0.5
+      !this.#isTouchControls()
+    );
+    this.#shouldHidePointerControlsAfterOverlayClick = (
+      this.#isOverlayPointerDownEligible &&
+      (
+        !this.#player.classList.contains('is-pointer-active') ||
+        performance.now() - this.#pointerControlsActivatedAt < this.#pointerControlsRevealGuardDelay
+      )
     );
   };
 
   #clearOverlayPointerDownEligibility = () => {
     this.#isOverlayPointerDownEligible = false;
+    this.#shouldHidePointerControlsAfterOverlayClick = false;
   };
 
   #handleOverlayPointerUp = (event: Event) => {
+    const shouldHidePointerControls = this.#shouldHidePointerControlsAfterOverlayClick;
     const shouldToggle = (
       event instanceof PointerEvent &&
       event.pointerType === 'mouse' &&
@@ -1865,6 +1968,29 @@ export class SimplePlayer extends HTMLElement {
 
     if (!shouldToggle) return;
 
+    if (shouldHidePointerControls) {
+      this.#suppressPointerControlsUntil = performance.now() + this.#pointerControlsRevealGuardDelay;
+      this.#hidePointerControls();
+    }
+    this.#pulsePlaybackIcon();
+    void this.#handleButtonClick();
+  };
+
+  #handlePlayerKeyDown = (event: Event) => {
+    if (!(event instanceof KeyboardEvent) || event.target !== this.#player || event.repeat) return;
+
+    const key = event.key.toLowerCase();
+    const shouldToggle = key === ' ' || key === 'spacebar' || key === 'enter' || key === 'k' || key === 'mediaplaypause';
+    const shouldPlay = key === 'mediaplay';
+    const shouldPause = key === 'mediapause';
+    if (!shouldToggle && !shouldPlay && !shouldPause) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (shouldPlay && !this.#video.paused && !this.#video.ended) return;
+    if (shouldPause && (this.#video.paused || this.#video.ended)) return;
+
+    this.#pulsePlaybackIcon();
     void this.#handleButtonClick();
   };
 
@@ -2227,10 +2353,12 @@ export class SimplePlayer extends HTMLElement {
   };
 
   #handleVideoPlay = () => {
+    this.#claimMediaSession();
     this.#optimisticPlaybackState = null;
     this.#clearPausedVisualProgress();
     if (!this.#isScrubPreviewLocked()) this.#syncVisualProgressClock();
     this.#syncVideoState();
+    this.#syncMediaSessionPlaybackState();
   };
 
   #handleVideoPause = () => {
@@ -2238,6 +2366,7 @@ export class SimplePlayer extends HTMLElement {
     if (!this.#isScrubPreviewLocked()) this.#holdPausedVisualProgress();
     this.#syncVideoLoading();
     this.#syncVideoState();
+    this.#syncMediaSessionPlaybackState();
   };
 
   #handleVideoEnded = () => {
@@ -2245,6 +2374,7 @@ export class SimplePlayer extends HTMLElement {
     this.#clearPausedVisualProgress();
     if (!this.#isScrubPreviewLocked()) this.#syncVisualProgressClock();
     this.#syncVideoState();
+    this.#syncMediaSessionPlaybackState();
   };
 
   #handleVideoLoadStart = () => {

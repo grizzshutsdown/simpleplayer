@@ -4,6 +4,8 @@ A simple default video player created from [Grizz's portfolio](https://grizz.fyi
 
 SimplePlayer is a framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading.
 
+Demo: [simpleplayer.grizz.fyi](https://simpleplayer.grizz.fyi/)
+
 ## Installation
 
 ```bash
@@ -100,10 +102,12 @@ declare module 'react' {
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
 - `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons. The volume control automatically hides itself if the video has no audio track.
 - `disable-autoplay`: turn off default autoplay. Autoplay starts muted so browsers allow it.
-- `pause-on-overlay-click`: opt into toggling play/pause when the visible non-control overlay is clicked on desktop. After the overlay fades out, the first click only reveals the controls. Mobile behavior stays unchanged.
+- `pause-on-overlay-click`: opt into toggling play/pause anywhere on the non-control video surface on desktop. Hidden-overlay clicks pulse only the center play/pause icon. Mobile behavior stays unchanged.
 - `show-time`: dual-mode timestamp. When used with `controls`, shows a pinned glass timestamp tray in the bottom-left alongside the controls tray. When used without `controls`, shows a hover tooltip above the scrubber as you drag or hover it. Clicking the timestamp toggles between elapsed and remaining time. The tray automatically resizes to fit the text as the time changes during playback.
 
 The default player matches the simple preview: play/pause, scrubber, muted autoplay, and no extra side controls. Hovering over the scrubber shows a translucent fill that follows the cursor, previewing the seek position. The controls and overlay automatically fade out after a brief period of inactivity (both windowed and fullscreen) and reappear instantly on movement or touch.
+
+When the player surface is focused, `Space`, `Enter`, and `K` toggle playback. Hardware media play/pause buttons use the browser Media Session API when available. Keyboard and media-button toggles pulse only the center play/pause icon without revealing the overlay.
 
 Keep the HTML clean and manage controls with JavaScript:
 

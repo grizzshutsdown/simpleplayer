@@ -3,7 +3,7 @@ import { styles } from './styles';
 export const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
-  <div class="sp-player is-loading" data-sp-player>
+  <div class="sp-player is-loading" tabindex="0" role="group" aria-label="Video player" data-sp-player>
     <video
       class="sp-video sp-asset"
       autoplay

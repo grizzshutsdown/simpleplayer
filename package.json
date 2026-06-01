@@ -1,9 +1,9 @@
 {
   "name": "@grizzshutsdown/simpleplayer",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "A simple default video player created from Grizz's portfolio for others to use.",
   "type": "module",
-  "homepage": "https://grizz.fyi",
+  "homepage": "https://simpleplayer.grizz.fyi/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/grizzshutsdown/simpleplayer.git"

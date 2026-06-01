@@ -134,7 +134,7 @@ export const styles: string = `
   }
 
   @media (hover: hover) and (pointer: fine) {
-    :host([pause-on-overlay-click]) .sp-player.is-pointer-active .sp-overlay {
+    :host([pause-on-overlay-click]) .sp-overlay {
       pointer-events: auto;
       cursor: pointer;
     }
@@ -178,10 +178,15 @@ export const styles: string = `
   }
 
   .sp-player.is-pointer-active .sp-button,
-  .sp-player.is-controls-visible .sp-button {
+  .sp-player.is-controls-visible .sp-button,
+  .sp-player.is-playback-pulsing .sp-button {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
+  }
+
+  .sp-player.is-playback-pulsing .sp-button {
+    pointer-events: none;
   }
 
   .sp-player.is-scrubbing .sp-button,
@@ -192,6 +197,10 @@ export const styles: string = `
   }
 
   .sp-button:focus {
+    outline: 0;
+  }
+
+  .sp-player:focus {
     outline: 0;
   }
 
@@ -863,7 +872,6 @@ export const styles: string = `
     opacity: 0;
   }
 
-  .sp-button:focus-visible,
   .sp-progress:focus-visible,
   .sp-control-button:focus-visible,
   .sp-volume-track:focus-visible {
