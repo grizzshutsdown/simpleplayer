@@ -22,6 +22,7 @@ export class SimplePlayer extends HTMLElement {
   #videoSourceLoaded = false;
   #player!: HTMLElement;
   #video!: HTMLVideoElement;
+  #overlay!: HTMLElement;
   #button!: HTMLButtonElement;
   #progressTrack!: HTMLElement;
   #controlTray!: HTMLElement;
@@ -58,6 +59,7 @@ export class SimplePlayer extends HTMLElement {
   #initialProgressSettleTimer = 0;
   #suppressTouchButtonClickUntil = 0;
   #suppressTouchControlClickUntil = 0;
+  #isOverlayPointerDownEligible = false;
   #timeWidthObserver: ResizeObserver | null = null;
   #hasDecodedFirstFrame = false;
   #hasPresentedFirstFrame = false;
@@ -152,6 +154,19 @@ export class SimplePlayer extends HTMLElement {
     this.setAttribute('disable-autoplay', '');
   }
 
+  get pauseOnOverlayClick() {
+    return this.hasAttribute('pause-on-overlay-click');
+  }
+
+  set pauseOnOverlayClick(value: boolean) {
+    if (value) {
+      this.setAttribute('pause-on-overlay-click', '');
+      return;
+    }
+
+    this.removeAttribute('pause-on-overlay-click');
+  }
+
   get controlsEnabled() {
     return this.hasAttribute('controls');
   }
@@ -231,6 +246,7 @@ export class SimplePlayer extends HTMLElement {
   connectedCallback() {
     this.#player = this.#root.querySelector('[data-sp-player]')!;
     this.#video = this.#root.querySelector('[data-sp-video]')!;
+    this.#overlay = this.#root.querySelector('[data-sp-overlay]')!;
     this.#button = this.#root.querySelector('[data-sp-button]')!;
     this.#progressTrack = this.#root.querySelector('[data-sp-progress-track]')!;
     this.#controlTray = this.#root.querySelector('[data-sp-control-tray]')!;
@@ -287,6 +303,7 @@ export class SimplePlayer extends HTMLElement {
     this.#isVolumeScrubbing = false;
     this.#isVolumeHovering = false;
     this.#isPointerOverControlSurface = false;
+    this.#isOverlayPointerDownEligible = false;
     this.#activeVolumePointerId = null;
     this.#volumeControl.classList.remove('is-volume-open');
     this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
@@ -301,6 +318,8 @@ export class SimplePlayer extends HTMLElement {
       this.#syncAspectRatio();
       return;
     }
+
+    if (!this.#initialized) return;
 
     if (name === 'preload-margin' && this.isConnected) {
       this.#observer?.disconnect();
@@ -441,6 +460,9 @@ export class SimplePlayer extends HTMLElement {
   }
 
   #bindEvents() {
+    this.#listen(this.#overlay, 'pointerdown', this.#handleOverlayPointerDown);
+    this.#listen(this.#overlay, 'pointerup', this.#handleOverlayPointerUp);
+    this.#listen(this.#overlay, 'pointercancel', this.#clearOverlayPointerDownEligibility);
     this.#listen(this.#button, 'click', this.#handleButtonClick);
     this.#listen(this, 'pointerenter', this.#handlePlayerPointerEnter);
     this.#listen(this, 'pointermove', this.#handlePlayerPointerMove);
@@ -1816,6 +1838,36 @@ export class SimplePlayer extends HTMLElement {
     this.#scheduleTouchControlsHide();
   };
 
+  #handleOverlayPointerDown = (event: Event) => {
+    const opacity = Number.parseFloat(getComputedStyle(this.#overlay).opacity);
+    this.#isOverlayPointerDownEligible = (
+      event instanceof PointerEvent &&
+      event.pointerType === 'mouse' &&
+      event.button === 0 &&
+      this.pauseOnOverlayClick &&
+      !this.#isTouchControls() &&
+      opacity >= 0.5
+    );
+  };
+
+  #clearOverlayPointerDownEligibility = () => {
+    this.#isOverlayPointerDownEligible = false;
+  };
+
+  #handleOverlayPointerUp = (event: Event) => {
+    const shouldToggle = (
+      event instanceof PointerEvent &&
+      event.pointerType === 'mouse' &&
+      event.button === 0 &&
+      this.#isOverlayPointerDownEligible
+    );
+    this.#clearOverlayPointerDownEligibility();
+
+    if (!shouldToggle) return;
+
+    void this.#handleButtonClick();
+  };
+
   #handlePlayerPointerDown = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
 
@@ -2144,6 +2196,7 @@ export class SimplePlayer extends HTMLElement {
 
   #handleDocumentPointerUp = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
+    this.#clearOverlayPointerDownEligibility();
     if (this.#activeVolumePointerId !== null && event.pointerId === this.#activeVolumePointerId) {
       this.#finishVolumeScrub(event.pointerId);
       return;
@@ -2154,6 +2207,7 @@ export class SimplePlayer extends HTMLElement {
 
   #handleDocumentPointerCancel = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
+    this.#clearOverlayPointerDownEligibility();
     if (this.#activeVolumePointerId !== null && event.pointerId === this.#activeVolumePointerId) {
       this.#finishVolumeScrub(event.pointerId);
       return;

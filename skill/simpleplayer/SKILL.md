@@ -24,6 +24,7 @@ Attributes:
 - `preload-margin`: lazy-load margin. Default: `360px 0px`.
 - `controls`: add a controls tray with volume, Picture-in-Picture, and fullscreen buttons. The volume control automatically hides itself if the video has no audio track.
 - `disable-autoplay`: turns off muted autoplay.
+- `pause-on-overlay-click`: opt into toggling play/pause when the visible non-control overlay is clicked on desktop. After the overlay fades out, the first click only reveals the controls. Mobile behavior stays unchanged.
 - `show-time`: dual-mode timestamp. With `controls`, shows a pinned glass timestamp tray in the bottom-left. Without `controls`, shows a hover tooltip above the scrubber while dragging or hovering. Clicking toggles between elapsed and remaining time. The tray automatically resizes to fit the text as the time changes during playback.
 - `disable-volume`: removes the volume control.
 - `disable-picture-in-picture`: removes Picture-in-Picture.
@@ -38,6 +39,7 @@ player.src = '/video.mp4';
 player.aspectRatio = '1 / 1';
 player.preloadMargin = '240px 0px';
 player.autoplayEnabled = false;
+player.pauseOnOverlayClick = true;
 player.controlsEnabled = true;
 player.timeVisible = true;
 player.volumeEnabled = true;

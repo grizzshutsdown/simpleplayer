@@ -15,7 +15,7 @@ template.innerHTML = `
       disableRemotePlayback
       data-sp-video>
     </video>
-    <span class="sp-overlay" aria-hidden="true"></span>
+    <span class="sp-overlay" aria-hidden="true" data-sp-overlay></span>
     <button class="sp-button" type="button" aria-label="Play video" data-sp-button>
       <svg class="sp-icon sp-icon--play" viewBox="0 0 18 20" aria-hidden="true">
         <path d="M3 3.5L15 10L3 16.5Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>

@@ -14,7 +14,8 @@ const syncPlayerSetting = (input: HTMLInputElement) => {
     | 'volumeSliderEnabled'
     | 'pictureInPictureEnabled'
     | 'fullscreenEnabled'
-    | 'autoplayEnabled';
+    | 'autoplayEnabled'
+    | 'pauseOnOverlayClick';
 
   player[key] = input.checked;
 };

@@ -133,6 +133,13 @@ export const styles: string = `
     transform: translateZ(0);
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    :host([pause-on-overlay-click]) .sp-player.is-pointer-active .sp-overlay {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+  }
+
   .sp-player.is-pointer-active .sp-overlay,
   .sp-player.is-controls-visible .sp-overlay {
     opacity: 1;

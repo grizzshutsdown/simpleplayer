@@ -7,6 +7,7 @@ export const OBSERVED_ATTRIBUTES = [
   'preload-margin',
   'controls',
   'disable-autoplay',
+  'pause-on-overlay-click',
   'enable-volume',
   'disable-volume',
   'disable-volume-slider',

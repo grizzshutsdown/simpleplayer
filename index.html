@@ -698,6 +698,11 @@ declare module 'react' {
       'simple-player': DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & {
         src?: string;
         'aspect-ratio'?: string;
+        'preload-margin'?: string;
+        controls?: boolean;
+        'disable-autoplay'?: boolean;
+        'pause-on-overlay-click'?: boolean;
+        'show-time'?: boolean;
       };
     }
   }
@@ -833,7 +838,7 @@ import '@grizzshutsdown/simpleplayer';
         playerCard.setAttribute('aria-busy', isLoading ? 'true' : 'false');
         playerCard.classList.toggle('is-loading-preview', mode === 'loading');
         const src = isLoading ? '' : ` src="${previewVideo}"`;
-        const controls = hasControls ? ' controls show-time' : '';
+        const controls = hasControls ? ' controls show-time pause-on-overlay-click' : '';
         playerCard.innerHTML = `<simple-player${src} aspect-ratio="16 / 9"${controls}></simple-player>`;
       };
 
