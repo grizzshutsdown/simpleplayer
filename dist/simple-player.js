@@ -1457,7 +1457,7 @@ class h extends HTMLElement {
   #os = 0;
   #pt = 0;
   #ns = !1;
-  #X = !1;
+  #W = !1;
   #xt = !1;
   #Hs = 0;
   #as = 0;
@@ -1498,7 +1498,7 @@ class h extends HTMLElement {
   #Ys = null;
   #fs = !1;
   #q = !1;
-  #W = !1;
+  #X = !1;
   #l = null;
   #At = 0;
   #_ = !1;
@@ -1533,24 +1533,27 @@ class h extends HTMLElement {
   #de = 260;
   constructor() {
     super(), this.#r = this.attachShadow({ mode: "open" }), this.#r.append(d.content.cloneNode(!0));
+    const t = this.#r.querySelector("[data-sp-video]"), s = this.ownerDocument.createElement("video");
+    for (const { name: e, value: i } of Array.from(t.attributes)) s.setAttribute(e, i);
+    t.replaceWith(s);
   }
   get src() {
     return this.getAttribute("src") ?? "";
   }
   set src(t) {
-    this.#Xs("src", t);
+    this.#Ws("src", t);
   }
   get aspectRatio() {
     return this.getAttribute("aspect-ratio") || u;
   }
   set aspectRatio(t) {
-    this.#Xs("aspect-ratio", t);
+    this.#Ws("aspect-ratio", t);
   }
   get preloadMargin() {
     return this.getAttribute("preload-margin") || f;
   }
   set preloadMargin(t) {
-    this.#Xs("preload-margin", t);
+    this.#Ws("preload-margin", t);
   }
   get autoplayEnabled() {
     return !this.hasAttribute("disable-autoplay") && !this.hasAttribute("no-autoplay");
@@ -1627,10 +1630,10 @@ class h extends HTMLElement {
     this.#vs("fullscreen", t);
   }
   connectedCallback() {
-    this.#e = this.#r.querySelector("[data-sp-player]"), this.#t = this.#r.querySelector("[data-sp-video]"), this.#is = this.#r.querySelector("[data-sp-overlay]"), this.#z = this.#r.querySelector("[data-sp-button]"), this.#i = this.#r.querySelector("[data-sp-progress-track]"), this.#U = this.#r.querySelector("[data-sp-control-tray]"), this.#C = this.#r.querySelector("[data-sp-control-tray-slots]"), this.#gt = this.#r.querySelector("[data-sp-tray-time]"), this.#c = this.#r.querySelector("[data-sp-tray-time-text]"), this.#Ds = this.#r.querySelector("[data-sp-time]"), this.#le = this.#r.querySelector("[data-sp-time-text]"), this.#R = this.#r.querySelector("[data-sp-volume-slot]"), this.#n = this.#r.querySelector("[data-sp-volume-control]"), this.#y = this.#r.querySelector("[data-sp-volume-popover]"), this.#b = this.#r.querySelector("[data-sp-volume-track]"), this.#a = this.#r.querySelector("[data-sp-speed-control]"), this.#rs = this.#r.querySelector("[data-sp-speed-slot]"), this.#N = this.#r.querySelector("[data-sp-speed-value]"), this.#w = this.#r.querySelector("[data-sp-speed-popover]"), this.#v = this.#r.querySelector("[data-sp-speed-track]"), this.#at = this.#r.querySelector("[data-sp-picture-in-picture-control]"), this.#lt = this.#r.querySelector("[data-sp-fullscreen-control]"), this.#O = [this.#n, this.#a, this.#at, this.#lt], this.#me(), this.#es || (this.#hi(), this.#es = !0), this.#ys(), this.#_s(), this.#Ht(), this.#Ws(), this.#S(), this.#g(), this.#re(), this.#_t(), this.#Ms(), this.#f();
+    this.#e = this.#r.querySelector("[data-sp-player]"), this.#t = this.#r.querySelector("[data-sp-video]"), this.#is = this.#r.querySelector("[data-sp-overlay]"), this.#z = this.#r.querySelector("[data-sp-button]"), this.#i = this.#r.querySelector("[data-sp-progress-track]"), this.#U = this.#r.querySelector("[data-sp-control-tray]"), this.#C = this.#r.querySelector("[data-sp-control-tray-slots]"), this.#gt = this.#r.querySelector("[data-sp-tray-time]"), this.#c = this.#r.querySelector("[data-sp-tray-time-text]"), this.#Ds = this.#r.querySelector("[data-sp-time]"), this.#le = this.#r.querySelector("[data-sp-time-text]"), this.#R = this.#r.querySelector("[data-sp-volume-slot]"), this.#n = this.#r.querySelector("[data-sp-volume-control]"), this.#y = this.#r.querySelector("[data-sp-volume-popover]"), this.#b = this.#r.querySelector("[data-sp-volume-track]"), this.#a = this.#r.querySelector("[data-sp-speed-control]"), this.#rs = this.#r.querySelector("[data-sp-speed-slot]"), this.#N = this.#r.querySelector("[data-sp-speed-value]"), this.#w = this.#r.querySelector("[data-sp-speed-popover]"), this.#v = this.#r.querySelector("[data-sp-speed-track]"), this.#at = this.#r.querySelector("[data-sp-picture-in-picture-control]"), this.#lt = this.#r.querySelector("[data-sp-fullscreen-control]"), this.#O = [this.#n, this.#a, this.#at, this.#lt], this.#me(), this.#es || (this.#hi(), this.#es = !0), this.#ys(), this.#_s(), this.#Ht(), this.#Xs(), this.#S(), this.#g(), this.#re(), this.#_t(), this.#Ms(), this.#f();
   }
   disconnectedCallback() {
-    this.#M?.disconnect(), this.#M = null, this.#ss.forEach((t) => t()), this.#ss = [], this.#es = !1, this.#T(), this.#ke(), this.#Es(), this.#Gs(), this.#yt(), this.#Cs(), this.#Kt(), this.#Jt(), this.#Rs(), this.#Ye(), this.#Pe(), this.#Ks(), this.#Te(), this.#e.classList.remove("is-volume-icon-animating"), this.#e.classList.remove("is-playback-pulsing"), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#Ot(), this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#q = !1, this.#W = !1, this.#_ = !1, this.#ft = !1, this.#st = !1, this.#Tt = !1, this.#ls = !1, this.#hs = 0, this.#ps = 0, this.#ne(this.#u), this.#l = null, this.#u = null, this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#O.forEach((t) => t.classList.remove("is-control-tap-active")), this.#e.classList.remove("is-pointer-active"), this.#fi(), this.#Xt();
+    this.#M?.disconnect(), this.#M = null, this.#ss.forEach((t) => t()), this.#ss = [], this.#es = !1, this.#T(), this.#ke(), this.#Es(), this.#Gs(), this.#yt(), this.#Cs(), this.#Kt(), this.#Jt(), this.#Rs(), this.#Ye(), this.#Pe(), this.#Ks(), this.#Te(), this.#e.classList.remove("is-volume-icon-animating"), this.#e.classList.remove("is-playback-pulsing"), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#Ot(), this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#q = !1, this.#X = !1, this.#_ = !1, this.#ft = !1, this.#st = !1, this.#Tt = !1, this.#ls = !1, this.#hs = 0, this.#ps = 0, this.#ne(this.#u), this.#l = null, this.#u = null, this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#O.forEach((t) => t.classList.remove("is-control-tap-active")), this.#e.classList.remove("is-pointer-active"), this.#fi(), this.#Wt();
   }
   attributeChangedCallback(t, s, e) {
     if (s !== e) {
@@ -1652,14 +1655,14 @@ class h extends HTMLElement {
           return;
         }
         if (t === "show-time" && this.isConnected) {
-          this.#Ws();
+          this.#Xs();
           return;
         }
-        (t === "controls" || t.startsWith("enable-") || t.startsWith("disable-") || t.startsWith("no-")) && this.isConnected && (this.#Ht(), this.#g(), this.#_t(), this.#Ms(), this.#Ws());
+        (t === "controls" || t.startsWith("enable-") || t.startsWith("disable-") || t.startsWith("no-")) && this.isConnected && (this.#Ht(), this.#g(), this.#_t(), this.#Ms(), this.#Xs());
       }
     }
   }
-  #Xs(t, s) {
+  #Ws(t, s) {
     if (s === "") {
       this.removeAttribute(t);
       return;
@@ -1696,7 +1699,7 @@ class h extends HTMLElement {
     let e = 0;
     for (const i of s)
       this.#e.classList.toggle(i.className, i.enabled), i.button.hidden = !i.enabled, i.enabled ? (i.button.dataset.spControlIndex = `${e}`, e += 1) : delete i.button.dataset.spControlIndex;
-    this.style.setProperty("--sp-enabled-controls-count", `${e}`), this.style.setProperty("--sp-control-tray-display", e > 0 ? "block" : "none"), this.#li(), this.#e.classList.toggle("has-volume-slider-control", t && this.volumeSliderEnabled), (!t || !this.volumeSliderEnabled) && (this.#Gt(), this.#Fs(this.#l), this.#q = !1, this.#W = !1, this.#y.classList.remove("is-scrubbing-volume")), this.speedEnabled || this.#G(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width");
+    this.style.setProperty("--sp-enabled-controls-count", `${e}`), this.style.setProperty("--sp-control-tray-display", e > 0 ? "block" : "none"), this.#li(), this.#e.classList.toggle("has-volume-slider-control", t && this.volumeSliderEnabled), (!t || !this.volumeSliderEnabled) && (this.#Gt(), this.#Fs(this.#l), this.#q = !1, this.#X = !1, this.#y.classList.remove("is-scrubbing-volume")), this.speedEnabled || this.#G(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width");
   }
   #li() {
     if (!this.#C || !this.#N) return;
@@ -1715,11 +1718,11 @@ class h extends HTMLElement {
   get #qt() {
     return this.timeVisible && this.controlsEnabled;
   }
-  #Ws() {
+  #Xs() {
     this.#e && (this.#e.classList.toggle("has-pinned-time", this.#qt), this.#qt && this.#Nt());
   }
   #hi() {
-    this.#s(this.#is, "pointerdown", this.#Yi), this.#s(this.#is, "pointerup", this.#Ui), this.#s(this.#is, "pointercancel", this.#Vs), this.#s(this.#z, "click", this.#Zt), this.#s(this, "pointerenter", this.#ks), this.#s(this, "pointermove", this.#Ps), this.#s(this, "pointerleave", this.#Ts), this.#s(this, "mouseenter", this.#ks), this.#s(this, "mousemove", this.#Ps), this.#s(this, "mouseleave", this.#Ts), this.#s(this.#e, "pointerenter", this.#ks), this.#s(this.#e, "pointermove", this.#Ps), this.#s(this.#e, "pointerleave", this.#Ts), this.#s(this.#e, "mouseenter", this.#ks), this.#s(this.#e, "mousemove", this.#Ps), this.#s(this.#e, "mouseleave", this.#Ts), this.#s(this.#z, "pointerenter", this.#j), this.#s(this.#z, "pointerleave", this.#Z), this.#s(this.#z, "mouseenter", this.#j), this.#s(this.#z, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#j), this.#s(this.#i, "pointerleave", this.#Z), this.#s(this.#i, "mouseenter", this.#j), this.#s(this.#i, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#_e), this.#s(this.#i, "pointerleave", this.#je), this.#s(this.#i, "mouseenter", this.#_e), this.#s(this.#i, "mouseleave", this.#je), this.#s(this.#U, "pointerenter", this.#j), this.#s(this.#U, "pointerleave", this.#Z), this.#s(this.#U, "mouseenter", this.#j), this.#s(this.#U, "mouseleave", this.#Z), this.#s(this.#gt, "pointerenter", this.#j), this.#s(this.#gt, "pointerleave", this.#Z), this.#s(this.#gt, "mouseenter", this.#j), this.#s(this.#gt, "mouseleave", this.#Z), this.#s(this.#r, "focusin", this.#ge), this.#s(this.#r, "focusout", this.#di), this.#s(this.#e, "pointerdown", this.#Oi), this.#s(this.#e, "keydown", this.#Ni), this.#s(this.#e, "dragstart", this.#ws), this.#s(this.#e, "selectstart", this.#ws), this.#s(this.#t, "dragstart", this.#ws), this.#s(this.#t, "selectstart", this.#ws), this.#s(this.#i, "pointerdown", this.#ur), this.#s(this.#i, "pointermove", this.#mr), this.#s(this.#i, "pointerup", this.#fr), this.#s(this.#i, "pointercancel", this.#br), this.#s(this.#i, "keydown", this.#dr), this.#s(this.#n, "pointerenter", this.#He), this.#s(this.#n, "pointerleave", this.#qe), this.#s(this.#n, "click", this.#ji), this.#s(this.#n, "keydown", this.#Be), this.#s(this.#y, "pointerenter", this.#He), this.#s(this.#y, "pointerleave", this.#qe), this.#s(this.#b, "pointerdown", this.#Zi), this.#s(this.#b, "pointermove", this.#Ki), this.#s(this.#b, "pointerup", this.#Gi), this.#s(this.#b, "pointercancel", this.#Ji), this.#s(this.#b, "click", this.#Xi), this.#s(this.#b, "keydown", this.#Be), this.#s(this.#R, "focusin", this.#Wi), this.#s(this.#R, "focusout", this.#_i), this.#s(this.#a, "pointerenter", this.#Oe), this.#s(this.#a, "pointerleave", this.#Xe), this.#s(this.#a, "click", this.#ir), this.#s(this.#a, "keydown", this.#We), this.#s(this.#w, "pointerenter", this.#Oe), this.#s(this.#w, "pointerleave", this.#Xe), this.#s(this.#v, "pointerdown", this.#or), this.#s(this.#v, "pointermove", this.#nr), this.#s(this.#v, "pointerup", this.#ar), this.#s(this.#v, "pointercancel", this.#lr), this.#s(this.#v, "click", this.#rr), this.#s(this.#v, "keydown", this.#We), this.#s(this.#rs, "focusin", this.#sr), this.#s(this.#rs, "focusout", this.#er), this.#s(this.#at, "click", this.#pr), this.#s(this.#lt, "click", this.#cr), this.#s(this.#c, "click", this.#$i);
+    this.#s(this.#is, "pointerdown", this.#Yi), this.#s(this.#is, "pointerup", this.#Ui), this.#s(this.#is, "pointercancel", this.#Vs), this.#s(this.#z, "click", this.#Zt), this.#s(this, "pointerenter", this.#ks), this.#s(this, "pointermove", this.#Ps), this.#s(this, "pointerleave", this.#Ts), this.#s(this, "mouseenter", this.#ks), this.#s(this, "mousemove", this.#Ps), this.#s(this, "mouseleave", this.#Ts), this.#s(this.#e, "pointerenter", this.#ks), this.#s(this.#e, "pointermove", this.#Ps), this.#s(this.#e, "pointerleave", this.#Ts), this.#s(this.#e, "mouseenter", this.#ks), this.#s(this.#e, "mousemove", this.#Ps), this.#s(this.#e, "mouseleave", this.#Ts), this.#s(this.#z, "pointerenter", this.#j), this.#s(this.#z, "pointerleave", this.#Z), this.#s(this.#z, "mouseenter", this.#j), this.#s(this.#z, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#j), this.#s(this.#i, "pointerleave", this.#Z), this.#s(this.#i, "mouseenter", this.#j), this.#s(this.#i, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#_e), this.#s(this.#i, "pointerleave", this.#je), this.#s(this.#i, "mouseenter", this.#_e), this.#s(this.#i, "mouseleave", this.#je), this.#s(this.#U, "pointerenter", this.#j), this.#s(this.#U, "pointerleave", this.#Z), this.#s(this.#U, "mouseenter", this.#j), this.#s(this.#U, "mouseleave", this.#Z), this.#s(this.#gt, "pointerenter", this.#j), this.#s(this.#gt, "pointerleave", this.#Z), this.#s(this.#gt, "mouseenter", this.#j), this.#s(this.#gt, "mouseleave", this.#Z), this.#s(this.#r, "focusin", this.#ge), this.#s(this.#r, "focusout", this.#di), this.#s(this.#e, "pointerdown", this.#Oi), this.#s(this.#e, "keydown", this.#Ni), this.#s(this.#e, "dragstart", this.#ws), this.#s(this.#e, "selectstart", this.#ws), this.#s(this.#t, "dragstart", this.#ws), this.#s(this.#t, "selectstart", this.#ws), this.#s(this.#i, "pointerdown", this.#ur), this.#s(this.#i, "pointermove", this.#mr), this.#s(this.#i, "pointerup", this.#fr), this.#s(this.#i, "pointercancel", this.#br), this.#s(this.#i, "keydown", this.#dr), this.#s(this.#n, "pointerenter", this.#He), this.#s(this.#n, "pointerleave", this.#qe), this.#s(this.#n, "click", this.#ji), this.#s(this.#n, "keydown", this.#Be), this.#s(this.#y, "pointerenter", this.#He), this.#s(this.#y, "pointerleave", this.#qe), this.#s(this.#b, "pointerdown", this.#Zi), this.#s(this.#b, "pointermove", this.#Ki), this.#s(this.#b, "pointerup", this.#Gi), this.#s(this.#b, "pointercancel", this.#Ji), this.#s(this.#b, "click", this.#Wi), this.#s(this.#b, "keydown", this.#Be), this.#s(this.#R, "focusin", this.#Xi), this.#s(this.#R, "focusout", this.#_i), this.#s(this.#a, "pointerenter", this.#Oe), this.#s(this.#a, "pointerleave", this.#We), this.#s(this.#a, "click", this.#ir), this.#s(this.#a, "keydown", this.#Xe), this.#s(this.#w, "pointerenter", this.#Oe), this.#s(this.#w, "pointerleave", this.#We), this.#s(this.#v, "pointerdown", this.#or), this.#s(this.#v, "pointermove", this.#nr), this.#s(this.#v, "pointerup", this.#ar), this.#s(this.#v, "pointercancel", this.#lr), this.#s(this.#v, "click", this.#rr), this.#s(this.#v, "keydown", this.#Xe), this.#s(this.#rs, "focusin", this.#sr), this.#s(this.#rs, "focusout", this.#er), this.#s(this.#at, "click", this.#pr), this.#s(this.#lt, "click", this.#cr), this.#s(this.#c, "click", this.#$i);
     for (const s of this.#O)
       this.#s(s, "pointerenter", this.#we), this.#s(s, "mouseenter", this.#we), this.#s(s, "pointerdown", this.#mi);
     const t = this.#t.audioTracks;
@@ -2014,7 +2017,7 @@ class h extends HTMLElement {
     return this.#V && !this.#t.error && this.#I && (this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !this.#e.classList.contains("is-loading"));
   }
   #m() {
-    return this.#L || this.#h || this.#X;
+    return this.#L || this.#h || this.#W;
   }
   #ki() {
     this.#qs >= this.#ii || this.#ct || (this.#ct = window.setTimeout(() => {
@@ -2022,10 +2025,10 @@ class h extends HTMLElement {
     }, this.#ei));
   }
   #Le() {
-    return this.#X ? (this.#X = !1, this.#xt = !1, this.#p(), this.#E(), !0) : !1;
+    return this.#W ? (this.#W = !1, this.#xt = !1, this.#p(), this.#E(), !0) : !1;
   }
   #Fe() {
-    return this.#Es(), !this.#e.classList.contains("has-loaded-once") && this.#gi(), this.#e.classList.add("has-loaded-once"), this.#e.classList.add("has-visible-frame"), this.#S(), this.#k = null, this.#X ? (this.#Le(), !0) : (this.#m() || this.#p(), this.#E(), !0);
+    return this.#Es(), !this.#e.classList.contains("has-loaded-once") && this.#gi(), this.#e.classList.add("has-loaded-once"), this.#e.classList.add("has-visible-frame"), this.#S(), this.#k = null, this.#W ? (this.#Le(), !0) : (this.#m() || this.#p(), this.#E(), !0);
   }
   #Pi() {
     if (this.#I || this.#J || this.#t.error) return;
@@ -2171,11 +2174,11 @@ class h extends HTMLElement {
     const t = this.#U.getBoundingClientRect(), s = this.#Ds.getBoundingClientRect(), e = t.width > 0 && t.height > 0, i = this.#ms ? this.#ni : this.#oi, r = e && s.right >= t.left - i && s.left <= t.right + i && s.bottom >= t.top - i && s.top <= t.bottom + i;
     this.#ms = r, this.#e.classList.toggle("has-controls-collision", this.#ms);
   }
-  #Xt() {
+  #Wt() {
     this.#wt && (window.cancelAnimationFrame(this.#wt), this.#wt = 0);
   }
   #Mi() {
-    this.#Xt(), this.#p();
+    this.#Wt(), this.#p();
     const t = () => {
       this.#E(this.#rt()), this.#Me() && (this.#wt = window.requestAnimationFrame(t));
     };
@@ -2184,10 +2187,10 @@ class h extends HTMLElement {
   #f() {
     const t = !this.#t.paused && (!this.#t.ended || this.#t.loop) || this.#h && this.#ht, s = this.#k ? this.#k === "playing" : t;
     if (this.#e.classList.toggle("is-playing", s), this.#z.setAttribute("aria-label", s ? "Pause video" : "Play video"), this.#h) {
-      this.#Xt();
+      this.#Wt();
       return;
     }
-    t && this.#e.classList.contains("has-loaded-once") && !this.#e.classList.contains("is-progress-settling") ? this.#Mi() : (this.#Xt(), this.#E());
+    t && this.#e.classList.contains("has-loaded-once") && !this.#e.classList.contains("is-progress-settling") ? this.#Mi() : (this.#Wt(), this.#E());
   }
   #yt() {
     this.#as && (window.clearTimeout(this.#as), this.#as = 0);
@@ -2199,7 +2202,7 @@ class h extends HTMLElement {
     return this.volumeEnabled && this.#H && this.#mt;
   }
   #Y() {
-    this.#Kt(), this.#Fs(this.#l), this.#q = !1, this.#W = !1, this.#l = null, this.#R.classList.remove("is-volume-open"), this.#n.classList.remove("is-control-tap-active"), this.#n.setAttribute("aria-expanded", "false"), this.#y.classList.remove("is-scrubbing-volume"), this.#y.setAttribute("inert", "");
+    this.#Kt(), this.#Fs(this.#l), this.#q = !1, this.#X = !1, this.#l = null, this.#R.classList.remove("is-volume-open"), this.#n.classList.remove("is-control-tap-active"), this.#n.setAttribute("aria-expanded", "false"), this.#y.classList.remove("is-scrubbing-volume"), this.#y.setAttribute("inert", "");
   }
   #zi = () => {
     this.#H = !0, this.#mt = !0, this.#Ht(), this.#g();
@@ -2229,7 +2232,7 @@ class h extends HTMLElement {
   #Fs(t) {
     t !== null && this.#b.hasPointerCapture(t) && this.#b.releasePointerCapture(t);
   }
-  #Wt(t) {
+  #Xt(t) {
     this.#q = !1, this.#l = null, this.#y.classList.remove("is-scrubbing-volume"), this.#b.blur(), this.#Fs(t), this.#ie(260);
   }
   #_t = () => {
@@ -2260,12 +2263,12 @@ class h extends HTMLElement {
     this.#Hi(t);
   };
   #Hi(t) {
-    this.#T(), this.#Kt(), this.#Jt(), this.#Qs(this.#d), this.#Fs(this.#l), this.#ne(this.#u), this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#d = null, this.#st = !1, this.#W = !1, this.#q = !1, this.#ft = !1, this.#_ = !1, this.#l = null, this.#u = null, this.#Ks(), this.#xe(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#y.classList.remove("is-scrubbing-volume"), this.#e.classList.remove("is-scrubbing"), this.#e.classList.remove("is-pointer-active"), this.#e.classList.add("is-hover-disabled");
+    this.#T(), this.#Kt(), this.#Jt(), this.#Qs(this.#d), this.#Fs(this.#l), this.#ne(this.#u), this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#d = null, this.#st = !1, this.#X = !1, this.#q = !1, this.#ft = !1, this.#_ = !1, this.#l = null, this.#u = null, this.#Ks(), this.#xe(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#y.classList.remove("is-scrubbing-volume"), this.#e.classList.remove("is-scrubbing"), this.#e.classList.remove("is-pointer-active"), this.#e.classList.add("is-hover-disabled");
     const s = this.#r.activeElement;
     s instanceof HTMLElement && s.blur(), t ? (this.#o() ? this.#A() : this.#xs(!0), this.#Bt(this.#o() ? this.#Os : this.#Dt)) : this.#$t();
   }
   #Ie = () => {
-    !this.#L || this.#h || (this.#K(), this.#T(), this.#yt(), this.#h = !0, this.#e.classList.add("is-scrubbing"), this.#x = this.#nt(this.#Hs, !0), this.#ht && this.#t.pause(), this.#t.currentTime = this.#x, this.#p(this.#x), this.#E(this.#x), this.#Xt(), this.#f());
+    !this.#L || this.#h || (this.#K(), this.#T(), this.#yt(), this.#h = !0, this.#e.classList.add("is-scrubbing"), this.#x = this.#nt(this.#Hs, !0), this.#ht && this.#t.pause(), this.#t.currentTime = this.#x, this.#p(this.#x), this.#E(this.#x), this.#Wt(), this.#f());
   };
   #Qs(t) {
     t !== null && this.#i.hasPointerCapture(t) && this.#i.releasePointerCapture(t);
@@ -2273,7 +2276,7 @@ class h extends HTMLElement {
   async #De(t, s, e) {
     if (!this.#L && !this.#h) return;
     const i = this.#h;
-    this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#d = null, this.#e.classList.remove("is-scrubbing"), this.#Ot(), this.#Qs(s), e && t !== null && (this.#K(), this.#x = this.#nt(t, i), this.#X = !0, this.#xt = this.#ht, this.#t.currentTime = this.#x, this.#p(this.#x)), this.#E(this.#x), i && this.#ht && await this.#t.play(), this.#B();
+    this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#d = null, this.#e.classList.remove("is-scrubbing"), this.#Ot(), this.#Qs(s), e && t !== null && (this.#K(), this.#x = this.#nt(t, i), this.#W = !0, this.#xt = this.#ht, this.#t.currentTime = this.#x, this.#p(this.#x)), this.#E(this.#x), i && this.#ht && await this.#t.play(), this.#B();
   }
   #te(t) {
     !this.#L && !this.#h || (this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#d = null, this.#e.classList.remove("is-scrubbing"), this.#Ot(), this.#Qs(t), this.#p(), this.#E(), this.#ht && this.#t.play(), this.#B());
@@ -2326,7 +2329,7 @@ class h extends HTMLElement {
     const s = this.#z.getBoundingClientRect(), e = t.clientX >= s.left && t.clientX <= s.right && t.clientY >= s.top && t.clientY <= s.bottom, i = this.#U.getBoundingClientRect(), r = t.clientX >= i.left && t.clientX <= i.right && t.clientY >= i.top && t.clientY <= i.bottom, n = this.#i.getBoundingClientRect(), a = t.clientX >= n.left && t.clientX <= n.right && t.clientY >= n.top && t.clientY <= n.bottom, p = this.#A();
     p && e && (this.#he = performance.now() + 260), p && (r || a) && (this.#Bs = performance.now() + 260), this.#it();
   };
-  #Xi = (t) => {
+  #Wi = (t) => {
     t.stopPropagation();
   };
   #Kt() {
@@ -2340,9 +2343,9 @@ class h extends HTMLElement {
     this.#G(), this.#Kt(), this.#R.classList.add("is-volume-open"), this.#n.setAttribute("aria-expanded", "true"), this.#y.removeAttribute("inert");
   }
   #Gt = () => {
-    this.#At = 0, !(this.#W || this.#q) && (this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""));
+    this.#At = 0, !(this.#X || this.#q) && (this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""));
   };
-  #Wi = () => {
+  #Xi = () => {
     this.#ee();
   };
   #_i = (t) => {
@@ -2358,7 +2361,7 @@ class h extends HTMLElement {
         this.#Y();
         return;
       }
-      this.#W = !0, this.#ee();
+      this.#X = !0, this.#ee();
     }
   };
   #qe = () => {
@@ -2367,7 +2370,7 @@ class h extends HTMLElement {
         this.#Y();
         return;
       }
-      this.#W = !1, this.#ie();
+      this.#X = !1, this.#ie();
     }
   };
   #ji = (t) => {
@@ -2390,15 +2393,15 @@ class h extends HTMLElement {
     t instanceof PointerEvent && this.#q && (this.#l !== null && t.pointerId !== this.#l || (t.preventDefault(), t.stopPropagation(), this.#ze(t.clientY)));
   };
   #Gi = (t) => {
-    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Wt(t.pointerId), this.#B()));
+    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Xt(t.pointerId), this.#B()));
   };
   #Ji = (t) => {
-    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Wt(t.pointerId)));
+    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Xt(t.pointerId)));
   };
   #Be = (t) => {
     if (!(t instanceof KeyboardEvent)) return;
     if (t.key === "Escape") {
-      t.preventDefault(), t.stopPropagation(), this.#W = !1, this.#n.focus(), this.#Gt();
+      t.preventDefault(), t.stopPropagation(), this.#X = !1, this.#n.focus(), this.#Gt();
       return;
     }
     if (!this.#$()) {
@@ -2462,7 +2465,7 @@ class h extends HTMLElement {
   #Oe = () => {
     this.#o() || (this.#ft = !0, this.#Is());
   };
-  #Xe = () => {
+  #We = () => {
     this.#o() || (this.#ft = !1, this.#oe());
   };
   #sr = () => {
@@ -2499,7 +2502,7 @@ class h extends HTMLElement {
   #lr = (t) => {
     t instanceof PointerEvent && (this.#u !== null && t.pointerId !== this.#u || (t.stopPropagation(), this.#Qt(t.pointerId)));
   };
-  #We = (t) => {
+  #Xe = (t) => {
     if (!(t instanceof KeyboardEvent)) return;
     if (t.key === "Escape") {
       t.preventDefault(), t.stopPropagation(), this.#ft = !1, this.#a.focus(), this.#G();
@@ -2551,7 +2554,7 @@ class h extends HTMLElement {
         this.#A(), this.#o() && (this.#Bs = performance.now() + 260);
         return;
       }
-      this.#A(), this.#T(), this.#Ce(), this.#X = !1, this.#xt = !1, this.#Si(this.#rt()), this.#L = !0, this.#d = t.pointerId, this.#Hs = t.clientX, this.#ht = !this.#t.paused && !this.#t.ended, this.#i.setPointerCapture(t.pointerId), this.#x = this.#nt(t.clientX, !1), this.#yt(), this.#as = window.setTimeout(this.#Ie, this.#Je);
+      this.#A(), this.#T(), this.#Ce(), this.#W = !1, this.#xt = !1, this.#Si(this.#rt()), this.#L = !0, this.#d = t.pointerId, this.#Hs = t.clientX, this.#ht = !this.#t.paused && !this.#t.ended, this.#i.setPointerCapture(t.pointerId), this.#x = this.#nt(t.clientX, !1), this.#yt(), this.#as = window.setTimeout(this.#Ie, this.#Je);
     }
   };
   #dr = (t) => {
@@ -2578,7 +2581,7 @@ class h extends HTMLElement {
   #vr = (t) => {
     if (t instanceof PointerEvent) {
       if (this.#Vs(), this.#l !== null && t.pointerId === this.#l) {
-        this.#Wt(t.pointerId);
+        this.#Xt(t.pointerId);
         return;
       }
       if (this.#u !== null && t.pointerId === this.#u) {
@@ -2591,7 +2594,7 @@ class h extends HTMLElement {
   #yr = (t) => {
     if (t instanceof PointerEvent) {
       if (this.#Vs(), this.#l !== null && t.pointerId === this.#l) {
-        this.#Wt(t.pointerId);
+        this.#Xt(t.pointerId);
         return;
       }
       if (this.#u !== null && t.pointerId === this.#u) {
@@ -2602,7 +2605,7 @@ class h extends HTMLElement {
     }
   };
   #gr = () => {
-    this.#Wt(this.#l), this.#Qt(this.#u), this.#te(this.#d);
+    this.#Xt(this.#l), this.#Qt(this.#u), this.#te(this.#d);
   };
   #wr = () => {
     this.#Js() || this.#$t();
@@ -2630,7 +2633,7 @@ class h extends HTMLElement {
     this.#g(), t && !this.#m() && this.#p(), this.#f();
   };
   #Ar = () => {
-    if (this.#K(), this.#S(), this.#X && (!this.#xt || this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
+    if (this.#K(), this.#S(), this.#W && (!this.#xt || this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
       this.#Le(), this.#f();
       return;
     }
@@ -2649,7 +2652,7 @@ class h extends HTMLElement {
     return window.matchMedia("(max-width: 768px)").matches && window.matchMedia("(hover: none), (pointer: coarse)").matches;
   }
   #Mr() {
-    this.#t && (this.#M?.disconnect(), this.#M = null, this.#Es(), this.#Gs(), this.#V = !1, this.#qs = 0, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#Et = !1, this.#Ct = 0, this.#K(), this.#mt = !1, this.#H = !1, this.#Ht(), this.#Y(), this.#X = !1, this.#xt = !1, this.#k = null, this.#e.classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), this.#t.dataset.src = this.src, this.#t.pause(), this.#t.removeAttribute("src"), this.#t.preload = "none", this.#ys(), this.#t.load(), this.#ot(0), this.#g(), this.#S(), this.#f());
+    this.#t && (this.#M?.disconnect(), this.#M = null, this.#Es(), this.#Gs(), this.#V = !1, this.#qs = 0, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#Et = !1, this.#Ct = 0, this.#K(), this.#mt = !1, this.#H = !1, this.#Ht(), this.#Y(), this.#W = !1, this.#xt = !1, this.#k = null, this.#e.classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), this.#t.dataset.src = this.src, this.#t.pause(), this.#t.removeAttribute("src"), this.#t.preload = "none", this.#ys(), this.#t.load(), this.#ot(0), this.#g(), this.#S(), this.#f());
   }
 }
 customElements.get("simple-player") || customElements.define("simple-player", h);

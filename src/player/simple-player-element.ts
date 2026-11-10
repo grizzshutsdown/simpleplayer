@@ -133,6 +133,14 @@ export class SimplePlayer extends HTMLElement {
     super();
     this.#root = this.attachShadow({ mode: 'open' });
     this.#root.append(template.content.cloneNode(true));
+
+    // WebKit bug 320979: a video cloned from an inert template can keep its
+    // visibility observer bound to that document and play without painting.
+    // Create the media element in the live document before loading its source.
+    const templateVideo = this.#root.querySelector<HTMLVideoElement>('[data-sp-video]')!;
+    const video = this.ownerDocument.createElement('video');
+    for (const { name, value } of Array.from(templateVideo.attributes)) video.setAttribute(name, value);
+    templateVideo.replaceWith(video);
   }
 
   get src() {
