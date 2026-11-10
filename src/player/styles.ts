@@ -201,6 +201,22 @@ export const styles: string = `
     outline: 0;
   }
 
+  .sp-button:focus-visible {
+    z-index: 31;
+    outline: 0;
+  }
+
+  .sp-button:focus-visible::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    z-index: 2;
+    border: 2px solid rgb(255 255 255 / 0.92);
+    border-radius: 12px;
+    box-shadow: 0 0 0 3px rgb(0 0 0 / 0.55);
+    pointer-events: none;
+  }
+
   .sp-player:focus {
     outline: 0;
   }
@@ -262,6 +278,24 @@ export const styles: string = `
     height: 28px;
     cursor: pointer;
     touch-action: none;
+  }
+
+  .sp-progress:focus-visible {
+    outline: 0;
+  }
+
+  .sp-progress:focus-visible::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    bottom: calc((var(--space) * 2) - 5px);
+    left: -3px;
+    z-index: 31;
+    height: calc(var(--sp-progress-height) + 10px);
+    border: 2px solid rgb(255 255 255 / 0.92);
+    border-radius: 8px;
+    box-shadow: 0 0 0 3px rgb(0 0 0 / 0.55);
+    pointer-events: none;
   }
 
   .sp-player.is-loading:not(.has-loaded-once) .sp-progress-cluster {
@@ -804,12 +838,6 @@ export const styles: string = `
     pointer-events: none;
   }
 
-  .sp-speed-track:focus-visible {
-    outline: 2px solid rgb(255 255 255 / 0.92);
-    outline-offset: 3px;
-    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.32);
-  }
-
   .sp-player.is-pointer-active .sp-control-icon,
   .sp-player.is-controls-visible .sp-control-icon {
     opacity: var(--sp-control-icon-opacity);
@@ -1007,6 +1035,10 @@ export const styles: string = `
     overflow: hidden;
   }
 
+  .sp-tray-time-holder:focus-within {
+    overflow: visible;
+  }
+
   .sp-tray-time-holder .sp-control-tray-slots {
     position: relative;
     width: 100%;
@@ -1042,12 +1074,19 @@ export const styles: string = `
     opacity: 0;
   }
 
-  .sp-progress:focus-visible,
+  .sp-progress-cluster:focus-within,
+  .sp-tray-time:focus-within,
+  .sp-control-tray:focus-within {
+    z-index: 30;
+  }
+
   .sp-control-button:focus-visible,
-  .sp-volume-track:focus-visible {
+  .sp-volume-track:focus-visible,
+  .sp-speed-track:focus-visible {
+    z-index: 31;
     outline: 2px solid rgb(255 255 255 / 0.92);
     outline-offset: 3px;
-    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.32);
+    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.42);
   }
 
   @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
