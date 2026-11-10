@@ -39,28 +39,49 @@ template.innerHTML = `
       <span class="sp-tray-time" data-sp-tray-time>
         <span class="sp-control-tray sp-tray-time-holder">
           <span class="sp-control-tray-slots">
-            <button class="sp-control-button sp-tray-time-text" type="button" tabindex="-1" data-sp-tray-time-text>0:00</button>
+            <button class="sp-control-button sp-tray-time-text" type="button" aria-label="Show remaining time" aria-pressed="false" data-sp-tray-time-text>0:00</button>
           </span>
         </span>
       </span>
       <span class="sp-control-tray" data-sp-control-tray>
         <span class="sp-control-tray-slots" data-sp-control-tray-slots>
-          <button class="sp-control-button sp-volume-slot" type="button" aria-label="Toggle sound" data-sp-volume-control>
-            <svg class="sp-control-icon sp-volume-icon sp-volume-icon--sound" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M8 7.00002H5C3.8954 7.00002 3 7.89542 3 9.00002V11C3 12.1046 3.8954 13 5 13H8L12.5227 16.7689C13.1093 17.2578 14 16.8406 14 16.077V3.92302C14 3.15942 13.1094 2.74222 12.5227 3.23112L8 7.00002Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M17.4141 8.58582C18.1951 9.36682 18.1951 10.6332 17.4141 11.4142" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <svg class="sp-control-icon sp-volume-icon sp-volume-icon--muted" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M3 17L17 3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M15 16.0773C14.9998 17.6883 13.1207 18.5686 11.8828 17.5372L9.8333 15.8303C9.38114 15.4538 9.35003 14.7702 9.76611 14.3541C10.132 13.9882 10.7165 13.9617 11.114 14.2929L13 15.8644V11.5354C13 11.2702 13.1054 11.0158 13.2929 10.8283C13.9229 10.1983 15 10.6445 15 11.5354V16.0773Z" fill="currentColor"></path>
-              <path d="M12 2.37218C13.2358 1.48685 15 2.36173 15 3.92296V4.87902L13 6.87902V4.13488L8.64062 7.76867C8.46092 7.91841 8.23392 8.00011 8 8.00011H5C4.44768 8.00011 4 8.4478 4 9.00011V11.0001C4.00009 11.5524 4.44774 12.0001 5 12.0001H7.87891L5.87891 14.0001H5C3.34317 14.0001 2.00009 12.6569 2 11.0001V9.00011C2 7.34323 3.34312 6.00011 5 6.00011H7.63672L11.8828 2.463L12 2.37218Z" fill="currentColor"></path>
-            </svg>
-            <span class="sp-volume-popover" data-sp-volume-popover>
+          <span class="sp-volume-slot" data-sp-volume-slot>
+            <button class="sp-control-button" type="button" aria-label="Toggle sound" aria-controls="sp-volume-popover" aria-expanded="false" data-sp-volume-control>
+              <svg class="sp-control-icon sp-volume-icon sp-volume-icon--sound" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M8 7.00002H5C3.8954 7.00002 3 7.89542 3 9.00002V11C3 12.1046 3.8954 13 5 13H8L12.5227 16.7689C13.1093 17.2578 14 16.8406 14 16.077V3.92302C14 3.15942 13.1094 2.74222 12.5227 3.23112L8 7.00002Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17.4141 8.58582C18.1951 9.36682 18.1951 10.6332 17.4141 11.4142" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <svg class="sp-control-icon sp-volume-icon sp-volume-icon--muted" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 17L17 3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15 16.0773C14.9998 17.6883 13.1207 18.5686 11.8828 17.5372L9.8333 15.8303C9.38114 15.4538 9.35003 14.7702 9.76611 14.3541C10.132 13.9882 10.7165 13.9617 11.114 14.2929L13 15.8644V11.5354C13 11.2702 13.1054 11.0158 13.2929 10.8283C13.9229 10.1983 15 10.6445 15 11.5354V16.0773Z" fill="currentColor"></path>
+                <path d="M12 2.37218C13.2358 1.48685 15 2.36173 15 3.92296V4.87902L13 6.87902V4.13488L8.64062 7.76867C8.46092 7.91841 8.23392 8.00011 8 8.00011H5C4.44768 8.00011 4 8.4478 4 9.00011V11.0001C4.00009 11.5524 4.44774 12.0001 5 12.0001H7.87891L5.87891 14.0001H5C3.34317 14.0001 2.00009 12.6569 2 11.0001V9.00011C2 7.34323 3.34312 6.00011 5 6.00011H7.63672L11.8828 2.463L12 2.37218Z" fill="currentColor"></path>
+              </svg>
+            </button>
+            <span class="sp-volume-popover" id="sp-volume-popover" inert data-sp-volume-popover>
               <span class="sp-volume-track" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" tabindex="0" data-sp-volume-track>
                 <span class="sp-volume-fill" data-sp-volume-fill></span>
               </span>
             </span>
-          </button>
+          </span>
+          <span class="sp-speed-slot" data-sp-speed-slot>
+            <button class="sp-control-button sp-speed-control" type="button" aria-label="Playback speed: 1x" aria-controls="sp-speed-popover" aria-expanded="false" data-sp-speed-control>
+              <svg class="sp-control-icon sp-speed-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 10.76L7.72 7.72"></path>
+                  <path d="M10 2.78C5.5928 2.78 2.02 6.3528 2.02 10.76C2.02 13.4163 3.3179 15.7695 5.3141 17.22H14.6859C16.6821 15.7695 17.98 13.4163 17.98 10.76C17.98 6.3528 14.4072 2.78 10 2.78Z"></path>
+                </g>
+              </svg>
+            </button>
+            <span class="sp-speed-popover" id="sp-speed-popover" inert data-sp-speed-popover>
+              <span class="sp-speed-preview" aria-hidden="true">
+                <span class="sp-speed-preview-text" data-sp-speed-value>1x</span>
+              </span>
+              <span class="sp-speed-track" role="slider" aria-label="Playback speed" aria-valuemin="0.25" aria-valuemax="4" aria-valuenow="1" aria-valuetext="1x" tabindex="0" data-sp-speed-track>
+                <span class="sp-speed-center" aria-hidden="true"></span>
+                <span class="sp-speed-thumb" aria-hidden="true"></span>
+              </span>
+            </span>
+          </span>
           <button class="sp-control-button" type="button" aria-label="Picture in picture" data-sp-picture-in-picture-control>
             <svg class="sp-control-icon" viewBox="0 0 20 20" aria-hidden="true">
               <path d="m5.5,13c-1.381,0-2.5-1.119-2.5-2.5v-5c0-1.381,1.119-2.5,2.5-2.5h7c1.381,0,2.5,1.119,2.5,2.5v2.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>

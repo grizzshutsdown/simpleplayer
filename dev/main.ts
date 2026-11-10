@@ -12,6 +12,7 @@ const syncPlayerSetting = (input: HTMLInputElement) => {
     | 'timeVisible'
     | 'volumeEnabled'
     | 'volumeSliderEnabled'
+    | 'speedEnabled'
     | 'pictureInPictureEnabled'
     | 'fullscreenEnabled'
     | 'autoplayEnabled'

@@ -19,7 +19,7 @@ export const styles: string = `
     --sp-control-tray-display: block;
     --sp-enabled-controls-count: 3;
     --sp-control-tray-width: 0px;
-    --sp-control-tray-expanded-width: calc((var(--sp-control-slot-size) * var(--sp-enabled-controls-count)) + (var(--sp-control-tray-padding) * 2));
+    --sp-control-tray-expanded-width: calc((var(--sp-control-slot-size) * var(--sp-enabled-controls-count)) + var(--sp-speed-slot-extra-width, 0px) + (var(--sp-control-tray-padding) * 2));
     --sp-control-tray-gap: 0px;
     --sp-control-icon-size: 20px;
     --sp-control-icon-render-size: 20px;
@@ -37,6 +37,7 @@ export const styles: string = `
     --sp-control-slot-size: calc(var(--sp-control-icon-size) + 4px);
     --sp-touch-control-hover-offset: -9999px;
     --sp-volume-level: 100%;
+    --sp-time-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     position: relative;
     display: block;
@@ -404,7 +405,7 @@ export const styles: string = `
     top: var(--sp-control-tray-padding);
     left: var(--sp-control-tray-padding);
     z-index: 0;
-    width: var(--sp-control-slot-size);
+    width: var(--sp-control-hover-width, var(--sp-control-slot-size));
     height: var(--sp-control-slot-size);
     border-radius: 3px;
     background: var(--sp-control-hover-surface);
@@ -413,6 +414,7 @@ export const styles: string = `
     transform: translateX(var(--sp-control-hover-offset, 0px));
     transition:
       opacity 120ms ease,
+      width 160ms cubic-bezier(0.18, 0.9, 0.22, 1),
       transform 240ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
@@ -474,7 +476,8 @@ export const styles: string = `
     }
 }
 
-  .sp-player:not(.has-volume-control) [data-sp-volume-control],
+  .sp-player:not(.has-volume-control) [data-sp-volume-slot],
+  .sp-player:not(.has-speed-control) [data-sp-speed-slot],
   .sp-player:not(.has-picture-in-picture-control) [data-sp-picture-in-picture-control],
   .sp-player:not(.has-fullscreen-control) [data-sp-fullscreen-control] {
     display: none;
@@ -534,6 +537,10 @@ export const styles: string = `
     stroke-width: var(--sp-control-icon-stroke-width);
   }
 
+  .sp-speed-icon [stroke] {
+    stroke-width: 2;
+  }
+
   .sp-volume-icon,
   .sp-player.is-volume-muted .sp-volume-icon--muted {
     display: none;
@@ -567,6 +574,14 @@ export const styles: string = `
       opacity 140ms ease,
       filter 180ms ease,
       transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-volume-slot {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: var(--sp-control-slot-size);
+    height: var(--sp-control-slot-size);
   }
 
   .sp-volume-slot::after {
@@ -638,6 +653,161 @@ export const styles: string = `
   .sp-player:not(.is-fullscreen) .sp-fullscreen-icon--enter,
   .sp-player.is-fullscreen .sp-fullscreen-icon--exit {
     display: block;
+  }
+
+  .sp-speed-slot {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: var(--sp-speed-slot-width, var(--sp-control-slot-size));
+    height: var(--sp-control-slot-size);
+  }
+
+  .sp-speed-control {
+    width: 100%;
+    padding: 0;
+  }
+
+  .sp-speed-popover {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--sp-control-slot-size) + var(--sp-control-tray-padding) + 4px);
+    z-index: -1;
+    display: grid;
+    place-items: center;
+    width: var(--sp-control-slot-size);
+    height: 76px;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(0.8px);
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+    transform: translate(-50%, 8px) scale(0.96);
+    transform-origin: center bottom;
+    transition:
+      opacity 140ms ease,
+      filter 180ms ease,
+      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-speed-control.is-speed-open + .sp-speed-popover {
+    z-index: 4;
+    opacity: 1;
+    pointer-events: auto;
+    filter: blur(0);
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .sp-speed-popover.is-scrubbing-speed {
+    z-index: 4;
+    opacity: 1;
+    pointer-events: auto;
+    filter: blur(0);
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .sp-speed-preview {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + var(--space));
+    z-index: 5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--white);
+    isolation: isolate;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(2px);
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.18, 0.9, 0.22, 1);
+    font: 500 12px/1.35 var(--sp-time-font-family);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sp-speed-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--sp-glass-surface);
+    opacity: var(--sp-glass-opacity);
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+  }
+
+  .sp-speed-popover.is-scrubbing-speed .sp-speed-preview,
+  .sp-speed-popover.is-speed-value-visible .sp-speed-preview {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .sp-speed-preview-text {
+    display: inline-block;
+  }
+
+  .sp-speed-preview-text.is-speed-value-animating {
+    animation: sp-speed-value-swap 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-speed-slot::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: calc(var(--sp-control-tray-padding) + 4px);
+    z-index: 5;
+    pointer-events: auto;
+  }
+
+  .sp-speed-track {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: var(--sp-control-slot-size);
+    height: 76px;
+    border-radius: 5px;
+    background: var(--sp-control-glass-surface);
+    overflow: hidden;
+    touch-action: none;
+    cursor: ns-resize;
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+    transform: translateZ(0);
+  }
+
+  .sp-speed-thumb {
+    position: absolute;
+    z-index: 1;
+    right: 2px;
+    bottom: clamp(2px, calc(var(--sp-speed-position, 50%) - 2px), calc(100% - 6px));
+    left: 2px;
+    height: 4px;
+    border-radius: 3px;
+    background: var(--white);
+    transition: bottom 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .sp-speed-center {
+    position: absolute;
+    right: 5px;
+    bottom: calc(50% - 1px);
+    left: 5px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--white);
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .sp-speed-track:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.92);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.32);
   }
 
   .sp-player.is-pointer-active .sp-control-icon,
@@ -755,7 +925,7 @@ export const styles: string = `
     transition: transform 120ms ease;
     transform: translateX(-50%) translateY(2px);
     white-space: nowrap;
-    font: 500 12px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font: 500 12px/1.35 var(--sp-time-font-family);
     font-variant-numeric: tabular-nums;
   }
 
@@ -853,7 +1023,7 @@ export const styles: string = `
     height: var(--sp-control-slot-size);
     max-height: var(--sp-control-slot-size);
     padding: 0 8px;
-    font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font: 600 13px/1 var(--sp-time-font-family);
     font-variant-numeric: tabular-nums;
     color: var(--white);
     border-radius: 3px;
@@ -990,6 +1160,26 @@ export const styles: string = `
 
     100% {
       filter: blur(0);
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes sp-speed-value-swap {
+    0% {
+      filter: blur(0);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    42% {
+      filter: blur(0.8px);
+      opacity: 0.72;
+      transform: translateY(-0.5px) scale(0.94);
+    }
+
+    100% {
+      filter: blur(0);
+      opacity: 1;
       transform: translateY(0) scale(1);
     }
   }

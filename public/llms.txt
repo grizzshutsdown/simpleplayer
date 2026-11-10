@@ -1,6 +1,6 @@
 # SimplePlayer
 
-> Framework-free Web Component video player. It gives users a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading.
+> Framework-free Web Component video player. It gives users a clean default video player with custom overlay controls, a scrubber, volume, playback speed, Picture-in-Picture, fullscreen, and lazy loading.
 
 Site: https://simpleplayer.grizz.fyi/
 GitHub: https://github.com/grizzshutsdown/simpleplayer
@@ -49,12 +49,15 @@ Player with the extra control tray:
 - `src`: video URL.
 - `aspect-ratio`: player aspect ratio. Default: `16 / 9`.
 - `preload-margin`: lazy-load margin before the video enters view. Default: `360px 0px`.
-- `controls`: enables the extra control tray for volume, Picture-in-Picture, and fullscreen.
+- `controls`: enables the extra control tray for volume, playback speed, Picture-in-Picture, and fullscreen.
+- `disable-speed`: removes the playback speed control.
 - `disable-autoplay`: turns off default muted autoplay.
 - `pause-on-overlay-click`: opt into toggling play/pause anywhere on the non-control video surface on desktop. Hidden-overlay clicks pulse only the center play/pause icon. Mobile behavior stays unchanged.
 - `show-time`: keeps the timestamp visible in a left glass holder when `controls` is enabled.
 
-When the player surface is focused, `Space`, `Enter`, and `K` toggle playback. Hardware media play/pause buttons use the browser Media Session API when available.
+The vertical speed slider ranges from `0.25x` to `4x`, with `1x` centered. A timestamp-styled live value appears above the slider while the speed changes, then fades away.
+
+The player is fully keyboard accessible. `Tab` moves through its controls, arrow keys adjust sliders, `Home` and `End` jump to slider limits, and `Escape` closes an open volume or speed slider. When the player surface is focused, `Space`, `Enter`, and `K` toggle playback. Hardware media play/pause buttons use the browser Media Session API when available.
 
 ## JavaScript Properties
 
@@ -66,6 +69,7 @@ const player = document.querySelector('simple-player');
 player.controlsEnabled = true;
 player.volumeEnabled = true;
 player.volumeSliderEnabled = false;
+player.speedEnabled = true;
 player.pictureInPictureEnabled = true;
 player.fullscreenEnabled = true;
 player.autoplayEnabled = false;

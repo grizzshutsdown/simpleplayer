@@ -32,9 +32,15 @@ export class SimplePlayer extends HTMLElement {
   #trayTimeText!: HTMLElement;
   #scrubTime!: HTMLElement;
   #scrubTimeText!: HTMLElement;
+  #volumeSlot!: HTMLElement;
   #volumeControl!: HTMLButtonElement;
   #volumePopover!: HTMLElement;
   #volumeTrack!: HTMLElement;
+  #speedControl!: HTMLButtonElement;
+  #speedSlot!: HTMLElement;
+  #speedValue!: HTMLElement;
+  #speedPopover!: HTMLElement;
+  #speedTrack!: HTMLElement;
   #pictureInPictureControl!: HTMLButtonElement;
   #fullscreenControl!: HTMLButtonElement;
   #controlButtons: HTMLButtonElement[] = [];
@@ -91,6 +97,12 @@ export class SimplePlayer extends HTMLElement {
   #isVolumeHovering = false;
   #activeVolumePointerId: number | null = null;
   #volumeCloseTimer = 0;
+  #isSpeedScrubbing = false;
+  #isSpeedHovering = false;
+  #activeSpeedPointerId: number | null = null;
+  #speedCloseTimer = 0;
+  #speedValuePreviewTimer = 0;
+  #speedValueAnimationTimer = 0;
   #volumeIconAnimationTimer = 0;
   #controlTapTimer = 0;
   #playbackPulseTimer = 0;
@@ -226,6 +238,18 @@ export class SimplePlayer extends HTMLElement {
     this.setAttribute('disable-volume-slider', '');
   }
 
+  get speedEnabled() {
+    return (
+      this.controlsEnabled &&
+      !this.hasAttribute('disable-speed') &&
+      !this.hasAttribute('no-speed')
+    );
+  }
+
+  set speedEnabled(value: boolean) {
+    this.#setOptionalControlAttributes('speed', value);
+  }
+
   get pictureInPictureEnabled() {
     return (
       this.controlsEnabled &&
@@ -262,12 +286,18 @@ export class SimplePlayer extends HTMLElement {
     this.#trayTimeText = this.#root.querySelector('[data-sp-tray-time-text]')!;
     this.#scrubTime = this.#root.querySelector('[data-sp-time]')!;
     this.#scrubTimeText = this.#root.querySelector('[data-sp-time-text]')!;
+    this.#volumeSlot = this.#root.querySelector('[data-sp-volume-slot]')!;
     this.#volumeControl = this.#root.querySelector('[data-sp-volume-control]')!;
     this.#volumePopover = this.#root.querySelector('[data-sp-volume-popover]')!;
     this.#volumeTrack = this.#root.querySelector('[data-sp-volume-track]')!;
+    this.#speedControl = this.#root.querySelector('[data-sp-speed-control]')!;
+    this.#speedSlot = this.#root.querySelector('[data-sp-speed-slot]')!;
+    this.#speedValue = this.#root.querySelector('[data-sp-speed-value]')!;
+    this.#speedPopover = this.#root.querySelector('[data-sp-speed-popover]')!;
+    this.#speedTrack = this.#root.querySelector('[data-sp-speed-track]')!;
     this.#pictureInPictureControl = this.#root.querySelector('[data-sp-picture-in-picture-control]')!;
     this.#fullscreenControl = this.#root.querySelector('[data-sp-fullscreen-control]')!;
-    this.#controlButtons = [this.#volumeControl, this.#pictureInPictureControl, this.#fullscreenControl];
+    this.#controlButtons = [this.#volumeControl, this.#speedControl, this.#pictureInPictureControl, this.#fullscreenControl];
     this.#syncAspectRatio();
 
     if (!this.#initialized) {
@@ -281,6 +311,7 @@ export class SimplePlayer extends HTMLElement {
     this.#syncTimeVisibility();
     this.#syncVideoLoading();
     this.#syncAudioControlState();
+    this.#syncSpeedControlState();
     this.#syncPictureInPictureState();
     this.#syncFullscreenState();
     this.#syncVideoState();
@@ -299,25 +330,36 @@ export class SimplePlayer extends HTMLElement {
     this.#clearScrubLongPressTimer();
     this.#clearFirstFrameFallbackTimer();
     this.#clearVolumeCloseTimer();
+    this.#clearSpeedCloseTimer();
+    this.#clearSpeedValuePreviewTimer();
+    this.#clearSpeedValueAnimationTimer();
     this.#clearVolumeIconAnimationTimer();
     this.#clearControlTapTimer();
     this.#clearPlaybackPulseTimer();
     this.#player.classList.remove('is-volume-icon-animating');
     this.#player.classList.remove('is-playback-pulsing');
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-width');
     this.style.removeProperty('--sp-touch-control-hover-offset');
     this.#clearControlsCollision();
     this.#isProgressHoverPreviewing = false;
     this.#player.classList.remove('is-progress-hovering');
     this.#isVolumeScrubbing = false;
     this.#isVolumeHovering = false;
+    this.#isSpeedScrubbing = false;
+    this.#isSpeedHovering = false;
     this.#isPointerOverControlSurface = false;
     this.#isOverlayPointerDownEligible = false;
     this.#shouldHidePointerControlsAfterOverlayClick = false;
     this.#pointerControlsActivatedAt = 0;
     this.#suppressPointerControlsUntil = 0;
+    this.#releaseSpeedPointer(this.#activeSpeedPointerId);
     this.#activeVolumePointerId = null;
-    this.#volumeControl.classList.remove('is-volume-open');
+    this.#activeSpeedPointerId = null;
+    this.#volumeSlot.classList.remove('is-volume-open');
+    this.#volumeControl.setAttribute('aria-expanded', 'false');
+    this.#volumePopover.setAttribute('inert', '');
+    this.#closeSpeedPopover();
     this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
     this.#player.classList.remove('is-pointer-active');
     this.#releaseMediaSession();
@@ -384,7 +426,7 @@ export class SimplePlayer extends HTMLElement {
     this.setAttribute(name, value);
   }
 
-  #setOptionalControlAttributes(name: 'volume' | 'picture-in-picture' | 'fullscreen', enabled: boolean) {
+  #setOptionalControlAttributes(name: 'volume' | 'speed' | 'picture-in-picture' | 'fullscreen', enabled: boolean) {
     if (enabled) {
       this.setAttribute(`enable-${name}`, '');
       this.removeAttribute(`disable-${name}`);
@@ -427,6 +469,7 @@ export class SimplePlayer extends HTMLElement {
     const showVolumeControl = this.volumeEnabled && (!this.#hasCheckedAudioTrack || this.#hasAudioTrack);
     const controls = [
       { button: this.#volumeControl, enabled: showVolumeControl, className: 'has-volume-control' },
+      { button: this.#speedControl, enabled: this.speedEnabled, className: 'has-speed-control' },
       { button: this.#pictureInPictureControl, enabled: this.pictureInPictureEnabled, className: 'has-picture-in-picture-control' },
       { button: this.#fullscreenControl, enabled: this.fullscreenEnabled, className: 'has-fullscreen-control' },
     ];
@@ -446,6 +489,7 @@ export class SimplePlayer extends HTMLElement {
 
     this.style.setProperty('--sp-enabled-controls-count', `${index}`);
     this.style.setProperty('--sp-control-tray-display', index > 0 ? 'block' : 'none');
+    this.#syncControlTrayMetrics();
     this.#player.classList.toggle('has-volume-slider-control', showVolumeControl && this.volumeSliderEnabled);
 
     if (!showVolumeControl || !this.volumeSliderEnabled) {
@@ -456,7 +500,40 @@ export class SimplePlayer extends HTMLElement {
       this.#volumePopover.classList.remove('is-scrubbing-volume');
     }
 
+    if (!this.speedEnabled) this.#closeSpeedPopover();
+
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-width');
+  }
+
+  #syncControlTrayMetrics() {
+    if (!this.#controlTraySlots || !this.#speedValue) return;
+
+    const visibleStandardControl = this.#controlButtons.find((button) => {
+      return button !== this.#speedControl && !button.hidden && button.getBoundingClientRect().width > 0;
+    });
+    const measuredSlotSize = visibleStandardControl
+      ? Number.parseFloat(getComputedStyle(visibleStandardControl).width)
+      : 0;
+    const slotSize = Number.isFinite(measuredSlotSize) && measuredSlotSize > 0 ? measuredSlotSize : 24;
+    const speedWidth = this.speedEnabled ? slotSize : 0;
+    let offset = 0;
+
+    this.style.setProperty('--sp-speed-slot-width', `${speedWidth || slotSize}px`);
+    this.style.setProperty('--sp-speed-slot-extra-width', `${Math.max(0, speedWidth - slotSize)}px`);
+
+    for (const button of this.#controlButtons) {
+      if (button.hidden) {
+        delete button.dataset.spControlOffset;
+        delete button.dataset.spControlWidth;
+        continue;
+      }
+
+      const width = button === this.#speedControl ? speedWidth : slotSize;
+      button.dataset.spControlOffset = `${offset}px`;
+      button.dataset.spControlWidth = `${width}px`;
+      offset += width;
+    }
   }
 
   get #hasPinnedTime() {
@@ -505,6 +582,10 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#controlTray, 'pointerleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#controlTray, 'mouseenter', this.#handleControlSurfacePointerEnter);
     this.#listen(this.#controlTray, 'mouseleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#trayTime, 'pointerenter', this.#handleControlSurfacePointerEnter);
+    this.#listen(this.#trayTime, 'pointerleave', this.#handleControlSurfacePointerLeave);
+    this.#listen(this.#trayTime, 'mouseenter', this.#handleControlSurfacePointerEnter);
+    this.#listen(this.#trayTime, 'mouseleave', this.#handleControlSurfacePointerLeave);
     this.#listen(this.#root, 'focusin', this.#handleControlSurfaceFocusIn);
     this.#listen(this.#root, 'focusout', this.#handleControlSurfaceFocusOut);
     this.#listen(this.#player, 'pointerdown', this.#handlePlayerPointerDown);
@@ -521,6 +602,7 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#volumeControl, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumeControl, 'pointerleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeControl, 'click', this.#handleVolumeControlClick);
+    this.#listen(this.#volumeControl, 'keydown', this.#handleVolumeKeyDown);
     this.#listen(this.#volumePopover, 'pointerenter', this.#handleVolumePointerEnter);
     this.#listen(this.#volumePopover, 'pointerleave', this.#handleVolumePointerLeave);
     this.#listen(this.#volumeTrack, 'pointerdown', this.#handleVolumePointerDown);
@@ -529,6 +611,22 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#volumeTrack, 'pointercancel', this.#handleVolumePointerCancel);
     this.#listen(this.#volumeTrack, 'click', this.#preventVolumeTrackClick);
     this.#listen(this.#volumeTrack, 'keydown', this.#handleVolumeKeyDown);
+    this.#listen(this.#volumeSlot, 'focusin', this.#handleVolumeFocusIn);
+    this.#listen(this.#volumeSlot, 'focusout', this.#handleVolumeFocusOut);
+    this.#listen(this.#speedControl, 'pointerenter', this.#handleSpeedPointerEnter);
+    this.#listen(this.#speedControl, 'pointerleave', this.#handleSpeedPointerLeave);
+    this.#listen(this.#speedControl, 'click', this.#handleSpeedControlClick);
+    this.#listen(this.#speedControl, 'keydown', this.#handleSpeedKeyDown);
+    this.#listen(this.#speedPopover, 'pointerenter', this.#handleSpeedPointerEnter);
+    this.#listen(this.#speedPopover, 'pointerleave', this.#handleSpeedPointerLeave);
+    this.#listen(this.#speedTrack, 'pointerdown', this.#handleSpeedPointerDown);
+    this.#listen(this.#speedTrack, 'pointermove', this.#handleSpeedPointerMove);
+    this.#listen(this.#speedTrack, 'pointerup', this.#handleSpeedPointerUp);
+    this.#listen(this.#speedTrack, 'pointercancel', this.#handleSpeedPointerCancel);
+    this.#listen(this.#speedTrack, 'click', this.#preventSpeedTrackClick);
+    this.#listen(this.#speedTrack, 'keydown', this.#handleSpeedKeyDown);
+    this.#listen(this.#speedSlot, 'focusin', this.#handleSpeedFocusIn);
+    this.#listen(this.#speedSlot, 'focusout', this.#handleSpeedFocusOut);
     this.#listen(this.#pictureInPictureControl, 'click', this.#handlePictureInPictureClick);
     this.#listen(this.#fullscreenControl, 'click', this.#handleFullscreenClick);
     this.#listen(this.#trayTimeText, 'click', this.#handleTimeToggleClick);
@@ -554,6 +652,7 @@ export class SimplePlayer extends HTMLElement {
       });
     }
 
+    this.#listen(document, 'pointerdown', this.#handleDocumentPointerDown);
     this.#listen(document, 'pointerup', this.#handleDocumentPointerUp);
     this.#listen(document, 'pointercancel', this.#handleDocumentPointerCancel);
     this.#listen(document, 'pointermove', this.#handleDocumentPointerMove);
@@ -584,6 +683,7 @@ export class SimplePlayer extends HTMLElement {
     this.#listen(this.#video, 'suspend', this.#syncVideoLoading);
     this.#listen(this.#video, 'timeupdate', this.#handleVideoTimeUpdate);
     this.#listen(this.#video, 'volumechange', this.#handleVideoVolumeChange);
+    this.#listen(this.#video, 'ratechange', this.#syncSpeedControlState);
     this.#listen(this.#video, 'enterpictureinpicture', this.#syncPictureInPictureState);
     this.#listen(this.#video, 'leavepictureinpicture', this.#syncPictureInPictureState);
   }
@@ -760,9 +860,18 @@ export class SimplePlayer extends HTMLElement {
     }) ?? null;
 
     if (!hoveredControl) return;
+    this.#applyControlHoverMetrics(hoveredControl);
+  }
 
-    const index = Number(hoveredControl.dataset.spControlIndex ?? 0);
-    this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
+  #applyControlHoverMetrics(button: HTMLButtonElement, touch = false) {
+    const offset = button.dataset.spControlOffset || '0px';
+    const width = button.dataset.spControlWidth || 'var(--sp-control-slot-size)';
+    this.#controlTraySlots.style.setProperty('--sp-control-hover-width', width);
+    if (touch) {
+      this.style.setProperty('--sp-touch-control-hover-offset', offset);
+      return;
+    }
+    this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', offset);
   }
 
   #areControlsVisible() {
@@ -856,8 +965,7 @@ export class SimplePlayer extends HTMLElement {
     if (this.#isUnavailableControlButton(target)) return;
 
     const button = target as HTMLButtonElement;
-    const index = Number(button.dataset.spControlIndex ?? 0);
-    this.#controlTraySlots.style.setProperty('--sp-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
+    this.#applyControlHoverMetrics(button);
   };
 
   #clearControlTapTimer() {
@@ -870,6 +978,7 @@ export class SimplePlayer extends HTMLElement {
     this.#controlTapTimer = 0;
     this.#controlButtons.forEach((button) => button.classList.remove('is-control-tap-active'));
     this.style.removeProperty('--sp-touch-control-hover-offset');
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-width');
   };
 
   #handleControlButtonPointerDown = (event: Event) => {
@@ -878,10 +987,9 @@ export class SimplePlayer extends HTMLElement {
     const target = event.currentTarget as HTMLButtonElement | null;
     if (!target || !this.#areControlsVisible() || this.#isUnavailableControlButton(target)) return;
 
-    const index = Number(target.dataset.spControlIndex ?? 0);
     this.#clearControlTapTimer();
     this.#controlButtons.forEach((button) => button.classList.toggle('is-control-tap-active', button === target));
-    this.style.setProperty('--sp-touch-control-hover-offset', `calc(var(--sp-control-slot-size) * ${index})`);
+    this.#applyControlHoverMetrics(target, true);
     this.#controlTapTimer = window.setTimeout(this.#clearControlTapActive, 280);
   };
 
@@ -1600,8 +1708,11 @@ export class SimplePlayer extends HTMLElement {
     this.#isVolumeScrubbing = false;
     this.#isVolumeHovering = false;
     this.#activeVolumePointerId = null;
-    this.#volumeControl.classList.remove('is-volume-open', 'is-control-tap-active');
+    this.#volumeSlot.classList.remove('is-volume-open');
+    this.#volumeControl.classList.remove('is-control-tap-active');
+    this.#volumeControl.setAttribute('aria-expanded', 'false');
     this.#volumePopover.classList.remove('is-scrubbing-volume');
+    this.#volumePopover.setAttribute('inert', '');
   }
 
   #handleAudioTrackAdded = () => {
@@ -1743,8 +1854,10 @@ export class SimplePlayer extends HTMLElement {
   #resetFullscreenPointerState(isFullscreenActive: boolean) {
     this.#clearControlsHideTimer();
     this.#clearVolumeCloseTimer();
+    this.#clearSpeedCloseTimer();
     this.#releaseScrubPointer(this.#activeScrubPointerId);
     this.#releaseVolumePointer(this.#activeVolumePointerId);
+    this.#releaseSpeedPointer(this.#activeSpeedPointerId);
     this.#clearScrubLongPressTimer();
     this.#isTrackingScrub = false;
     this.#isScrubbing = false;
@@ -1754,11 +1867,18 @@ export class SimplePlayer extends HTMLElement {
     this.#isPointerOverControlSurface = false;
     this.#isVolumeHovering = false;
     this.#isVolumeScrubbing = false;
+    this.#isSpeedHovering = false;
+    this.#isSpeedScrubbing = false;
     this.#activeVolumePointerId = null;
+    this.#activeSpeedPointerId = null;
     this.#clearControlTapTimer();
     this.#clearControlTapActive();
     this.#controlTraySlots.style.removeProperty('--sp-control-hover-offset');
-    this.#volumeControl.classList.remove('is-volume-open');
+    this.#controlTraySlots.style.removeProperty('--sp-control-hover-width');
+    this.#volumeSlot.classList.remove('is-volume-open');
+    this.#volumeControl.setAttribute('aria-expanded', 'false');
+    this.#volumePopover.setAttribute('inert', '');
+    this.#closeSpeedPopover();
     this.#volumePopover.classList.remove('is-scrubbing-volume');
     this.#player.classList.remove('is-scrubbing');
     this.#player.classList.remove('is-pointer-active');
@@ -1890,6 +2010,11 @@ export class SimplePlayer extends HTMLElement {
   #handleTimeToggleClick = (event: Event) => {
     event.stopPropagation();
     this.#showRemainingTime = !this.#showRemainingTime;
+    this.#trayTimeText.setAttribute('aria-pressed', `${this.#showRemainingTime}`);
+    this.#trayTimeText.setAttribute(
+      'aria-label',
+      this.#showRemainingTime ? 'Show elapsed time' : 'Show remaining time',
+    );
     this.#animateTimeSwap();
     if (this.#isScrubPreviewLocked() || this.#isProgressHoverPreviewing) {
       if (this.#trayTimeText) {
@@ -2043,14 +2168,29 @@ export class SimplePlayer extends HTMLElement {
       this.#clearVolumeInteractionState();
       return;
     }
+    this.#closeSpeedPopover();
     this.#clearVolumeCloseTimer();
-    this.#volumeControl.classList.add('is-volume-open');
+    this.#volumeSlot.classList.add('is-volume-open');
+    this.#volumeControl.setAttribute('aria-expanded', 'true');
+    this.#volumePopover.removeAttribute('inert');
   }
 
   #closeVolumePopover = () => {
     this.#volumeCloseTimer = 0;
     if (this.#isVolumeHovering || this.#isVolumeScrubbing) return;
-    this.#volumeControl.classList.remove('is-volume-open');
+    this.#volumeSlot.classList.remove('is-volume-open');
+    this.#volumeControl.setAttribute('aria-expanded', 'false');
+    this.#volumePopover.setAttribute('inert', '');
+  };
+
+  #handleVolumeFocusIn = () => {
+    this.#openVolumePopover();
+  };
+
+  #handleVolumeFocusOut = (event: Event) => {
+    const nextTarget = event instanceof FocusEvent ? event.relatedTarget : null;
+    if (nextTarget instanceof Node && this.#volumeSlot.contains(nextTarget)) return;
+    this.#scheduleVolumePopoverClose(0);
   };
 
   #scheduleVolumePopoverClose(delay = 150) {
@@ -2143,6 +2283,14 @@ export class SimplePlayer extends HTMLElement {
 
   #handleVolumeKeyDown = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.#isVolumeHovering = false;
+      this.#volumeControl.focus();
+      this.#closeVolumePopover();
+      return;
+    }
     if (!this.#isVolumeAvailable()) {
       event.preventDefault();
       event.stopPropagation();
@@ -2163,6 +2311,253 @@ export class SimplePlayer extends HTMLElement {
     this.#video.volume = Math.min(1, Math.max(0, nextVolume));
     this.#video.muted = this.#video.volume <= 0;
     this.#syncAudioControlState();
+  };
+
+  #formatPlaybackRate(rate: number) {
+    return `${Number(rate.toFixed(2))}x`;
+  }
+
+  #syncSpeedControlState = () => {
+    if (!this.#video || !this.#speedControl) return;
+    const rate = Number.isFinite(this.#video.playbackRate)
+      ? Math.min(4, Math.max(0.25, this.#video.playbackRate))
+      : 1;
+    const label = this.#formatPlaybackRate(rate);
+    const position = rate >= 1
+      ? 50 + (((rate - 1) / 3) * 50)
+      : ((rate - 0.25) / 0.75) * 50;
+
+    const previousLabel = this.#speedValue.textContent;
+    this.#speedValue.textContent = label;
+    if (
+      previousLabel &&
+      previousLabel !== label &&
+      (
+        this.#isSpeedScrubbing ||
+        this.#speedControl.classList.contains('is-speed-open')
+      )
+    ) {
+      this.#animateSpeedValueSwap();
+    }
+    this.#speedControl.setAttribute('aria-label', `Playback speed: ${label}`);
+    this.#speedTrack.setAttribute('aria-valuenow', `${rate}`);
+    this.#speedTrack.setAttribute('aria-valuetext', label);
+    this.#player.style.setProperty('--sp-speed-position', `${position}%`);
+  };
+
+  #setPlaybackRate(rate: number) {
+    const nextRate = Math.round(Math.min(4, Math.max(0.25, rate)) * 20) / 20;
+    this.#video.playbackRate = nextRate;
+    this.#syncSpeedControlState();
+    this.#showSpeedValuePreview();
+    this.#scheduleSpeedValuePreviewHide();
+  }
+
+  #setSpeedFromClientY(clientY: number) {
+    const rect = this.#speedTrack.getBoundingClientRect();
+    const position = Math.min(1, Math.max(0, 1 - ((clientY - rect.top) / rect.height)));
+    const rate = position >= 0.5
+      ? 1 + (((position - 0.5) / 0.5) * 3)
+      : 0.25 + ((position / 0.5) * 0.75);
+    this.#setPlaybackRate(rate);
+  }
+
+  #clearSpeedCloseTimer() {
+    if (!this.#speedCloseTimer) return;
+    window.clearTimeout(this.#speedCloseTimer);
+    this.#speedCloseTimer = 0;
+  }
+
+  #clearSpeedValuePreviewTimer() {
+    if (!this.#speedValuePreviewTimer) return;
+    window.clearTimeout(this.#speedValuePreviewTimer);
+    this.#speedValuePreviewTimer = 0;
+  }
+
+  #clearSpeedValueAnimationTimer() {
+    if (!this.#speedValueAnimationTimer) return;
+    window.clearTimeout(this.#speedValueAnimationTimer);
+    this.#speedValueAnimationTimer = 0;
+  }
+
+  #animateSpeedValueSwap() {
+    if (this.#speedValue.classList.contains('is-speed-value-animating')) return;
+    this.#speedValue.classList.add('is-speed-value-animating');
+    this.#speedValueAnimationTimer = window.setTimeout(() => {
+      this.#speedValueAnimationTimer = 0;
+      this.#speedValue.classList.remove('is-speed-value-animating');
+    }, 180);
+  }
+
+  #showSpeedValuePreview() {
+    this.#clearSpeedValuePreviewTimer();
+    this.#speedPopover.classList.add('is-speed-value-visible');
+  }
+
+  #scheduleSpeedValuePreviewHide(delay = 700) {
+    this.#clearSpeedValuePreviewTimer();
+    this.#speedValuePreviewTimer = window.setTimeout(() => {
+      this.#speedValuePreviewTimer = 0;
+      if (this.#isSpeedScrubbing) return;
+      this.#speedPopover.classList.remove('is-speed-value-visible');
+    }, delay);
+  }
+
+  #openSpeedPopover() {
+    if (!this.speedEnabled) return;
+    this.#clearSpeedCloseTimer();
+    this.#speedControl.classList.add('is-speed-open');
+    this.#speedControl.setAttribute('aria-expanded', 'true');
+    this.#speedPopover.removeAttribute('inert');
+    this.#clearControlsHideTimer();
+  }
+
+  #closeSpeedPopover = () => {
+    if (!this.#speedControl) return;
+    this.#clearSpeedCloseTimer();
+    this.#clearSpeedValuePreviewTimer();
+    this.#clearSpeedValueAnimationTimer();
+    this.#speedControl.classList.remove('is-speed-open');
+    this.#speedControl.setAttribute('aria-expanded', 'false');
+    this.#speedPopover.classList.remove('is-scrubbing-speed');
+    this.#speedPopover.classList.remove('is-speed-value-visible');
+    this.#speedValue.classList.remove('is-speed-value-animating');
+    this.#speedPopover?.setAttribute('inert', '');
+  };
+
+  #scheduleSpeedPopoverClose(delay = 150) {
+    this.#clearSpeedCloseTimer();
+    this.#speedCloseTimer = window.setTimeout(() => {
+      this.#speedCloseTimer = 0;
+      if (this.#isSpeedHovering || this.#isSpeedScrubbing) return;
+      this.#closeSpeedPopover();
+    }, delay);
+  }
+
+  #handleSpeedPointerEnter = () => {
+    if (this.#isTouchControls()) return;
+    this.#isSpeedHovering = true;
+    this.#openSpeedPopover();
+  };
+
+  #handleSpeedPointerLeave = () => {
+    if (this.#isTouchControls()) return;
+    this.#isSpeedHovering = false;
+    this.#scheduleSpeedPopoverClose();
+  };
+
+  #handleSpeedFocusIn = () => {
+    this.#openSpeedPopover();
+  };
+
+  #handleSpeedFocusOut = (event: Event) => {
+    const nextTarget = event instanceof FocusEvent ? event.relatedTarget : null;
+    if (nextTarget instanceof Node && this.#speedSlot.contains(nextTarget)) return;
+    this.#scheduleSpeedPopoverClose(0);
+  };
+
+  #handleSpeedControlClick = (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.speedEnabled || !this.#areControlsVisible() || this.#shouldSuppressControlAction()) return;
+
+    this.#showTouchControls();
+    const shouldOpen = !this.#speedControl.classList.contains('is-speed-open');
+    this.#closeVolumePopover();
+    if (this.#isTouchControls() && !shouldOpen) this.#closeSpeedPopover();
+    else this.#openSpeedPopover();
+  };
+
+  #preventSpeedTrackClick = (event: Event) => {
+    event.stopPropagation();
+  };
+
+  #releaseSpeedPointer(pointerId: number | null) {
+    if (pointerId === null) return;
+    if (this.#speedTrack.hasPointerCapture(pointerId)) {
+      this.#speedTrack.releasePointerCapture(pointerId);
+    }
+  }
+
+  #finishSpeedScrub(pointerId: number | null) {
+    this.#isSpeedScrubbing = false;
+    this.#activeSpeedPointerId = null;
+    this.#speedPopover.classList.remove('is-scrubbing-speed');
+    this.#showSpeedValuePreview();
+    this.#scheduleSpeedValuePreviewHide();
+    this.#speedTrack.blur();
+    this.#releaseSpeedPointer(pointerId);
+    this.#scheduleSpeedPopoverClose(850);
+    this.#scheduleTouchControlsHide();
+  }
+
+  #handleSpeedPointerDown = (event: Event) => {
+    if (!(event instanceof PointerEvent)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.speedEnabled) return;
+
+    this.#showTouchControls();
+    this.#clearControlsHideTimer();
+    this.#openSpeedPopover();
+    this.#isSpeedScrubbing = true;
+    this.#activeSpeedPointerId = event.pointerId;
+    this.#speedPopover.classList.add('is-scrubbing-speed');
+    this.#speedTrack.setPointerCapture(event.pointerId);
+    this.#setSpeedFromClientY(event.clientY);
+  };
+
+  #handleSpeedPointerMove = (event: Event) => {
+    if (!(event instanceof PointerEvent) || !this.#isSpeedScrubbing) return;
+    if (this.#activeSpeedPointerId !== null && event.pointerId !== this.#activeSpeedPointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.#setSpeedFromClientY(event.clientY);
+  };
+
+  #handleSpeedPointerUp = (event: Event) => {
+    if (!(event instanceof PointerEvent)) return;
+    if (this.#activeSpeedPointerId !== null && event.pointerId !== this.#activeSpeedPointerId) return;
+    event.stopPropagation();
+    this.#setSpeedFromClientY(event.clientY);
+    this.#finishSpeedScrub(event.pointerId);
+  };
+
+  #handleSpeedPointerCancel = (event: Event) => {
+    if (!(event instanceof PointerEvent)) return;
+    if (this.#activeSpeedPointerId !== null && event.pointerId !== this.#activeSpeedPointerId) return;
+    event.stopPropagation();
+    this.#finishSpeedScrub(event.pointerId);
+  };
+
+  #handleSpeedKeyDown = (event: Event) => {
+    if (!(event instanceof KeyboardEvent)) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.#isSpeedHovering = false;
+      this.#speedControl.focus();
+      this.#closeSpeedPopover();
+      return;
+    }
+    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    const step = event.shiftKey ? 0.25 : 0.05;
+    const nextRate = event.key === 'Home'
+      ? 0.25
+      : event.key === 'End'
+        ? 4
+        : this.#video.playbackRate + (event.key === 'ArrowUp' ? step : -step);
+    this.#setPlaybackRate(nextRate);
+  };
+
+  #handleDocumentPointerDown = (event: Event) => {
+    if (!this.#speedControl?.classList.contains('is-speed-open')) return;
+    const path = event.composedPath();
+    if (path.includes(this.#speedControl) || path.includes(this.#speedPopover)) return;
+    this.#closeSpeedPopover();
   };
 
   #handlePictureInPictureClick = async () => {
@@ -2327,6 +2722,11 @@ export class SimplePlayer extends HTMLElement {
       this.#finishVolumeScrub(event.pointerId);
       return;
     }
+    if (this.#activeSpeedPointerId !== null && event.pointerId === this.#activeSpeedPointerId) {
+      this.#setSpeedFromClientY(event.clientY);
+      this.#finishSpeedScrub(event.pointerId);
+      return;
+    }
     if (this.#activeScrubPointerId === null || event.pointerId !== this.#activeScrubPointerId) return;
     void this.#finishScrub(event.clientX, event.pointerId, true);
   };
@@ -2338,12 +2738,17 @@ export class SimplePlayer extends HTMLElement {
       this.#finishVolumeScrub(event.pointerId);
       return;
     }
+    if (this.#activeSpeedPointerId !== null && event.pointerId === this.#activeSpeedPointerId) {
+      this.#finishSpeedScrub(event.pointerId);
+      return;
+    }
     if (this.#activeScrubPointerId === null || event.pointerId !== this.#activeScrubPointerId) return;
     this.#cancelScrub(event.pointerId);
   };
 
   #handleWindowBlur = () => {
     this.#finishVolumeScrub(this.#activeVolumePointerId);
+    this.#finishSpeedScrub(this.#activeSpeedPointerId);
     this.#cancelScrub(this.#activeScrubPointerId);
   };
 

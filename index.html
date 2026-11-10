@@ -6,13 +6,13 @@
     <title>SimplePlayer</title>
     <meta
       name="description"
-      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, playback speed, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="SimplePlayer" />
     <meta
       property="og:description"
-      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, playback speed, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta property="og:url" content="https://simpleplayer.grizz.fyi/" />
     <meta property="og:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
@@ -23,7 +23,7 @@
     <meta name="twitter:title" content="SimplePlayer" />
     <meta
       name="twitter:description"
-      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, Picture-in-Picture, fullscreen, and lazy loading."
+      content="Framework-free Web Component. It gives you a clean default video player with custom overlay controls, a scrubber, volume, playback speed, Picture-in-Picture, fullscreen, and lazy loading."
     />
     <meta name="twitter:image" content="https://simpleplayer.grizz.fyi/assets/OG.png" />
     <link rel="icon" type="image/svg+xml" href="./assets/Favicon.svg" />
@@ -586,7 +586,7 @@
           <p class="text">Framework-free Web Component.</p>
           <p class="text">
             It gives you a clean default video player with custom overlay
-            controls, a scrubber, volume, Picture-in-Picture, fullscreen, and
+            controls, a scrubber, volume, playback speed, Picture-in-Picture, fullscreen, and
             lazy loading.
           </p>
         </header>
@@ -701,6 +701,7 @@ declare module 'react' {
         'aspect-ratio'?: string;
         'preload-margin'?: string;
         controls?: boolean;
+        'disable-speed'?: boolean;
         'disable-autoplay'?: boolean;
         'pause-on-overlay-click'?: boolean;
         'show-time'?: boolean;

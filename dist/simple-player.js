@@ -1,4 +1,4 @@
-const u = "16 / 9", f = "360px 0px", v = [
+const u = "16 / 9", f = "360px 0px", b = [
   "src",
   "aspect-ratio",
   "preload-margin",
@@ -8,6 +8,8 @@ const u = "16 / 9", f = "360px 0px", v = [
   "enable-volume",
   "disable-volume",
   "disable-volume-slider",
+  "enable-speed",
+  "disable-speed",
   "enable-picture-in-picture",
   "disable-picture-in-picture",
   "enable-fullscreen",
@@ -16,16 +18,17 @@ const u = "16 / 9", f = "360px 0px", v = [
   "no-autoplay",
   "no-volume",
   "no-volume-slider",
+  "no-speed",
   "no-picture-in-picture",
   "no-fullscreen"
 ];
-function b(o) {
+function v(o) {
   const t = document;
   return o.fullscreenElement || document.fullscreenElement || t.webkitFullscreenElement || t.mozFullScreenElement || t.msFullscreenElement || null;
 }
 function y(o, t, s) {
-  const e = document, i = t, r = s, n = !!((document.fullscreenEnabled ?? e.webkitFullscreenEnabled ?? e.mozFullScreenEnabled ?? e.msFullscreenEnabled ?? !1) && (i.requestFullscreen || i.webkitRequestFullscreen || i.mozRequestFullScreen || i.msRequestFullscreen)), l = !!(r.webkitSupportsFullscreen || r.webkitEnterFullscreen || r.webkitEnterFullScreen);
-  return !!(o && (n || l));
+  const e = document, i = t, r = s, n = !!((document.fullscreenEnabled ?? e.webkitFullscreenEnabled ?? e.mozFullScreenEnabled ?? e.msFullscreenEnabled ?? !1) && (i.requestFullscreen || i.webkitRequestFullscreen || i.mozRequestFullScreen || i.msRequestFullscreen)), a = !!(r.webkitSupportsFullscreen || r.webkitEnterFullscreen || r.webkitEnterFullScreen);
+  return !!(o && (n || a));
 }
 function g(o) {
   const t = o, s = t.requestFullscreen || t.webkitRequestFullscreen || t.mozRequestFullScreen || t.msRequestFullscreen;
@@ -35,15 +38,15 @@ function w(o) {
   const t = o;
   return typeof t.requestFullscreen == "function" || typeof t.webkitRequestFullscreen == "function" || typeof t.mozRequestFullScreen == "function" || typeof t.msRequestFullscreen == "function";
 }
-function k(o) {
+function x(o) {
   const t = o;
   (t.webkitEnterFullscreen || t.webkitEnterFullScreen)?.call(t);
 }
-function x() {
+function k() {
   const o = document, t = document.exitFullscreen || o.webkitExitFullscreen || o.mozCancelFullScreen || o.msExitFullscreen;
   return Promise.resolve(t?.call(o));
 }
-function a(o) {
+function l(o) {
   if (!Number.isFinite(o) || o < 0) return "0:00";
   const t = Math.floor(o), s = t % 60, e = Math.floor(t / 60), i = e % 60, r = Math.floor(e / 60);
   return r > 0 ? r + ":" + String(i).padStart(2, "0") + ":" + String(s).padStart(2, "0") : i + ":" + String(s).padStart(2, "0");
@@ -72,19 +75,19 @@ function P(o) {
 function T(o) {
   return typeof o.webkitAudioDecodedByteCount != "number" ? !1 : o.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ? !0 : o.currentTime <= 0.25;
 }
-function p(o) {
+function c(o) {
   const t = Math.min(2, Math.max(0, o.width / 2)), s = Math.max(1, o.width - t * 2);
   return { rect: o, sideInset: t, innerWidth: s };
 }
 function E(o, t) {
-  const { sideInset: s, innerWidth: e } = p(t), i = Math.min(1, Math.max(0, o));
+  const { sideInset: s, innerWidth: e } = c(t), i = Math.min(1, Math.max(0, o));
   return s + i * e;
 }
-function A(o, t) {
-  const { sideInset: s, innerWidth: e } = p(t);
+function C(o, t) {
+  const { sideInset: s, innerWidth: e } = c(t);
   return Math.min(1, Math.max(0, (o - t.left - s) / e));
 }
-const C = `
+const A = `
   :host {
     --simple-player-aspect-ratio: ${u};
     --space: 4px;
@@ -103,7 +106,7 @@ const C = `
     --sp-control-tray-display: block;
     --sp-enabled-controls-count: 3;
     --sp-control-tray-width: 0px;
-    --sp-control-tray-expanded-width: calc((var(--sp-control-slot-size) * var(--sp-enabled-controls-count)) + (var(--sp-control-tray-padding) * 2));
+    --sp-control-tray-expanded-width: calc((var(--sp-control-slot-size) * var(--sp-enabled-controls-count)) + var(--sp-speed-slot-extra-width, 0px) + (var(--sp-control-tray-padding) * 2));
     --sp-control-tray-gap: 0px;
     --sp-control-icon-size: 20px;
     --sp-control-icon-render-size: 20px;
@@ -121,6 +124,7 @@ const C = `
     --sp-control-slot-size: calc(var(--sp-control-icon-size) + 4px);
     --sp-touch-control-hover-offset: -9999px;
     --sp-volume-level: 100%;
+    --sp-time-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     position: relative;
     display: block;
@@ -488,7 +492,7 @@ const C = `
     top: var(--sp-control-tray-padding);
     left: var(--sp-control-tray-padding);
     z-index: 0;
-    width: var(--sp-control-slot-size);
+    width: var(--sp-control-hover-width, var(--sp-control-slot-size));
     height: var(--sp-control-slot-size);
     border-radius: 3px;
     background: var(--sp-control-hover-surface);
@@ -497,6 +501,7 @@ const C = `
     transform: translateX(var(--sp-control-hover-offset, 0px));
     transition:
       opacity 120ms ease,
+      width 160ms cubic-bezier(0.18, 0.9, 0.22, 1),
       transform 240ms cubic-bezier(0.18, 0.9, 0.22, 1);
   }
 
@@ -558,7 +563,8 @@ const C = `
     }
 }
 
-  .sp-player:not(.has-volume-control) [data-sp-volume-control],
+  .sp-player:not(.has-volume-control) [data-sp-volume-slot],
+  .sp-player:not(.has-speed-control) [data-sp-speed-slot],
   .sp-player:not(.has-picture-in-picture-control) [data-sp-picture-in-picture-control],
   .sp-player:not(.has-fullscreen-control) [data-sp-fullscreen-control] {
     display: none;
@@ -618,6 +624,10 @@ const C = `
     stroke-width: var(--sp-control-icon-stroke-width);
   }
 
+  .sp-speed-icon [stroke] {
+    stroke-width: 2;
+  }
+
   .sp-volume-icon,
   .sp-player.is-volume-muted .sp-volume-icon--muted {
     display: none;
@@ -651,6 +661,14 @@ const C = `
       opacity 140ms ease,
       filter 180ms ease,
       transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-volume-slot {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: var(--sp-control-slot-size);
+    height: var(--sp-control-slot-size);
   }
 
   .sp-volume-slot::after {
@@ -722,6 +740,161 @@ const C = `
   .sp-player:not(.is-fullscreen) .sp-fullscreen-icon--enter,
   .sp-player.is-fullscreen .sp-fullscreen-icon--exit {
     display: block;
+  }
+
+  .sp-speed-slot {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: var(--sp-speed-slot-width, var(--sp-control-slot-size));
+    height: var(--sp-control-slot-size);
+  }
+
+  .sp-speed-control {
+    width: 100%;
+    padding: 0;
+  }
+
+  .sp-speed-popover {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--sp-control-slot-size) + var(--sp-control-tray-padding) + 4px);
+    z-index: -1;
+    display: grid;
+    place-items: center;
+    width: var(--sp-control-slot-size);
+    height: 76px;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(0.8px);
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+    transform: translate(-50%, 8px) scale(0.96);
+    transform-origin: center bottom;
+    transition:
+      opacity 140ms ease,
+      filter 180ms ease,
+      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-speed-control.is-speed-open + .sp-speed-popover {
+    z-index: 4;
+    opacity: 1;
+    pointer-events: auto;
+    filter: blur(0);
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .sp-speed-popover.is-scrubbing-speed {
+    z-index: 4;
+    opacity: 1;
+    pointer-events: auto;
+    filter: blur(0);
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .sp-speed-preview {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + var(--space));
+    z-index: 5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--white);
+    isolation: isolate;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(2px);
+    transition: opacity 140ms ease, transform 180ms cubic-bezier(0.18, 0.9, 0.22, 1);
+    font: 500 12px/1.35 var(--sp-time-font-family);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sp-speed-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--sp-glass-surface);
+    opacity: var(--sp-glass-opacity);
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+  }
+
+  .sp-speed-popover.is-scrubbing-speed .sp-speed-preview,
+  .sp-speed-popover.is-speed-value-visible .sp-speed-preview {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .sp-speed-preview-text {
+    display: inline-block;
+  }
+
+  .sp-speed-preview-text.is-speed-value-animating {
+    animation: sp-speed-value-swap 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sp-speed-slot::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: calc(var(--sp-control-tray-padding) + 4px);
+    z-index: 5;
+    pointer-events: auto;
+  }
+
+  .sp-speed-track {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: var(--sp-control-slot-size);
+    height: 76px;
+    border-radius: 5px;
+    background: var(--sp-control-glass-surface);
+    overflow: hidden;
+    touch-action: none;
+    cursor: ns-resize;
+    backdrop-filter: var(--sp-glass-filter);
+    -webkit-backdrop-filter: var(--sp-glass-filter);
+    box-shadow: inset 0 0 0 1px rgb(var(--white-rgb) / 0.08);
+    transform: translateZ(0);
+  }
+
+  .sp-speed-thumb {
+    position: absolute;
+    z-index: 1;
+    right: 2px;
+    bottom: clamp(2px, calc(var(--sp-speed-position, 50%) - 2px), calc(100% - 6px));
+    left: 2px;
+    height: 4px;
+    border-radius: 3px;
+    background: var(--white);
+    transition: bottom 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .sp-speed-center {
+    position: absolute;
+    right: 5px;
+    bottom: calc(50% - 1px);
+    left: 5px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--white);
+    opacity: 0.38;
+    pointer-events: none;
+  }
+
+  .sp-speed-track:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.92);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgb(0 0 0 / 0.32);
   }
 
   .sp-player.is-pointer-active .sp-control-icon,
@@ -839,7 +1012,7 @@ const C = `
     transition: transform 120ms ease;
     transform: translateX(-50%) translateY(2px);
     white-space: nowrap;
-    font: 500 12px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font: 500 12px/1.35 var(--sp-time-font-family);
     font-variant-numeric: tabular-nums;
   }
 
@@ -937,7 +1110,7 @@ const C = `
     height: var(--sp-control-slot-size);
     max-height: var(--sp-control-slot-size);
     padding: 0 8px;
-    font: 600 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font: 600 13px/1 var(--sp-time-font-family);
     font-variant-numeric: tabular-nums;
     color: var(--white);
     border-radius: 3px;
@@ -1077,9 +1250,29 @@ const C = `
       transform: translateY(0) scale(1);
     }
   }
+
+  @keyframes sp-speed-value-swap {
+    0% {
+      filter: blur(0);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    42% {
+      filter: blur(0.8px);
+      opacity: 0.72;
+      transform: translateY(-0.5px) scale(0.94);
+    }
+
+    100% {
+      filter: blur(0);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 `, d = document.createElement("template");
 d.innerHTML = `
-  <style>${C}</style>
+  <style>${A}</style>
   <div class="sp-player is-loading" tabindex="0" role="group" aria-label="Video player" data-sp-player>
     <video
       class="sp-video sp-asset"
@@ -1116,28 +1309,49 @@ d.innerHTML = `
       <span class="sp-tray-time" data-sp-tray-time>
         <span class="sp-control-tray sp-tray-time-holder">
           <span class="sp-control-tray-slots">
-            <button class="sp-control-button sp-tray-time-text" type="button" tabindex="-1" data-sp-tray-time-text>0:00</button>
+            <button class="sp-control-button sp-tray-time-text" type="button" aria-label="Show remaining time" aria-pressed="false" data-sp-tray-time-text>0:00</button>
           </span>
         </span>
       </span>
       <span class="sp-control-tray" data-sp-control-tray>
         <span class="sp-control-tray-slots" data-sp-control-tray-slots>
-          <button class="sp-control-button sp-volume-slot" type="button" aria-label="Toggle sound" data-sp-volume-control>
-            <svg class="sp-control-icon sp-volume-icon sp-volume-icon--sound" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M8 7.00002H5C3.8954 7.00002 3 7.89542 3 9.00002V11C3 12.1046 3.8954 13 5 13H8L12.5227 16.7689C13.1093 17.2578 14 16.8406 14 16.077V3.92302C14 3.15942 13.1094 2.74222 12.5227 3.23112L8 7.00002Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M17.4141 8.58582C18.1951 9.36682 18.1951 10.6332 17.4141 11.4142" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-            <svg class="sp-control-icon sp-volume-icon sp-volume-icon--muted" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M3 17L17 3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M15 16.0773C14.9998 17.6883 13.1207 18.5686 11.8828 17.5372L9.8333 15.8303C9.38114 15.4538 9.35003 14.7702 9.76611 14.3541C10.132 13.9882 10.7165 13.9617 11.114 14.2929L13 15.8644V11.5354C13 11.2702 13.1054 11.0158 13.2929 10.8283C13.9229 10.1983 15 10.6445 15 11.5354V16.0773Z" fill="currentColor"></path>
-              <path d="M12 2.37218C13.2358 1.48685 15 2.36173 15 3.92296V4.87902L13 6.87902V4.13488L8.64062 7.76867C8.46092 7.91841 8.23392 8.00011 8 8.00011H5C4.44768 8.00011 4 8.4478 4 9.00011V11.0001C4.00009 11.5524 4.44774 12.0001 5 12.0001H7.87891L5.87891 14.0001H5C3.34317 14.0001 2.00009 12.6569 2 11.0001V9.00011C2 7.34323 3.34312 6.00011 5 6.00011H7.63672L11.8828 2.463L12 2.37218Z" fill="currentColor"></path>
-            </svg>
-            <span class="sp-volume-popover" data-sp-volume-popover>
+          <span class="sp-volume-slot" data-sp-volume-slot>
+            <button class="sp-control-button" type="button" aria-label="Toggle sound" aria-controls="sp-volume-popover" aria-expanded="false" data-sp-volume-control>
+              <svg class="sp-control-icon sp-volume-icon sp-volume-icon--sound" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M8 7.00002H5C3.8954 7.00002 3 7.89542 3 9.00002V11C3 12.1046 3.8954 13 5 13H8L12.5227 16.7689C13.1093 17.2578 14 16.8406 14 16.077V3.92302C14 3.15942 13.1094 2.74222 12.5227 3.23112L8 7.00002Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17.4141 8.58582C18.1951 9.36682 18.1951 10.6332 17.4141 11.4142" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <svg class="sp-control-icon sp-volume-icon sp-volume-icon--muted" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 17L17 3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15 16.0773C14.9998 17.6883 13.1207 18.5686 11.8828 17.5372L9.8333 15.8303C9.38114 15.4538 9.35003 14.7702 9.76611 14.3541C10.132 13.9882 10.7165 13.9617 11.114 14.2929L13 15.8644V11.5354C13 11.2702 13.1054 11.0158 13.2929 10.8283C13.9229 10.1983 15 10.6445 15 11.5354V16.0773Z" fill="currentColor"></path>
+                <path d="M12 2.37218C13.2358 1.48685 15 2.36173 15 3.92296V4.87902L13 6.87902V4.13488L8.64062 7.76867C8.46092 7.91841 8.23392 8.00011 8 8.00011H5C4.44768 8.00011 4 8.4478 4 9.00011V11.0001C4.00009 11.5524 4.44774 12.0001 5 12.0001H7.87891L5.87891 14.0001H5C3.34317 14.0001 2.00009 12.6569 2 11.0001V9.00011C2 7.34323 3.34312 6.00011 5 6.00011H7.63672L11.8828 2.463L12 2.37218Z" fill="currentColor"></path>
+              </svg>
+            </button>
+            <span class="sp-volume-popover" id="sp-volume-popover" inert data-sp-volume-popover>
               <span class="sp-volume-track" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" tabindex="0" data-sp-volume-track>
                 <span class="sp-volume-fill" data-sp-volume-fill></span>
               </span>
             </span>
-          </button>
+          </span>
+          <span class="sp-speed-slot" data-sp-speed-slot>
+            <button class="sp-control-button sp-speed-control" type="button" aria-label="Playback speed: 1x" aria-controls="sp-speed-popover" aria-expanded="false" data-sp-speed-control>
+              <svg class="sp-control-icon sp-speed-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 10.76L7.72 7.72"></path>
+                  <path d="M10 2.78C5.5928 2.78 2.02 6.3528 2.02 10.76C2.02 13.4163 3.3179 15.7695 5.3141 17.22H14.6859C16.6821 15.7695 17.98 13.4163 17.98 10.76C17.98 6.3528 14.4072 2.78 10 2.78Z"></path>
+                </g>
+              </svg>
+            </button>
+            <span class="sp-speed-popover" id="sp-speed-popover" inert data-sp-speed-popover>
+              <span class="sp-speed-preview" aria-hidden="true">
+                <span class="sp-speed-preview-text" data-sp-speed-value>1x</span>
+              </span>
+              <span class="sp-speed-track" role="slider" aria-label="Playback speed" aria-valuemin="0.25" aria-valuemax="4" aria-valuenow="1" aria-valuetext="1x" tabindex="0" data-sp-speed-track>
+                <span class="sp-speed-center" aria-hidden="true"></span>
+                <span class="sp-speed-thumb" aria-hidden="true"></span>
+              </span>
+            </span>
+          </span>
           <button class="sp-control-button" type="button" aria-label="Picture in picture" data-sp-picture-in-picture-control>
             <svg class="sp-control-icon" viewBox="0 0 20 20" aria-hidden="true">
               <path d="m5.5,13c-1.381,0-2.5-1.119-2.5-2.5v-5c0-1.381,1.119-2.5,2.5-2.5h7c1.381,0,2.5,1.119,2.5,2.5v2.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
@@ -1166,106 +1380,118 @@ d.innerHTML = `
   </div>
 `;
 class h extends HTMLElement {
-  static observedAttributes = v;
-  static #Dt = null;
+  static observedAttributes = b;
+  static #ts = null;
   #r;
-  #Ht = [];
-  #T = null;
-  #qt = !1;
-  #E = !1;
-  #s;
+  #ss = [];
+  #M = null;
+  #es = !1;
+  #V = !1;
+  #e;
   #t;
-  #Bt;
-  #A;
+  #is;
+  #z;
   #i;
-  #I;
-  #Z;
-  #ye;
-  #p;
-  #ms;
-  #Hs;
-  #a;
+  #U;
+  #C;
+  #gt;
+  #c;
+  #Ds;
+  #le;
   #R;
-  #m;
-  #K;
-  #G;
-  #J = [];
-  #ht = 0;
-  #l = !1;
-  #k = !1;
-  #Q = !1;
-  #v = 0;
-  #Ut = 0;
-  #tt = 0;
-  #$t = !1;
-  #D = !1;
-  #ct = !1;
-  #fs = 0;
-  #Nt = 0;
-  #c = null;
-  #b = null;
-  #vs = 0;
-  #st = 0;
-  #pt = 0;
-  #ut = 0;
-  #et = 0;
-  #qs = 0;
-  #bs = 0;
-  #dt = !1;
-  #Yt = !1;
-  #Xt = 0;
-  #Ot = 0;
-  #Wt = null;
-  #C = !1;
-  #L = !1;
-  #B = !1;
-  #U = !1;
-  #$ = 0;
-  #_t = 0;
-  #mt = !1;
-  #Bs = 0;
-  #jt = !0;
-  #Us = 0;
-  #$s = performance.now();
-  #ft = 0;
-  #x = null;
-  #it = null;
-  #Zt = !1;
-  #y = !1;
-  #rt = !1;
-  #S = !1;
-  #N = !1;
-  #ys = null;
-  #gs = null;
-  #Kt = !1;
-  #F = !1;
-  #Y = !1;
-  #o = null;
-  #vt = 0;
-  #bt = 0;
-  #yt = 0;
-  #gt = 0;
-  #ws = null;
-  #ks = !1;
+  #n;
+  #y;
+  #b;
+  #a;
+  #rs;
+  #N;
+  #w;
+  #v;
+  #at;
+  #lt;
+  #O = [];
   #wt = 0;
-  #ge = 4;
-  #we = 3.5;
-  #xs = 6;
-  #ke = 0.08;
-  #xe = 240;
-  #Ps = 1200;
-  #kt = 1600;
-  #Pe = 140;
-  #Te = 380;
-  #Ee = 650;
-  #Ae = 2e3;
-  #Ce = 3;
-  #Le = 10;
-  #Gt = 0.18;
-  #Se = 8;
-  #Fe = 18;
-  #Me = 620;
-  #Ns = 260;
+  #h = !1;
+  #L = !1;
+  #ht = !1;
+  #x = 0;
+  #os = 0;
+  #pt = 0;
+  #ns = !1;
+  #X = !1;
+  #xt = !1;
+  #Hs = 0;
+  #as = 0;
+  #d = null;
+  #k = null;
+  #qs = 0;
+  #ct = 0;
+  #kt = 0;
+  #Pt = 0;
+  #ut = 0;
+  #he = 0;
+  #Bs = 0;
+  #Tt = !1;
+  #ls = !1;
+  #hs = 0;
+  #ps = 0;
+  #cs = null;
+  #I = !1;
+  #D = !1;
+  #J = !1;
+  #Q = !1;
+  #tt = 0;
+  #us = 0;
+  #Et = !1;
+  #pe = 0;
+  #ds = !0;
+  #ce = 0;
+  #ue = performance.now();
+  #Ct = 0;
+  #F = null;
+  #dt = null;
+  #ms = !1;
+  #P = !1;
+  #mt = !1;
+  #H = !1;
+  #st = !1;
+  #$s = null;
+  #Ys = null;
+  #fs = !1;
+  #q = !1;
+  #W = !1;
+  #l = null;
+  #At = 0;
+  #_ = !1;
+  #ft = !1;
+  #u = null;
+  #St = 0;
+  #Lt = 0;
+  #Ft = 0;
+  #Mt = 0;
+  #Vt = 0;
+  #zt = 0;
+  #Us = null;
+  #Rt = !1;
+  #It = 0;
+  #Ze = 4;
+  #Ke = 3.5;
+  #Ns = 6;
+  #Ge = 0.08;
+  #Je = 240;
+  #Os = 1200;
+  #Dt = 1600;
+  #Qe = 140;
+  #ti = 380;
+  #si = 650;
+  #ei = 2e3;
+  #ii = 3;
+  #ri = 10;
+  #bs = 0.18;
+  #oi = 8;
+  #ni = 18;
+  #ai = 620;
+  #de = 260;
   constructor() {
     super(), this.#r = this.attachShadow({ mode: "open" }), this.#r.append(d.content.cloneNode(!0));
   }
@@ -1273,19 +1499,19 @@ class h extends HTMLElement {
     return this.getAttribute("src") ?? "";
   }
   set src(t) {
-    this.#Ts("src", t);
+    this.#Xs("src", t);
   }
   get aspectRatio() {
     return this.getAttribute("aspect-ratio") || u;
   }
   set aspectRatio(t) {
-    this.#Ts("aspect-ratio", t);
+    this.#Xs("aspect-ratio", t);
   }
   get preloadMargin() {
     return this.getAttribute("preload-margin") || f;
   }
   set preloadMargin(t) {
-    this.#Ts("preload-margin", t);
+    this.#Xs("preload-margin", t);
   }
   get autoplayEnabled() {
     return !this.hasAttribute("disable-autoplay") && !this.hasAttribute("no-autoplay");
@@ -1331,7 +1557,7 @@ class h extends HTMLElement {
     return this.controlsEnabled && !this.hasAttribute("disable-volume") && !this.hasAttribute("no-volume");
   }
   set volumeEnabled(t) {
-    this.#Es("volume", t);
+    this.#vs("volume", t);
   }
   get volumeSliderEnabled() {
     return !this.hasAttribute("disable-volume-slider") && !this.hasAttribute("no-volume-slider");
@@ -1343,343 +1569,368 @@ class h extends HTMLElement {
     }
     this.setAttribute("disable-volume-slider", "");
   }
+  get speedEnabled() {
+    return this.controlsEnabled && !this.hasAttribute("disable-speed") && !this.hasAttribute("no-speed");
+  }
+  set speedEnabled(t) {
+    this.#vs("speed", t);
+  }
   get pictureInPictureEnabled() {
     return this.controlsEnabled && !this.hasAttribute("disable-picture-in-picture") && !this.hasAttribute("no-picture-in-picture");
   }
   set pictureInPictureEnabled(t) {
-    this.#Es("picture-in-picture", t);
+    this.#vs("picture-in-picture", t);
   }
   get fullscreenEnabled() {
     return this.controlsEnabled && !this.hasAttribute("disable-fullscreen") && !this.hasAttribute("no-fullscreen");
   }
   set fullscreenEnabled(t) {
-    this.#Es("fullscreen", t);
+    this.#vs("fullscreen", t);
   }
   connectedCallback() {
-    this.#s = this.#r.querySelector("[data-sp-player]"), this.#t = this.#r.querySelector("[data-sp-video]"), this.#Bt = this.#r.querySelector("[data-sp-overlay]"), this.#A = this.#r.querySelector("[data-sp-button]"), this.#i = this.#r.querySelector("[data-sp-progress-track]"), this.#I = this.#r.querySelector("[data-sp-control-tray]"), this.#Z = this.#r.querySelector("[data-sp-control-tray-slots]"), this.#ye = this.#r.querySelector("[data-sp-tray-time]"), this.#p = this.#r.querySelector("[data-sp-tray-time-text]"), this.#ms = this.#r.querySelector("[data-sp-time]"), this.#Hs = this.#r.querySelector("[data-sp-time-text]"), this.#a = this.#r.querySelector("[data-sp-volume-control]"), this.#R = this.#r.querySelector("[data-sp-volume-popover]"), this.#m = this.#r.querySelector("[data-sp-volume-track]"), this.#K = this.#r.querySelector("[data-sp-picture-in-picture-control]"), this.#G = this.#r.querySelector("[data-sp-fullscreen-control]"), this.#J = [this.#a, this.#K, this.#G], this.#Ys(), this.#qt || (this.#Ve(), this.#qt = !0), this.#Jt(), this.#Cs(), this.#xt(), this.#As(), this.#w(), this.#f(), this.#Vt(), this.#us(), this.#d();
+    this.#e = this.#r.querySelector("[data-sp-player]"), this.#t = this.#r.querySelector("[data-sp-video]"), this.#is = this.#r.querySelector("[data-sp-overlay]"), this.#z = this.#r.querySelector("[data-sp-button]"), this.#i = this.#r.querySelector("[data-sp-progress-track]"), this.#U = this.#r.querySelector("[data-sp-control-tray]"), this.#C = this.#r.querySelector("[data-sp-control-tray-slots]"), this.#gt = this.#r.querySelector("[data-sp-tray-time]"), this.#c = this.#r.querySelector("[data-sp-tray-time-text]"), this.#Ds = this.#r.querySelector("[data-sp-time]"), this.#le = this.#r.querySelector("[data-sp-time-text]"), this.#R = this.#r.querySelector("[data-sp-volume-slot]"), this.#n = this.#r.querySelector("[data-sp-volume-control]"), this.#y = this.#r.querySelector("[data-sp-volume-popover]"), this.#b = this.#r.querySelector("[data-sp-volume-track]"), this.#a = this.#r.querySelector("[data-sp-speed-control]"), this.#rs = this.#r.querySelector("[data-sp-speed-slot]"), this.#N = this.#r.querySelector("[data-sp-speed-value]"), this.#w = this.#r.querySelector("[data-sp-speed-popover]"), this.#v = this.#r.querySelector("[data-sp-speed-track]"), this.#at = this.#r.querySelector("[data-sp-picture-in-picture-control]"), this.#lt = this.#r.querySelector("[data-sp-fullscreen-control]"), this.#O = [this.#n, this.#a, this.#at, this.#lt], this.#me(), this.#es || (this.#hi(), this.#es = !0), this.#ys(), this.#_s(), this.#Ht(), this.#Ws(), this.#S(), this.#g(), this.#re(), this.#_t(), this.#Ms(), this.#f();
   }
   disconnectedCallback() {
-    this.#T?.disconnect(), this.#T = null, this.#Ht.forEach((t) => t()), this.#Ht = [], this.#qt = !1, this.#P(), this.#Gs(), this.#ns(), this.#Fs(), this.#lt(), this.#as(), this.#Rt(), this.#Js(), this.#Ss(), this.#Qs(), this.#s.classList.remove("is-volume-icon-animating"), this.#s.classList.remove("is-playback-pulsing"), this.#Z.style.removeProperty("--sp-control-hover-offset"), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#St(), this.#y = !1, this.#s.classList.remove("is-progress-hovering"), this.#F = !1, this.#Y = !1, this.#N = !1, this.#dt = !1, this.#Yt = !1, this.#Xt = 0, this.#Ot = 0, this.#o = null, this.#a.classList.remove("is-volume-open"), this.#J.forEach((t) => t.classList.remove("is-control-tap-active")), this.#s.classList.remove("is-pointer-active"), this.#qe(), this.#Ft();
+    this.#M?.disconnect(), this.#M = null, this.#ss.forEach((t) => t()), this.#ss = [], this.#es = !1, this.#T(), this.#ke(), this.#Es(), this.#Gs(), this.#yt(), this.#Cs(), this.#Kt(), this.#Jt(), this.#Rs(), this.#Ye(), this.#Pe(), this.#Ks(), this.#Te(), this.#e.classList.remove("is-volume-icon-animating"), this.#e.classList.remove("is-playback-pulsing"), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#Ot(), this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#q = !1, this.#W = !1, this.#_ = !1, this.#ft = !1, this.#st = !1, this.#Tt = !1, this.#ls = !1, this.#hs = 0, this.#ps = 0, this.#ne(this.#u), this.#l = null, this.#u = null, this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#O.forEach((t) => t.classList.remove("is-control-tap-active")), this.#e.classList.remove("is-pointer-active"), this.#fi(), this.#Xt();
   }
   attributeChangedCallback(t, s, e) {
     if (s !== e) {
       if (t === "aspect-ratio") {
-        this.#Ys();
+        this.#me();
         return;
       }
-      if (this.#qt) {
+      if (this.#es) {
         if (t === "preload-margin" && this.isConnected) {
-          this.#T?.disconnect(), this.#Cs();
+          this.#M?.disconnect(), this.#_s();
           return;
         }
         if (t === "src" && this.isConnected) {
-          this.#Ni(), this.#Cs();
+          this.#Mr(), this.#_s();
           return;
         }
         if ((t === "disable-autoplay" || t === "no-autoplay") && this.isConnected) {
-          this.#Jt(), this.#f(), this.#d();
+          this.#ys(), this.#g(), this.#f();
           return;
         }
         if (t === "show-time" && this.isConnected) {
-          this.#As();
+          this.#Ws();
           return;
         }
-        (t === "controls" || t.startsWith("enable-") || t.startsWith("disable-") || t.startsWith("no-")) && this.isConnected && (this.#xt(), this.#f(), this.#Vt(), this.#us(), this.#As());
+        (t === "controls" || t.startsWith("enable-") || t.startsWith("disable-") || t.startsWith("no-")) && this.isConnected && (this.#Ht(), this.#g(), this.#_t(), this.#Ms(), this.#Ws());
       }
     }
   }
-  #Ts(t, s) {
+  #Xs(t, s) {
     if (s === "") {
       this.removeAttribute(t);
       return;
     }
     this.setAttribute(t, s);
   }
-  #Es(t, s) {
+  #vs(t, s) {
     if (s) {
       this.setAttribute(`enable-${t}`, ""), this.removeAttribute(`disable-${t}`), this.removeAttribute(`no-${t}`);
       return;
     }
     this.removeAttribute(`enable-${t}`), this.setAttribute(`disable-${t}`, "");
   }
-  #Ys() {
+  #me() {
     this.style.setProperty("--simple-player-aspect-ratio", this.aspectRatio);
   }
-  #Jt() {
+  #ys() {
     if (!this.#t) return;
     const t = this.autoplayEnabled;
     if (this.#t.autoplay = t, t) {
       this.#t.muted = !0, this.#t.setAttribute("autoplay", ""), this.#t.setAttribute("muted", "");
       return;
     }
-    this.#t.removeAttribute("autoplay"), this.#E || (this.#t.muted = !1, this.#t.removeAttribute("muted"));
+    this.#t.removeAttribute("autoplay"), this.#V || (this.#t.muted = !1, this.#t.removeAttribute("muted"));
   }
-  #xt() {
-    if (!this.#s) return;
-    const t = this.volumeEnabled && (!this.#S || this.#rt), s = [
-      { button: this.#a, enabled: t, className: "has-volume-control" },
-      { button: this.#K, enabled: this.pictureInPictureEnabled, className: "has-picture-in-picture-control" },
-      { button: this.#G, enabled: this.fullscreenEnabled, className: "has-fullscreen-control" }
+  #Ht() {
+    if (!this.#e) return;
+    const t = this.volumeEnabled && (!this.#H || this.#mt), s = [
+      { button: this.#n, enabled: t, className: "has-volume-control" },
+      { button: this.#a, enabled: this.speedEnabled, className: "has-speed-control" },
+      { button: this.#at, enabled: this.pictureInPictureEnabled, className: "has-picture-in-picture-control" },
+      { button: this.#lt, enabled: this.fullscreenEnabled, className: "has-fullscreen-control" }
     ];
     let e = 0;
     for (const i of s)
-      this.#s.classList.toggle(i.className, i.enabled), i.button.hidden = !i.enabled, i.enabled ? (i.button.dataset.spControlIndex = `${e}`, e += 1) : delete i.button.dataset.spControlIndex;
-    this.style.setProperty("--sp-enabled-controls-count", `${e}`), this.style.setProperty("--sp-control-tray-display", e > 0 ? "block" : "none"), this.#s.classList.toggle("has-volume-slider-control", t && this.volumeSliderEnabled), (!t || !this.volumeSliderEnabled) && (this.#Rs(), this.#ps(this.#o), this.#F = !1, this.#Y = !1, this.#R.classList.remove("is-scrubbing-volume")), this.#Z.style.removeProperty("--sp-control-hover-offset");
+      this.#e.classList.toggle(i.className, i.enabled), i.button.hidden = !i.enabled, i.enabled ? (i.button.dataset.spControlIndex = `${e}`, e += 1) : delete i.button.dataset.spControlIndex;
+    this.style.setProperty("--sp-enabled-controls-count", `${e}`), this.style.setProperty("--sp-control-tray-display", e > 0 ? "block" : "none"), this.#li(), this.#e.classList.toggle("has-volume-slider-control", t && this.volumeSliderEnabled), (!t || !this.volumeSliderEnabled) && (this.#Gt(), this.#Fs(this.#l), this.#q = !1, this.#W = !1, this.#y.classList.remove("is-scrubbing-volume")), this.speedEnabled || this.#G(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width");
   }
-  get #Pt() {
+  #li() {
+    if (!this.#C || !this.#N) return;
+    const t = this.#O.find((n) => n !== this.#a && !n.hidden && n.getBoundingClientRect().width > 0), s = t ? Number.parseFloat(getComputedStyle(t).width) : 0, e = Number.isFinite(s) && s > 0 ? s : 24, i = this.speedEnabled ? e : 0;
+    let r = 0;
+    this.style.setProperty("--sp-speed-slot-width", `${i || e}px`), this.style.setProperty("--sp-speed-slot-extra-width", `${Math.max(0, i - e)}px`);
+    for (const n of this.#O) {
+      if (n.hidden) {
+        delete n.dataset.spControlOffset, delete n.dataset.spControlWidth;
+        continue;
+      }
+      const a = n === this.#a ? i : e;
+      n.dataset.spControlOffset = `${r}px`, n.dataset.spControlWidth = `${a}px`, r += a;
+    }
+  }
+  get #qt() {
     return this.timeVisible && this.controlsEnabled;
   }
-  #As() {
-    this.#s && (this.#s.classList.toggle("has-pinned-time", this.#Pt), this.#Pt && this.#Lt());
+  #Ws() {
+    this.#e && (this.#e.classList.toggle("has-pinned-time", this.#qt), this.#qt && this.#Nt());
   }
-  #Ve() {
-    this.#e(this.#Bt, "pointerdown", this.#ci), this.#e(this.#Bt, "pointerup", this.#pi), this.#e(this.#Bt, "pointercancel", this.#ds), this.#e(this.#A, "click", this.#It), this.#e(this, "pointerenter", this.#is), this.#e(this, "pointermove", this.#rs), this.#e(this, "pointerleave", this.#os), this.#e(this, "mouseenter", this.#is), this.#e(this, "mousemove", this.#rs), this.#e(this, "mouseleave", this.#os), this.#e(this.#s, "pointerenter", this.#is), this.#e(this.#s, "pointermove", this.#rs), this.#e(this.#s, "pointerleave", this.#os), this.#e(this.#s, "mouseenter", this.#is), this.#e(this.#s, "mousemove", this.#rs), this.#e(this.#s, "mouseleave", this.#os), this.#e(this.#A, "pointerenter", this.#ot), this.#e(this.#A, "pointerleave", this.#nt), this.#e(this.#A, "mouseenter", this.#ot), this.#e(this.#A, "mouseleave", this.#nt), this.#e(this.#i, "pointerenter", this.#ot), this.#e(this.#i, "pointerleave", this.#nt), this.#e(this.#i, "mouseenter", this.#ot), this.#e(this.#i, "mouseleave", this.#nt), this.#e(this.#i, "pointerenter", this.#ve), this.#e(this.#i, "pointerleave", this.#be), this.#e(this.#i, "mouseenter", this.#ve), this.#e(this.#i, "mouseleave", this.#be), this.#e(this.#I, "pointerenter", this.#ot), this.#e(this.#I, "pointerleave", this.#nt), this.#e(this.#I, "mouseenter", this.#ot), this.#e(this.#I, "mouseleave", this.#nt), this.#e(this.#r, "focusin", this.#js), this.#e(this.#r, "focusout", this.#De), this.#e(this.#s, "pointerdown", this.#di), this.#e(this.#s, "keydown", this.#ui), this.#e(this.#s, "dragstart", this.#ts), this.#e(this.#s, "selectstart", this.#ts), this.#e(this.#t, "dragstart", this.#ts), this.#e(this.#t, "selectstart", this.#ts), this.#e(this.#i, "pointerdown", this.#Pi), this.#e(this.#i, "pointermove", this.#Ei), this.#e(this.#i, "pointerup", this.#Ai), this.#e(this.#i, "pointercancel", this.#Ci), this.#e(this.#i, "keydown", this.#Ti), this.#e(this.#a, "pointerenter", this.#me), this.#e(this.#a, "pointerleave", this.#fe), this.#e(this.#a, "click", this.#fi), this.#e(this.#R, "pointerenter", this.#me), this.#e(this.#R, "pointerleave", this.#fe), this.#e(this.#m, "pointerdown", this.#vi), this.#e(this.#m, "pointermove", this.#bi), this.#e(this.#m, "pointerup", this.#yi), this.#e(this.#m, "pointercancel", this.#gi), this.#e(this.#m, "click", this.#mi), this.#e(this.#m, "keydown", this.#wi), this.#e(this.#K, "click", this.#ki), this.#e(this.#G, "click", this.#xi), this.#e(this.#p, "click", this.#hi);
-    for (const s of this.#J)
-      this.#e(s, "pointerenter", this.#Zs), this.#e(s, "mouseenter", this.#Zs), this.#e(s, "pointerdown", this.#He);
+  #hi() {
+    this.#s(this.#is, "pointerdown", this.#Yi), this.#s(this.#is, "pointerup", this.#Ui), this.#s(this.#is, "pointercancel", this.#Vs), this.#s(this.#z, "click", this.#Zt), this.#s(this, "pointerenter", this.#ks), this.#s(this, "pointermove", this.#Ps), this.#s(this, "pointerleave", this.#Ts), this.#s(this, "mouseenter", this.#ks), this.#s(this, "mousemove", this.#Ps), this.#s(this, "mouseleave", this.#Ts), this.#s(this.#e, "pointerenter", this.#ks), this.#s(this.#e, "pointermove", this.#Ps), this.#s(this.#e, "pointerleave", this.#Ts), this.#s(this.#e, "mouseenter", this.#ks), this.#s(this.#e, "mousemove", this.#Ps), this.#s(this.#e, "mouseleave", this.#Ts), this.#s(this.#z, "pointerenter", this.#j), this.#s(this.#z, "pointerleave", this.#Z), this.#s(this.#z, "mouseenter", this.#j), this.#s(this.#z, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#j), this.#s(this.#i, "pointerleave", this.#Z), this.#s(this.#i, "mouseenter", this.#j), this.#s(this.#i, "mouseleave", this.#Z), this.#s(this.#i, "pointerenter", this.#_e), this.#s(this.#i, "pointerleave", this.#je), this.#s(this.#i, "mouseenter", this.#_e), this.#s(this.#i, "mouseleave", this.#je), this.#s(this.#U, "pointerenter", this.#j), this.#s(this.#U, "pointerleave", this.#Z), this.#s(this.#U, "mouseenter", this.#j), this.#s(this.#U, "mouseleave", this.#Z), this.#s(this.#gt, "pointerenter", this.#j), this.#s(this.#gt, "pointerleave", this.#Z), this.#s(this.#gt, "mouseenter", this.#j), this.#s(this.#gt, "mouseleave", this.#Z), this.#s(this.#r, "focusin", this.#ge), this.#s(this.#r, "focusout", this.#di), this.#s(this.#e, "pointerdown", this.#Oi), this.#s(this.#e, "keydown", this.#Ni), this.#s(this.#e, "dragstart", this.#ws), this.#s(this.#e, "selectstart", this.#ws), this.#s(this.#t, "dragstart", this.#ws), this.#s(this.#t, "selectstart", this.#ws), this.#s(this.#i, "pointerdown", this.#ur), this.#s(this.#i, "pointermove", this.#mr), this.#s(this.#i, "pointerup", this.#fr), this.#s(this.#i, "pointercancel", this.#br), this.#s(this.#i, "keydown", this.#dr), this.#s(this.#n, "pointerenter", this.#He), this.#s(this.#n, "pointerleave", this.#qe), this.#s(this.#n, "click", this.#ji), this.#s(this.#n, "keydown", this.#Be), this.#s(this.#y, "pointerenter", this.#He), this.#s(this.#y, "pointerleave", this.#qe), this.#s(this.#b, "pointerdown", this.#Zi), this.#s(this.#b, "pointermove", this.#Ki), this.#s(this.#b, "pointerup", this.#Gi), this.#s(this.#b, "pointercancel", this.#Ji), this.#s(this.#b, "click", this.#Xi), this.#s(this.#b, "keydown", this.#Be), this.#s(this.#R, "focusin", this.#Wi), this.#s(this.#R, "focusout", this.#_i), this.#s(this.#a, "pointerenter", this.#Oe), this.#s(this.#a, "pointerleave", this.#Xe), this.#s(this.#a, "click", this.#ir), this.#s(this.#a, "keydown", this.#We), this.#s(this.#w, "pointerenter", this.#Oe), this.#s(this.#w, "pointerleave", this.#Xe), this.#s(this.#v, "pointerdown", this.#or), this.#s(this.#v, "pointermove", this.#nr), this.#s(this.#v, "pointerup", this.#ar), this.#s(this.#v, "pointercancel", this.#lr), this.#s(this.#v, "click", this.#rr), this.#s(this.#v, "keydown", this.#We), this.#s(this.#rs, "focusin", this.#sr), this.#s(this.#rs, "focusout", this.#er), this.#s(this.#at, "click", this.#pr), this.#s(this.#lt, "click", this.#cr), this.#s(this.#c, "click", this.#$i);
+    for (const s of this.#O)
+      this.#s(s, "pointerenter", this.#we), this.#s(s, "mouseenter", this.#we), this.#s(s, "pointerdown", this.#mi);
     const t = this.#t.audioTracks;
-    t && typeof t.addEventListener == "function" && this.#e(t, "addtrack", this.#ei), "ResizeObserver" in window && (this.#Wt = new ResizeObserver(() => {
-      this.#Qt();
-    }), this.#Wt.observe(this.#p), this.#Ht.push(() => {
-      this.#Wt?.disconnect(), this.#Wt = null;
-    })), this.#e(document, "pointerup", this.#Li), this.#e(document, "pointercancel", this.#Si), this.#e(document, "pointermove", this.#_s), this.#e(document, "mousemove", this.#_s), this.#e(document, "fullscreenchange", this.#zt), this.#e(document, "webkitfullscreenchange", this.#zt), this.#e(document, "mozfullscreenchange", this.#zt), this.#e(document, "MSFullscreenChange", this.#zt), this.#e(this.#r, "fullscreenchange", this.#zt), this.#e(window, "blur", this.#Fi), this.#e(window, "focus", this.#Mi), this.#e(this.#t, "play", this.#Vi), this.#e(this.#t, "pause", this.#zi), this.#e(this.#t, "ended", this.#Ii), this.#e(this.#t, "loadstart", this.#Ri), this.#e(this.#t, "waiting", this.#Ds), this.#e(this.#t, "stalled", this.#Ds), this.#e(this.#t, "seeking", this.#Ds), this.#e(this.#t, "loadeddata", this.#hs), this.#e(this.#t, "loadedmetadata", this.#Di), this.#e(this.#t, "canplay", this.#hs), this.#e(this.#t, "canplaythrough", this.#hs), this.#e(this.#t, "playing", this.#Hi), this.#e(this.#t, "seeked", this.#qi), this.#e(this.#t, "error", this.#Bi), this.#e(this.#t, "progress", this.#w), this.#e(this.#t, "suspend", this.#w), this.#e(this.#t, "timeupdate", this.#Ui), this.#e(this.#t, "volumechange", this.#$i), this.#e(this.#t, "enterpictureinpicture", this.#Vt), this.#e(this.#t, "leavepictureinpicture", this.#Vt);
+    t && typeof t.addEventListener == "function" && this.#s(t, "addtrack", this.#zi), "ResizeObserver" in window && (this.#cs = new ResizeObserver(() => {
+      this.#gs();
+    }), this.#cs.observe(this.#c), this.#ss.push(() => {
+      this.#cs?.disconnect(), this.#cs = null;
+    })), this.#s(document, "pointerdown", this.#hr), this.#s(document, "pointerup", this.#vr), this.#s(document, "pointercancel", this.#yr), this.#s(document, "pointermove", this.#ye), this.#s(document, "mousemove", this.#ye), this.#s(document, "fullscreenchange", this.#jt), this.#s(document, "webkitfullscreenchange", this.#jt), this.#s(document, "mozfullscreenchange", this.#jt), this.#s(document, "MSFullscreenChange", this.#jt), this.#s(this.#r, "fullscreenchange", this.#jt), this.#s(window, "blur", this.#gr), this.#s(window, "focus", this.#wr), this.#s(this.#t, "play", this.#xr), this.#s(this.#t, "pause", this.#kr), this.#s(this.#t, "ended", this.#Pr), this.#s(this.#t, "loadstart", this.#Tr), this.#s(this.#t, "waiting", this.#ae), this.#s(this.#t, "stalled", this.#ae), this.#s(this.#t, "seeking", this.#ae), this.#s(this.#t, "loadeddata", this.#Ss), this.#s(this.#t, "loadedmetadata", this.#Er), this.#s(this.#t, "canplay", this.#Ss), this.#s(this.#t, "canplaythrough", this.#Ss), this.#s(this.#t, "playing", this.#Cr), this.#s(this.#t, "seeked", this.#Ar), this.#s(this.#t, "error", this.#Sr), this.#s(this.#t, "progress", this.#S), this.#s(this.#t, "suspend", this.#S), this.#s(this.#t, "timeupdate", this.#Lr), this.#s(this.#t, "volumechange", this.#Fr), this.#s(this.#t, "ratechange", this.#re), this.#s(this.#t, "enterpictureinpicture", this.#_t), this.#s(this.#t, "leavepictureinpicture", this.#_t);
   }
-  #Qt() {
-    if (!this.#s || !this.#p) return;
-    this.#p.style.width = "fit-content";
-    const t = Math.ceil(this.#p.scrollWidth);
-    this.#p.style.width = "", this.#s.style.setProperty("--sp-tray-time-width", `${t}px`);
+  #gs() {
+    if (!this.#e || !this.#c) return;
+    this.#c.style.width = "fit-content";
+    const t = Math.ceil(this.#c.scrollWidth);
+    this.#c.style.width = "", this.#e.style.setProperty("--sp-tray-time-width", `${t}px`);
   }
-  #e(t, s, e) {
-    t.addEventListener(s, e), this.#Ht.push(() => t.removeEventListener(s, e));
+  #s(t, s, e) {
+    t.addEventListener(s, e), this.#ss.push(() => t.removeEventListener(s, e));
   }
-  #Cs() {
-    if (!(!this.src || this.#E)) {
-      if (this.#T?.disconnect(), this.#t.dataset.src = this.src, "IntersectionObserver" in window) {
-        this.#T = new IntersectionObserver((t, s) => {
-          t.some((e) => e.isIntersecting) && (s.disconnect(), this.#T = null, this.#O());
-        }, { rootMargin: this.preloadMargin }), this.#T.observe(this.#s);
+  #_s() {
+    if (!(!this.src || this.#V)) {
+      if (this.#M?.disconnect(), this.#t.dataset.src = this.src, "IntersectionObserver" in window) {
+        this.#M = new IntersectionObserver((t, s) => {
+          t.some((e) => e.isIntersecting) && (s.disconnect(), this.#M = null, this.#it());
+        }, { rootMargin: this.preloadMargin }), this.#M.observe(this.#e);
         return;
       }
-      this.#O();
+      this.#it();
     }
   }
-  #ts = (t) => {
+  #ws = (t) => {
     t.preventDefault();
   };
-  #P() {
-    this.#pt && (window.clearTimeout(this.#pt), this.#pt = 0);
+  #T() {
+    this.#kt && (window.clearTimeout(this.#kt), this.#kt = 0);
   }
-  #ze = () => {
-    if (this.#pt = 0, !(this.#k || this.#l || this.#F)) {
-      if (this.#n()) {
-        this.#s.classList.remove("is-controls-visible");
+  #pi = () => {
+    if (this.#kt = 0, !(this.#L || this.#h || this.#q)) {
+      if (this.#o()) {
+        this.#e.classList.remove("is-controls-visible");
         return;
       }
-      this.#N || this.#s.classList.remove("is-pointer-active");
+      this.#st || this.#e.classList.remove("is-pointer-active");
     }
   };
-  #Tt(t = this.#n() ? this.#Ps : this.#kt) {
-    this.#P(), this.#pt = window.setTimeout(this.#ze, t);
+  #Bt(t = this.#o() ? this.#Os : this.#Dt) {
+    this.#T(), this.#kt = window.setTimeout(this.#pi, t);
   }
-  #H() {
-    this.#n() && this.#Tt(this.#Ps);
+  #B() {
+    this.#o() && this.#Bt(this.#Os);
   }
-  #M() {
-    if (!this.#n()) return !1;
-    const t = this.#s.classList.contains("is-controls-visible");
-    return this.#s.classList.add("is-controls-visible"), this.#H(), !t;
+  #A() {
+    if (!this.#o()) return !1;
+    const t = this.#e.classList.contains("is-controls-visible");
+    return this.#e.classList.add("is-controls-visible"), this.#B(), !t;
   }
-  #ss(t = !1) {
-    !t && this.#n() || performance.now() < this.#Ot || (this.#s.classList.contains("is-pointer-active") || (this.#Xt = performance.now()), this.#s.classList.add("is-pointer-active"), this.#N ? this.#P() : this.#Tt(t ? this.#kt : void 0));
+  #xs(t = !1) {
+    !t && this.#o() || performance.now() < this.#ps || (this.#e.classList.contains("is-pointer-active") || (this.#hs = performance.now()), this.#e.classList.add("is-pointer-active"), this.#st ? this.#T() : this.#Bt(t ? this.#Dt : void 0));
   }
-  #Et() {
-    this.#N = !1, this.#Xt = 0, this.#P(), this.#s.classList.remove("is-pointer-active");
+  #$t() {
+    this.#st = !1, this.#hs = 0, this.#T(), this.#e.classList.remove("is-pointer-active");
   }
-  #X(t) {
-    return this.#n() ? !1 : typeof PointerEvent < "u" && t instanceof PointerEvent ? (this.#Kt = t.pointerType === "touch" || t.pointerType === "pen", this.#Kt ? !1 : (this.#ys = t.clientX, this.#gs = t.clientY, !0)) : t instanceof MouseEvent ? this.#Kt ? !1 : (this.#ys = t.clientX, this.#gs = t.clientY, !0) : !1;
+  #et(t) {
+    return this.#o() ? !1 : typeof PointerEvent < "u" && t instanceof PointerEvent ? (this.#fs = t.pointerType === "touch" || t.pointerType === "pen", this.#fs ? !1 : (this.#$s = t.clientX, this.#Ys = t.clientY, !0)) : t instanceof MouseEvent ? this.#fs ? !1 : (this.#$s = t.clientX, this.#Ys = t.clientY, !0) : !1;
   }
-  #Ie(t, s) {
+  #ci(t, s) {
     if (t === null || s === null || t < 0 || s < 0 || t > window.innerWidth || s > window.innerHeight) return !1;
-    const e = this.#s.getBoundingClientRect();
+    const e = this.#e.getBoundingClientRect();
     return e.width <= 0 || e.height <= 0 ? !1 : t >= e.left && t <= e.right && s >= e.top && s <= e.bottom;
   }
-  #Xs(t, s, e) {
+  #fe(t, s, e) {
     if (!t) return !1;
     const i = t.getBoundingClientRect();
     return i.width <= 0 || i.height <= 0 ? !1 : s >= i.left && s <= i.right && e >= i.top && e <= i.bottom;
   }
-  #Os() {
-    this.#y && (this.#y = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#St(), this.#Lt());
+  #be() {
+    this.#P && (this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#Ot(), this.#Nt());
   }
-  #Ws(t, s) {
-    if (this.#n()) return;
-    !this.#u() && this.#Xs(this.#i, t, s) ? (this.#y = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t, !1, !1)) : this.#u() || this.#Os();
-    const e = this.#J.find((r) => !r.hidden && !this.#Ls(r) && this.#Xs(r, t, s)) ?? null;
-    if (!e) return;
-    const i = Number(e.dataset.spControlIndex ?? 0);
-    this.#Z.style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${i})`);
+  #ve(t, s) {
+    if (this.#o()) return;
+    !this.#m() && this.#fe(this.#i, t, s) ? (this.#P = !0, this.#e.classList.add("is-progress-hovering"), this.#nt(t, !1, !1)) : this.#m() || this.#be();
+    const e = this.#O.find((i) => !i.hidden && !this.#Zs(i) && this.#fe(i, t, s)) ?? null;
+    e && this.#js(e);
   }
-  #At() {
-    return this.#s.classList.contains("is-controls-visible") || this.#s.classList.contains("is-pointer-active") || this.#r.activeElement instanceof HTMLElement;
-  }
-  #es() {
-    return this.#n() && performance.now() < this.#bs;
-  }
-  #Ls(t) {
-    return t instanceof HTMLButtonElement && (t.disabled || t === this.#a && !this.#V());
-  }
-  #Re() {
-    if (!this.#Kt && this.#Ie(this.#ys, this.#gs)) {
-      this.#ss(!0);
+  #js(t, s = !1) {
+    const e = t.dataset.spControlOffset || "0px", i = t.dataset.spControlWidth || "var(--sp-control-slot-size)";
+    if (this.#C.style.setProperty("--sp-control-hover-width", i), s) {
+      this.style.setProperty("--sp-touch-control-hover-offset", e);
       return;
     }
-    this.#Et();
+    this.#C.style.setProperty("--sp-control-hover-offset", e);
   }
-  #is = (t) => {
-    this.#X(t) && this.#ss(!0);
+  #bt() {
+    return this.#e.classList.contains("is-controls-visible") || this.#e.classList.contains("is-pointer-active") || this.#r.activeElement instanceof HTMLElement;
+  }
+  #Yt() {
+    return this.#o() && performance.now() < this.#Bs;
+  }
+  #Zs(t) {
+    return t instanceof HTMLButtonElement && (t.disabled || t === this.#n && !this.#$());
+  }
+  #ui() {
+    if (!this.#fs && this.#ci(this.#$s, this.#Ys)) {
+      this.#xs(!0);
+      return;
+    }
+    this.#$t();
+  }
+  #ks = (t) => {
+    this.#et(t) && this.#xs(!0);
   };
-  #rs = (t) => {
-    this.#X(t) && ((t instanceof PointerEvent || t instanceof MouseEvent) && this.#Ws(t.clientX, t.clientY), this.#ss(!0));
+  #Ps = (t) => {
+    this.#et(t) && ((t instanceof PointerEvent || t instanceof MouseEvent) && this.#ve(t.clientX, t.clientY), this.#xs(!0));
   };
-  #_s = (t) => {
-    this.#X(t) && (this.#s.classList.remove("is-hover-disabled"), (t instanceof PointerEvent || t instanceof MouseEvent) && this.#Ws(t.clientX, t.clientY), this.#Re());
+  #ye = (t) => {
+    this.#et(t) && (this.#e.classList.remove("is-hover-disabled"), (t instanceof PointerEvent || t instanceof MouseEvent) && this.#ve(t.clientX, t.clientY), this.#ui());
   };
-  #os = (t) => {
-    this.#X(t) && (this.#Ot = 0, this.#Et());
+  #Ts = (t) => {
+    this.#et(t) && (this.#ps = 0, this.#$t());
   };
-  #ot = (t) => {
-    this.#X(t) && (this.#N = !0, this.#s.classList.add("is-pointer-active"), this.#P());
+  #j = (t) => {
+    this.#et(t) && (this.#st = !0, this.#e.classList.add("is-pointer-active"), this.#T());
   };
-  #nt = (t) => {
-    this.#X(t) && (this.#N = !1, this.#Tt(this.#kt));
+  #Z = (t) => {
+    this.#et(t) && (this.#st = !1, this.#Bt(this.#Dt));
   };
-  #js = (t) => {
-    if (t?.target !== this.#s) {
-      if (this.#n()) {
-        this.#s.classList.add("is-controls-visible");
+  #ge = (t) => {
+    if (t?.target !== this.#e) {
+      if (this.#o()) {
+        this.#e.classList.add("is-controls-visible");
         return;
       }
-      this.#s.classList.add("is-pointer-active"), this.#P();
+      this.#e.classList.add("is-pointer-active"), this.#T();
     }
   };
-  #De = () => {
-    this.#n() || this.#Tt(this.#kt);
+  #di = () => {
+    this.#o() || this.#Bt(this.#Dt);
   };
-  #Zs = (t) => {
+  #we = (t) => {
     const s = t.currentTarget;
-    if (this.#Ls(s)) return;
-    const i = Number(s.dataset.spControlIndex ?? 0);
-    this.#Z.style.setProperty("--sp-control-hover-offset", `calc(var(--sp-control-slot-size) * ${i})`);
+    if (this.#Zs(s)) return;
+    const e = s;
+    this.#js(e);
   };
-  #Ss() {
-    this.#yt && (window.clearTimeout(this.#yt), this.#yt = 0);
+  #Ks() {
+    this.#Vt && (window.clearTimeout(this.#Vt), this.#Vt = 0);
   }
-  #Ks = () => {
-    this.#yt = 0, this.#J.forEach((t) => t.classList.remove("is-control-tap-active")), this.style.removeProperty("--sp-touch-control-hover-offset");
+  #xe = () => {
+    this.#Vt = 0, this.#O.forEach((t) => t.classList.remove("is-control-tap-active")), this.style.removeProperty("--sp-touch-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width");
   };
-  #He = (t) => {
+  #mi = (t) => {
     if (!(t instanceof PointerEvent) || t.pointerType !== "touch") return;
     const s = t.currentTarget;
-    if (!s || !this.#At() || this.#Ls(s)) return;
-    const e = Number(s.dataset.spControlIndex ?? 0);
-    this.#Ss(), this.#J.forEach((i) => i.classList.toggle("is-control-tap-active", i === s)), this.style.setProperty("--sp-touch-control-hover-offset", `calc(var(--sp-control-slot-size) * ${e})`), this.#yt = window.setTimeout(this.#Ks, 280);
+    !s || !this.#bt() || this.#Zs(s) || (this.#Ks(), this.#O.forEach((e) => e.classList.toggle("is-control-tap-active", e === s)), this.#js(s, !0), this.#Vt = window.setTimeout(this.#xe, 280));
   };
+  #ke() {
+    this.#Pt && (window.clearTimeout(this.#Pt), this.#Pt = 0);
+  }
+  #Es() {
+    this.#ct && (window.clearTimeout(this.#ct), this.#ct = 0);
+  }
   #Gs() {
     this.#ut && (window.clearTimeout(this.#ut), this.#ut = 0);
   }
-  #ns() {
-    this.#st && (window.clearTimeout(this.#st), this.#st = 0);
+  #Cs() {
+    this.#us && (window.clearTimeout(this.#us), this.#us = 0);
   }
-  #Fs() {
-    this.#et && (window.clearTimeout(this.#et), this.#et = 0);
+  #Pe() {
+    this.#Mt && (window.clearTimeout(this.#Mt), this.#Mt = 0);
   }
-  #as() {
-    this.#_t && (window.clearTimeout(this.#_t), this.#_t = 0);
+  #Te() {
+    this.#zt && (window.clearTimeout(this.#zt), this.#zt = 0);
   }
-  #Js() {
-    this.#bt && (window.clearTimeout(this.#bt), this.#bt = 0);
+  #As() {
+    this.#Te(), this.#e.classList.remove("is-playback-pulsing"), this.#z.offsetWidth, this.#e.classList.add("is-playback-pulsing"), this.#zt = window.setTimeout(() => {
+      this.#zt = 0, this.#e.classList.remove("is-playback-pulsing");
+    }, this.#ai);
   }
-  #Qs() {
-    this.#gt && (window.clearTimeout(this.#gt), this.#gt = 0);
-  }
-  #ls() {
-    this.#Qs(), this.#s.classList.remove("is-playback-pulsing"), this.#A.offsetWidth, this.#s.classList.add("is-playback-pulsing"), this.#gt = window.setTimeout(() => {
-      this.#gt = 0, this.#s.classList.remove("is-playback-pulsing");
-    }, this.#Me);
-  }
-  #te() {
+  #Ee() {
     if ("mediaSession" in navigator) {
-      h.#Dt = this;
+      h.#ts = this;
       try {
-        navigator.mediaSession.setActionHandler("play", this.#Be), navigator.mediaSession.setActionHandler("pause", this.#Ue);
+        navigator.mediaSession.setActionHandler("play", this.#bi), navigator.mediaSession.setActionHandler("pause", this.#vi);
       } catch {
       }
-      this.#at();
+      this.#vt();
     }
   }
-  #qe() {
-    if (!(!("mediaSession" in navigator) || h.#Dt !== this)) {
+  #fi() {
+    if (!(!("mediaSession" in navigator) || h.#ts !== this)) {
       try {
         navigator.mediaSession.setActionHandler("play", null), navigator.mediaSession.setActionHandler("pause", null), navigator.mediaSession.playbackState = "none";
       } catch {
       }
-      h.#Dt = null;
+      h.#ts = null;
     }
   }
-  #at() {
-    if (!(!("mediaSession" in navigator) || h.#Dt !== this))
+  #vt() {
+    if (!(!("mediaSession" in navigator) || h.#ts !== this))
       try {
         navigator.mediaSession.playbackState = this.#t.paused || this.#t.ended ? "paused" : "playing";
       } catch {
       }
   }
-  #Be = () => {
+  #bi = () => {
     if (!this.#t.paused && !this.#t.ended) {
-      this.#at();
+      this.#vt();
       return;
     }
-    this.#ls(), this.#It();
+    this.#As(), this.#Zt();
   };
-  #Ue = () => {
+  #vi = () => {
     if (this.#t.paused || this.#t.ended) {
-      this.#at();
+      this.#vt();
       return;
     }
-    this.#ls(), this.#It();
+    this.#As(), this.#Zt();
   };
-  #$e() {
-    this.#Js(), this.#s.classList.remove("is-volume-icon-animating"), this.#a.offsetWidth, this.#s.classList.add("is-volume-icon-animating"), this.#bt = window.setTimeout(() => {
-      this.#bt = 0, this.#s.classList.remove("is-volume-icon-animating");
+  #yi() {
+    this.#Pe(), this.#e.classList.remove("is-volume-icon-animating"), this.#n.offsetWidth, this.#e.classList.add("is-volume-icon-animating"), this.#Mt = window.setTimeout(() => {
+      this.#Mt = 0, this.#e.classList.remove("is-volume-icon-animating");
     }, 240);
   }
-  #se = () => {
-    if (this.#et || this.#s.classList.contains("is-progress-settling")) {
-      if (this.#Fs(), this.#mt) {
-        this.#s.classList.remove("is-progress-settling");
+  #Ce = () => {
+    if (this.#ut || this.#e.classList.contains("is-progress-settling")) {
+      if (this.#Gs(), this.#Et) {
+        this.#e.classList.remove("is-progress-settling");
         return;
       }
-      this.#mt = !0, this.#Bs = performance.now() + this.#Ee, this.#u() || this.#h(), this.#g(), this.#s.classList.remove("is-progress-settling"), this.#d();
+      this.#Et = !0, this.#pe = performance.now() + this.#si, this.#m() || this.#p(), this.#E(), this.#e.classList.remove("is-progress-settling"), this.#f();
     }
   };
-  #Ne() {
-    this.#mt || this.#et || (this.#s.classList.add("is-progress-settling"), this.#_(0), this.#et = window.setTimeout(this.#se, this.#Te));
+  #gi() {
+    this.#Et || this.#ut || (this.#e.classList.add("is-progress-settling"), this.#ot(0), this.#ut = window.setTimeout(this.#Ce, this.#ti));
   }
-  async #O() {
-    if (this.#E) return;
+  async #it() {
+    if (this.#V) return;
     const t = this.#t.dataset.src || this.src;
-    t && (this.#ns(), this.#as(), this.#vs += 1, this.#E = !0, this.#C = !1, this.#L = !1, this.#B = !1, this.#U = !1, this.#$ += 1, this.#s.classList.remove("has-visible-frame"), this.#Jt(), this.#t.src = t, this.#t.preload = "auto", this.#t.load(), this.#t.autoplay && this.#t.muted && await this.#t.play().catch(() => {
+    t && (this.#Es(), this.#Cs(), this.#qs += 1, this.#V = !0, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#e.classList.remove("has-visible-frame"), this.#ys(), this.#t.src = t, this.#t.preload = "auto", this.#t.load(), this.#t.autoplay && this.#t.muted && await this.#t.play().catch(() => {
     }));
   }
-  #ee() {
+  #Ae() {
     return !this.#t.loop || this.#t.paused || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 ? !1 : this.#t.currentTime < 0.28 || this.#t.duration - this.#t.currentTime < 0.28;
   }
-  #Ye(t = this.#t.currentTime) {
+  #wi(t = this.#t.currentTime) {
     if (!Number.isFinite(t)) return 0;
     const s = Math.max(0, t);
     try {
       for (let e = 0; e < this.#t.buffered.length; e += 1) {
         const i = this.#t.buffered.start(e), r = this.#t.buffered.end(e);
-        if (s + this.#Gt >= i && s <= r + this.#Gt)
+        if (s + this.#bs >= i && s <= r + this.#bs)
           return Math.max(0, r - s);
       }
     } catch {
@@ -1687,552 +1938,679 @@ class h extends HTMLElement {
     }
     return 0;
   }
-  #ie(t = this.#Le) {
-    if (!this.#E || this.#t.error || !this.#s.classList.contains("has-loaded-once") || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return !1;
+  #Se(t = this.#ri) {
+    if (!this.#V || this.#t.error || !this.#e.classList.contains("has-loaded-once") || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return !1;
     const s = Math.max(0, this.#t.duration - this.#t.currentTime), e = Math.min(t, s);
-    return e <= this.#Gt || this.#Ye() + this.#Gt >= e;
+    return e <= this.#bs || this.#wi() + this.#bs >= e;
   }
-  #Ct(t, s = !1) {
-    this.#Gs();
-    const e = t && !this.#ee() && !this.#ie(), r = t && !this.#L || e;
-    if (this.#jt = r, !r) {
-      this.#s.classList.remove("is-loading");
+  #Ut(t, s = !1) {
+    this.#ke();
+    const e = t && !this.#Ae() && !this.#Se(), r = t && !this.#D || e;
+    if (this.#ds = r, !r) {
+      this.#e.classList.remove("is-loading");
       return;
     }
     if (s) {
-      this.#s.classList.add("is-loading");
+      this.#e.classList.add("is-loading");
       return;
     }
-    this.#ut = window.setTimeout(() => {
-      if (this.#ut = 0, !this.#L || !this.#ee() && !this.#ie()) {
-        this.#jt = !0, this.#s.classList.add("is-loading");
+    this.#Pt = window.setTimeout(() => {
+      if (this.#Pt = 0, !this.#D || !this.#Ae() && !this.#Se()) {
+        this.#ds = !0, this.#e.classList.add("is-loading");
         return;
       }
-      this.#jt = !1, this.#s.classList.remove("is-loading");
-    }, this.#Pe);
+      this.#ds = !1, this.#e.classList.remove("is-loading");
+    }, this.#Qe);
   }
-  #w = () => {
+  #S = () => {
     if (this.#t.error) {
-      this.#Ct(!0, !0);
+      this.#Ut(!0, !0);
       return;
     }
-    this.#Ct(
-      !this.#E || !this.#L || this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
+    this.#Ut(
+      !this.#V || !this.#D || this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
     );
   };
-  #Xe() {
-    return this.#E && !this.#t.error && this.#C && (this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !this.#s.classList.contains("is-loading"));
+  #xi() {
+    return this.#V && !this.#t.error && this.#I && (this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && !this.#e.classList.contains("is-loading"));
   }
-  #u() {
-    return this.#k || this.#l || this.#D;
+  #m() {
+    return this.#L || this.#h || this.#X;
   }
-  #Oe() {
-    this.#vs >= this.#Ce || this.#st || (this.#st = window.setTimeout(() => {
-      this.#st = 0, this.#as(), this.#E = !1, this.#C = !1, this.#L = !1, this.#B = !1, this.#U = !1, this.#$ += 1, this.#s.classList.remove("has-visible-frame"), this.#s.classList.contains("has-loaded-once") || this.#_(0), this.#t.removeAttribute("src"), this.#t.load(), this.#O();
-    }, this.#Ae));
+  #ki() {
+    this.#qs >= this.#ii || this.#ct || (this.#ct = window.setTimeout(() => {
+      this.#ct = 0, this.#Cs(), this.#V = !1, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#e.classList.remove("has-visible-frame"), this.#e.classList.contains("has-loaded-once") || this.#ot(0), this.#t.removeAttribute("src"), this.#t.load(), this.#it();
+    }, this.#ei));
   }
-  #re() {
-    return this.#D ? (this.#D = !1, this.#ct = !1, this.#h(), this.#g(), !0) : !1;
+  #Le() {
+    return this.#X ? (this.#X = !1, this.#xt = !1, this.#p(), this.#E(), !0) : !1;
   }
-  #oe() {
-    return this.#ns(), !this.#s.classList.contains("has-loaded-once") && this.#Ne(), this.#s.classList.add("has-loaded-once"), this.#s.classList.add("has-visible-frame"), this.#w(), this.#b = null, this.#D ? (this.#re(), !0) : (this.#u() || this.#h(), this.#g(), !0);
+  #Fe() {
+    return this.#Es(), !this.#e.classList.contains("has-loaded-once") && this.#gi(), this.#e.classList.add("has-loaded-once"), this.#e.classList.add("has-visible-frame"), this.#S(), this.#k = null, this.#X ? (this.#Le(), !0) : (this.#m() || this.#p(), this.#E(), !0);
   }
-  #We() {
-    if (this.#C || this.#B || this.#t.error) return;
-    this.#B = !0;
-    const t = this.#$, s = () => {
-      if (t === this.#$) {
-        if (this.#as(), this.#B = !1, this.#C = !this.#t.error && this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && this.#t.videoWidth > 0 && this.#t.videoHeight > 0, this.#C) {
-          if (this.#U || this.#L) return;
-          this.#U = !0, window.requestAnimationFrame(() => {
+  #Pi() {
+    if (this.#I || this.#J || this.#t.error) return;
+    this.#J = !0;
+    const t = this.#tt, s = () => {
+      if (t === this.#tt) {
+        if (this.#Cs(), this.#J = !1, this.#I = !this.#t.error && this.#t.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && this.#t.videoWidth > 0 && this.#t.videoHeight > 0, this.#I) {
+          if (this.#Q || this.#D) return;
+          this.#Q = !0, window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => {
-              t === this.#$ && (this.#U = !1, this.#L = !0, this.#oe(), this.#d());
+              t === this.#tt && (this.#Q = !1, this.#D = !0, this.#Fe(), this.#f());
             });
-          }), this.#d();
+          }), this.#f();
           return;
         }
-        this.#w();
+        this.#S();
       }
     };
     if ("requestVideoFrameCallback" in this.#t) {
-      this.#t.requestVideoFrameCallback(s), this.#_t = window.setTimeout(s, 180);
+      this.#t.requestVideoFrameCallback(s), this.#us = window.setTimeout(s, 180);
       return;
     }
     window.requestAnimationFrame(s);
   }
-  #hs = () => {
+  #Ss = () => {
     if (this.#t.error || this.#t.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || this.#t.videoWidth <= 0 || this.#t.videoHeight <= 0)
-      return this.#w(), !1;
-    if (!this.#C)
-      return this.#We(), this.#w(), !1;
-    const t = this.#oe();
-    return this.#f(), t;
+      return this.#S(), !1;
+    if (!this.#I)
+      return this.#Pi(), this.#S(), !1;
+    const t = this.#Fe();
+    return this.#g(), t;
   };
-  #ne() {
+  #Me() {
     return !this.#t.paused && (!this.#t.ended || this.#t.loop) && this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
   }
-  #h(t = this.#t.currentTime) {
-    this.#Us = Number.isFinite(t) ? Math.max(0, t) : 0, this.#$s = performance.now();
+  #p(t = this.#t.currentTime) {
+    this.#ce = Number.isFinite(t) ? Math.max(0, t) : 0, this.#ue = performance.now();
   }
-  #q() {
-    this.#x = null, this.#it = null;
+  #K() {
+    this.#F = null, this.#dt = null;
   }
-  #ae() {
+  #Ve() {
     if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) {
-      this.#x = null;
+      this.#F = null;
       return;
     }
-    const t = Number.isFinite(this.#t.currentTime) ? Math.max(0, this.#t.currentTime) : 0, s = Number.isFinite(this.#ft) ? this.#ft : t;
-    this.#x = Math.min(this.#t.duration, Math.max(t, s)), this.#h(this.#x);
+    const t = Number.isFinite(this.#t.currentTime) ? Math.max(0, this.#t.currentTime) : 0, s = Number.isFinite(this.#Ct) ? this.#Ct : t;
+    this.#F = Math.min(this.#t.duration, Math.max(t, s)), this.#p(this.#F);
   }
-  #_e() {
+  #Ti() {
     if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) {
-      this.#it = null, this.#ae();
+      this.#dt = null, this.#Ve();
       return;
     }
-    const t = this.#s.style.getPropertyValue("--sp-progress-inset"), s = Number.parseFloat(t), e = Number.isFinite(s) ? Math.min(1, Math.max(0, 1 - s / 100)) : null, i = this.#W(), r = Math.min(1, Math.max(0, i / this.#t.duration)), n = Math.max(e ?? 0, r);
-    this.#it = n, this.#x = n * this.#t.duration, this.#h(this.#x), this.#_(n), this.#i.setAttribute("aria-valuenow", `${this.#x}`), this.#i.setAttribute(
+    const t = this.#e.style.getPropertyValue("--sp-progress-inset"), s = Number.parseFloat(t), e = Number.isFinite(s) ? Math.min(1, Math.max(0, 1 - s / 100)) : null, i = this.#rt(), r = Math.min(1, Math.max(0, i / this.#t.duration)), n = Math.max(e ?? 0, r);
+    this.#dt = n, this.#F = n * this.#t.duration, this.#p(this.#F), this.#ot(n), this.#i.setAttribute("aria-valuenow", `${this.#F}`), this.#i.setAttribute(
       "aria-valuetext",
-      `${a(this.#x)} of ${a(this.#t.duration)}`
+      `${l(this.#F)} of ${l(this.#t.duration)}`
     );
   }
-  #W() {
+  #rt() {
     if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return this.#t.currentTime || 0;
-    if (this.#u()) return this.#v;
-    if (this.#x !== null) return this.#x;
-    if (!this.#ne()) return this.#t.currentTime || 0;
-    if (this.#jt || !this.#mt || performance.now() < this.#Bs)
-      return this.#h(), this.#t.currentTime || 0;
-    if (this.#s.classList.contains("is-loading") && this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA)
-      return this.#h(), this.#t.currentTime || 0;
-    const t = (performance.now() - this.#$s) / 1e3, s = this.#Us + t, e = this.#t.loop ? s % this.#t.duration : Math.min(s, this.#t.duration);
-    return !this.#t.loop && this.#t.currentTime - e > 0.45 ? (this.#h(), this.#t.currentTime) : e;
+    if (this.#m()) return this.#x;
+    if (this.#F !== null) return this.#F;
+    if (!this.#Me()) return this.#t.currentTime || 0;
+    if (this.#ds || !this.#Et || performance.now() < this.#pe)
+      return this.#p(), this.#t.currentTime || 0;
+    if (this.#e.classList.contains("is-loading") && this.#t.readyState < HTMLMediaElement.HAVE_FUTURE_DATA)
+      return this.#p(), this.#t.currentTime || 0;
+    const t = (performance.now() - this.#ue) / 1e3, s = this.#ce + t, e = this.#t.loop ? s % this.#t.duration : Math.min(s, this.#t.duration);
+    return !this.#t.loop && this.#t.currentTime - e > 0.45 ? (this.#p(), this.#t.currentTime) : e;
   }
-  #_(t) {
-    const s = Math.min(1, Math.max(0, t)), e = (1 - s) * 100, { innerWidth: i } = this.#Ze(), r = 1 / i, n = this.#l && this.#$t && this.#tt + r < s;
-    if (this.#s.style.setProperty("--sp-progress-inset", `${e}%`), this.#s.style.setProperty("--sp-return-marker-base-opacity", n ? "0" : "1"), n) {
-      const l = this.#cs(this.#tt), c = Math.max(0, i - 2), m = Math.min(c, Math.max(0, l - 3));
-      this.#s.style.setProperty("--sp-return-marker-hole-left", `${m}px`);
+  #ot(t) {
+    const s = Math.min(1, Math.max(0, t)), e = (1 - s) * 100, { innerWidth: i } = this.#Ci(), r = 1 / i, n = this.#h && this.#ns && this.#pt + r < s;
+    if (this.#e.style.setProperty("--sp-progress-inset", `${e}%`), this.#e.style.setProperty("--sp-return-marker-base-opacity", n ? "0" : "1"), n) {
+      const a = this.#Ls(this.#pt), p = Math.max(0, i - 2), m = Math.min(p, Math.max(0, a - 3));
+      this.#e.style.setProperty("--sp-return-marker-hole-left", `${m}px`);
     } else
-      this.#s.style.setProperty("--sp-return-marker-hole-left", "-9999px");
+      this.#e.style.setProperty("--sp-return-marker-hole-left", "-9999px");
   }
-  #je(t) {
+  #Ei(t) {
     return !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 ? 0 : Math.min(1, Math.max(0, t / this.#t.duration));
   }
-  #Ze(t = this.#i.getBoundingClientRect()) {
-    return p(t);
+  #Ci(t = this.#i.getBoundingClientRect()) {
+    return c(t);
   }
-  #cs(t, s = this.#i.getBoundingClientRect()) {
+  #Ls(t, s = this.#i.getBoundingClientRect()) {
     return E(t, s);
   }
-  #Ke(t, s) {
-    return A(t, s);
+  #Ai(t, s) {
+    return C(t, s);
   }
-  #Ge(t) {
-    this.#Ut = Number.isFinite(t) ? Math.max(0, t) : 0, this.#tt = this.#je(this.#Ut);
-    const s = this.#i.getBoundingClientRect(), e = this.#cs(this.#tt, s), i = e >= this.#xs && e <= Math.max(this.#xs, s.width - this.#xs);
-    this.#$t = this.#Ut > this.#ke && i, this.#s.classList.toggle("has-return-marker", this.#$t), this.#s.style.setProperty("--sp-return-marker-left", `${e}px`);
+  #Si(t) {
+    this.#os = Number.isFinite(t) ? Math.max(0, t) : 0, this.#pt = this.#Ei(this.#os);
+    const s = this.#i.getBoundingClientRect(), e = this.#Ls(this.#pt, s), i = e >= this.#Ns && e <= Math.max(this.#Ns, s.width - this.#Ns);
+    this.#ns = this.#os > this.#Ge && i, this.#e.classList.toggle("has-return-marker", this.#ns), this.#e.style.setProperty("--sp-return-marker-left", `${e}px`);
   }
-  #Je(t, s, e, i = this.#l) {
+  #Li(t, s, e, i = this.#h) {
     const r = e * this.#t.duration;
-    if (!i || !this.#$t)
+    if (!i || !this.#ns)
       return { percent: e, targetTime: r };
-    const n = s.left + this.#cs(this.#tt, s);
-    return Math.abs(t - n) <= this.#we ? {
-      percent: this.#tt,
-      targetTime: this.#Ut
+    const n = s.left + this.#Ls(this.#pt, s);
+    return Math.abs(t - n) <= this.#Ke ? {
+      percent: this.#pt,
+      targetTime: this.#os
     } : { percent: e, targetTime: r };
   }
-  #Lt(t = this.#W()) {
-    !this.#Pt || this.#y || this.#u() || (this.#p.textContent = this.#Is(t), this.#Qt());
+  #Nt(t = this.#rt()) {
+    !this.#qt || this.#P || this.#m() || (this.#c.textContent = this.#se(t), this.#gs());
   }
-  #g(t = this.#W()) {
+  #E(t = this.#rt()) {
     const s = Number.isFinite(this.#t.duration) && this.#t.duration > 0;
-    if (s && this.#it !== null) {
-      const r = this.#it * this.#t.duration;
-      this.#ft = r, this.#_(this.#it), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", `${this.#t.duration}`), this.#i.setAttribute("aria-valuenow", `${r}`), this.#i.setAttribute(
+    if (s && this.#dt !== null) {
+      const r = this.#dt * this.#t.duration;
+      this.#Ct = r, this.#ot(this.#dt), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", `${this.#t.duration}`), this.#i.setAttribute("aria-valuenow", `${r}`), this.#i.setAttribute(
         "aria-valuetext",
-        `${a(r)} of ${a(this.#t.duration)}`
-      ), this.#Lt(r);
+        `${l(r)} of ${l(this.#t.duration)}`
+      ), this.#Nt(r);
       return;
     }
     const e = s ? Math.min(this.#t.duration, Math.max(0, t)) : t, i = s ? e / this.#t.duration : 0;
-    this.#ft = Number.isFinite(e) ? Math.max(0, e) : 0, this.#_(i), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", s ? `${this.#t.duration}` : "0"), this.#i.setAttribute("aria-valuenow", s ? `${e}` : "0"), this.#i.setAttribute(
+    this.#Ct = Number.isFinite(e) ? Math.max(0, e) : 0, this.#ot(i), this.#i.setAttribute("aria-valuemin", "0"), this.#i.setAttribute("aria-valuemax", s ? `${this.#t.duration}` : "0"), this.#i.setAttribute("aria-valuenow", s ? `${e}` : "0"), this.#i.setAttribute(
       "aria-valuetext",
-      s ? `${a(e)} of ${a(this.#t.duration)}` : "Loading video"
-    ), this.#Lt(e);
+      s ? `${l(e)} of ${l(this.#t.duration)}` : "Loading video"
+    ), this.#Nt(e);
   }
-  #j(t, s = this.#l, e = !0) {
+  #nt(t, s = this.#h, e = !0) {
     if (!Number.isFinite(this.#t.duration) || this.#t.duration <= 0) return this.#t.currentTime;
-    const i = this.#i.getBoundingClientRect(), r = this.#Ke(t, i), n = this.#Je(t, i, r, s);
-    return this.#s.style.setProperty("--sp-hover-fill-inset", `${(1 - r) * 100}%`), e && this.#_(n.percent), this.#Pt || this.#s.style.setProperty("--sp-scrub-preview-left", `${this.#cs(n.percent, i)}px`), this.#Hs.textContent = a(n.targetTime), this.#p.textContent = this.#Is(n.targetTime), this.#Qt(), e && (this.#i.setAttribute("aria-valuenow", `${n.targetTime}`), this.#i.setAttribute(
+    const i = this.#i.getBoundingClientRect(), r = this.#Ai(t, i), n = this.#Li(t, i, r, s);
+    return this.#e.style.setProperty("--sp-hover-fill-inset", `${(1 - r) * 100}%`), e && this.#ot(n.percent), this.#qt || this.#e.style.setProperty("--sp-scrub-preview-left", `${this.#Ls(n.percent, i)}px`), this.#le.textContent = l(n.targetTime), this.#c.textContent = this.#se(n.targetTime), this.#gs(), e && (this.#i.setAttribute("aria-valuenow", `${n.targetTime}`), this.#i.setAttribute(
       "aria-valuetext",
-      `${a(n.targetTime)} of ${a(this.#t.duration)}`
-    )), this.#Qe(), n.targetTime;
+      `${l(n.targetTime)} of ${l(this.#t.duration)}`
+    )), this.#Fi(), n.targetTime;
   }
-  #St() {
-    this.#Zt = !1, this.#s?.classList.remove("has-controls-collision");
+  #Ot() {
+    this.#ms = !1, this.#e?.classList.remove("has-controls-collision");
   }
-  #Qe() {
-    if (!this.#l && !this.#y || !this.#I || !this.#ms || this.#Pt) {
-      this.#St();
+  #Fi() {
+    if (!this.#h && !this.#P || !this.#U || !this.#Ds || this.#qt) {
+      this.#Ot();
       return;
     }
-    const t = this.#I.getBoundingClientRect(), s = this.#ms.getBoundingClientRect(), e = t.width > 0 && t.height > 0, i = this.#Zt ? this.#Fe : this.#Se, r = e && s.right >= t.left - i && s.left <= t.right + i && s.bottom >= t.top - i && s.top <= t.bottom + i;
-    this.#Zt = r, this.#s.classList.toggle("has-controls-collision", this.#Zt);
+    const t = this.#U.getBoundingClientRect(), s = this.#Ds.getBoundingClientRect(), e = t.width > 0 && t.height > 0, i = this.#ms ? this.#ni : this.#oi, r = e && s.right >= t.left - i && s.left <= t.right + i && s.bottom >= t.top - i && s.top <= t.bottom + i;
+    this.#ms = r, this.#e.classList.toggle("has-controls-collision", this.#ms);
   }
-  #Ft() {
-    this.#ht && (window.cancelAnimationFrame(this.#ht), this.#ht = 0);
+  #Xt() {
+    this.#wt && (window.cancelAnimationFrame(this.#wt), this.#wt = 0);
   }
-  #ti() {
-    this.#Ft(), this.#h();
+  #Mi() {
+    this.#Xt(), this.#p();
     const t = () => {
-      this.#g(this.#W()), this.#ne() && (this.#ht = window.requestAnimationFrame(t));
+      this.#E(this.#rt()), this.#Me() && (this.#wt = window.requestAnimationFrame(t));
     };
-    this.#ht = window.requestAnimationFrame(t);
+    this.#wt = window.requestAnimationFrame(t);
   }
-  #d() {
-    const t = !this.#t.paused && (!this.#t.ended || this.#t.loop) || this.#l && this.#Q, s = this.#b ? this.#b === "playing" : t;
-    if (this.#s.classList.toggle("is-playing", s), this.#A.setAttribute("aria-label", s ? "Pause video" : "Play video"), this.#l) {
-      this.#Ft();
+  #f() {
+    const t = !this.#t.paused && (!this.#t.ended || this.#t.loop) || this.#h && this.#ht, s = this.#k ? this.#k === "playing" : t;
+    if (this.#e.classList.toggle("is-playing", s), this.#z.setAttribute("aria-label", s ? "Pause video" : "Play video"), this.#h) {
+      this.#Xt();
       return;
     }
-    t && this.#s.classList.contains("has-loaded-once") && !this.#s.classList.contains("is-progress-settling") ? this.#ti() : (this.#Ft(), this.#g());
+    t && this.#e.classList.contains("has-loaded-once") && !this.#e.classList.contains("is-progress-settling") ? this.#Mi() : (this.#Xt(), this.#E());
   }
-  #lt() {
-    this.#Nt && (window.clearTimeout(this.#Nt), this.#Nt = 0);
+  #yt() {
+    this.#as && (window.clearTimeout(this.#as), this.#as = 0);
   }
-  #si() {
+  #Vi() {
     return P(this.#t);
   }
-  #V() {
-    return this.volumeEnabled && this.#S && this.#rt;
+  #$() {
+    return this.volumeEnabled && this.#H && this.#mt;
   }
-  #z() {
-    this.#Rt(), this.#ps(this.#o), this.#F = !1, this.#Y = !1, this.#o = null, this.#a.classList.remove("is-volume-open", "is-control-tap-active"), this.#R.classList.remove("is-scrubbing-volume");
+  #Y() {
+    this.#Kt(), this.#Fs(this.#l), this.#q = !1, this.#W = !1, this.#l = null, this.#R.classList.remove("is-volume-open"), this.#n.classList.remove("is-control-tap-active"), this.#n.setAttribute("aria-expanded", "false"), this.#y.classList.remove("is-scrubbing-volume"), this.#y.setAttribute("inert", "");
   }
-  #ei = () => {
-    this.#S = !0, this.#rt = !0, this.#xt(), this.#f();
+  #zi = () => {
+    this.#H = !0, this.#mt = !0, this.#Ht(), this.#g();
   };
-  #f = () => {
+  #g = () => {
     if (!this.volumeEnabled) {
-      this.#s.classList.remove("is-volume-unavailable", "is-volume-muted", "is-volume-sound", "is-volume-icon-animating"), this.#z(), this.#a.disabled = !0, this.#a.setAttribute("aria-disabled", "true");
+      this.#e.classList.remove("is-volume-unavailable", "is-volume-muted", "is-volume-sound", "is-volume-icon-animating"), this.#Y(), this.#n.disabled = !0, this.#n.setAttribute("aria-disabled", "true");
       return;
     }
-    const t = this.#S;
-    if (!this.#S) {
-      const l = this.#si();
-      l !== "unknown" ? (this.#S = !0, this.#rt = l === "available") : this.#t.readyState >= HTMLMediaElement.HAVE_METADATA && !T(this.#t) && (this.#S = !0, this.#rt = !0);
+    const t = this.#H;
+    if (!this.#H) {
+      const a = this.#Vi();
+      a !== "unknown" ? (this.#H = !0, this.#mt = a === "available") : this.#t.readyState >= HTMLMediaElement.HAVE_METADATA && !T(this.#t) && (this.#H = !0, this.#mt = !0);
     }
-    !t && this.#S && this.#xt();
-    const s = this.#V(), e = !s || this.#t.muted || this.#t.volume <= 0, i = s && !this.#t.muted ? this.#t.volume : 0, r = Math.round(i * 100), n = e ? "muted" : "sound";
-    this.#ws && this.#ws !== n && this.#$e(), this.#ws = n, this.#s.classList.toggle("is-volume-unavailable", !s), this.#s.classList.toggle("is-volume-muted", e), this.#s.classList.toggle("is-volume-sound", !e), this.#s.style.setProperty("--sp-volume-level", `${r}%`), this.#a.disabled = !s, this.#a.setAttribute("aria-disabled", `${!s}`), this.#a.setAttribute(
+    !t && this.#H && this.#Ht();
+    const s = this.#$(), e = !s || this.#t.muted || this.#t.volume <= 0, i = s && !this.#t.muted ? this.#t.volume : 0, r = Math.round(i * 100), n = e ? "muted" : "sound";
+    this.#Us && this.#Us !== n && this.#yi(), this.#Us = n, this.#e.classList.toggle("is-volume-unavailable", !s), this.#e.classList.toggle("is-volume-muted", e), this.#e.classList.toggle("is-volume-sound", !e), this.#e.style.setProperty("--sp-volume-level", `${r}%`), this.#n.disabled = !s, this.#n.setAttribute("aria-disabled", `${!s}`), this.#n.setAttribute(
       "aria-label",
       s ? e ? "Unmute video" : "Mute video" : "Video has no audio"
-    ), this.#m.setAttribute("aria-valuenow", `${r}`), this.#m.setAttribute("aria-valuetext", `${r}%`), s || this.#z();
+    ), this.#b.setAttribute("aria-valuenow", `${r}`), this.#b.setAttribute("aria-valuetext", `${r}%`), s || this.#Y();
   };
-  #le(t) {
-    if (!this.#V()) return;
-    const s = this.#m.getBoundingClientRect(), e = Math.min(1, Math.max(0, 1 - (t - s.top) / s.height)), i = Math.round(e * 100) / 100;
-    this.#t.volume = i, this.#t.muted = i <= 0, this.#f();
+  #ze(t) {
+    if (!this.#$()) return;
+    const s = this.#b.getBoundingClientRect(), e = Math.min(1, Math.max(0, 1 - (t - s.top) / s.height)), i = Math.round(e * 100) / 100;
+    this.#t.volume = i, this.#t.muted = i <= 0, this.#g();
   }
-  #ps(t) {
-    t !== null && this.#m.hasPointerCapture(t) && this.#m.releasePointerCapture(t);
+  #Fs(t) {
+    t !== null && this.#b.hasPointerCapture(t) && this.#b.releasePointerCapture(t);
   }
-  #Mt(t) {
-    this.#F = !1, this.#o = null, this.#R.classList.remove("is-scrubbing-volume"), this.#m.blur(), this.#ps(t), this.#de(260);
+  #Wt(t) {
+    this.#q = !1, this.#l = null, this.#y.classList.remove("is-scrubbing-volume"), this.#b.blur(), this.#Fs(t), this.#ie(260);
   }
-  #Vt = () => {
+  #_t = () => {
     const t = document.pictureInPictureElement === this.#t, s = this.#t, e = !!(this.pictureInPictureEnabled && document.pictureInPictureEnabled && s.requestPictureInPicture);
-    this.#s.classList.toggle("is-picture-in-picture", t), this.#K.disabled = !e, this.#K.setAttribute("aria-label", t ? "Exit picture in picture" : "Enter picture in picture");
+    this.#e.classList.toggle("is-picture-in-picture", t), this.#at.disabled = !e, this.#at.setAttribute("aria-label", t ? "Exit picture in picture" : "Enter picture in picture");
   };
-  #Ms() {
-    return b(this.#r);
+  #Js() {
+    return v(this.#r);
   }
-  #he() {
-    return y(this.fullscreenEnabled, this.#s, this.#t);
+  #Re() {
+    return y(this.fullscreenEnabled, this.#e, this.#t);
   }
-  #ii() {
-    return g(this.#s);
+  #Ri() {
+    return g(this.#e);
   }
-  #ri() {
-    k(this.#t);
+  #Ii() {
+    x(this.#t);
   }
-  #oi() {
-    return x();
+  #Di() {
+    return k();
   }
-  #us = () => {
-    const t = this.#Ms(), s = t === this.#s || t === this, e = this.#he();
-    return this.#s.classList.toggle("is-fullscreen", s), this.#G.disabled = !e, this.#G.setAttribute("aria-label", s ? "Exit fullscreen" : "Enter fullscreen"), s;
+  #Ms = () => {
+    const t = this.#Js(), s = t === this.#e || t === this, e = this.#Re();
+    return this.#e.classList.toggle("is-fullscreen", s), this.#lt.disabled = !e, this.#lt.setAttribute("aria-label", s ? "Exit fullscreen" : "Enter fullscreen"), s;
   };
-  #zt = () => {
-    const t = this.#us();
-    this.#ni(t);
+  #jt = () => {
+    const t = this.#Ms();
+    this.#Hi(t);
   };
-  #ni(t) {
-    this.#P(), this.#Rt(), this.#Vs(this.#c), this.#ps(this.#o), this.#lt(), this.#k = !1, this.#l = !1, this.#y = !1, this.#s.classList.remove("is-progress-hovering"), this.#c = null, this.#N = !1, this.#Y = !1, this.#F = !1, this.#o = null, this.#Ss(), this.#Ks(), this.#Z.style.removeProperty("--sp-control-hover-offset"), this.#a.classList.remove("is-volume-open"), this.#R.classList.remove("is-scrubbing-volume"), this.#s.classList.remove("is-scrubbing"), this.#s.classList.remove("is-pointer-active"), this.#s.classList.add("is-hover-disabled");
+  #Hi(t) {
+    this.#T(), this.#Kt(), this.#Jt(), this.#Qs(this.#d), this.#Fs(this.#l), this.#ne(this.#u), this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#d = null, this.#st = !1, this.#W = !1, this.#q = !1, this.#ft = !1, this.#_ = !1, this.#l = null, this.#u = null, this.#Ks(), this.#xe(), this.#C.style.removeProperty("--sp-control-hover-offset"), this.#C.style.removeProperty("--sp-control-hover-width"), this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""), this.#G(), this.#y.classList.remove("is-scrubbing-volume"), this.#e.classList.remove("is-scrubbing"), this.#e.classList.remove("is-pointer-active"), this.#e.classList.add("is-hover-disabled");
     const s = this.#r.activeElement;
-    s instanceof HTMLElement && s.blur(), t ? (this.#n() ? this.#M() : this.#ss(!0), this.#Tt(this.#n() ? this.#Ps : this.#kt)) : this.#Et();
+    s instanceof HTMLElement && s.blur(), t ? (this.#o() ? this.#A() : this.#xs(!0), this.#Bt(this.#o() ? this.#Os : this.#Dt)) : this.#$t();
   }
-  #ce = () => {
-    !this.#k || this.#l || (this.#q(), this.#P(), this.#lt(), this.#l = !0, this.#s.classList.add("is-scrubbing"), this.#v = this.#j(this.#fs, !0), this.#Q && this.#t.pause(), this.#t.currentTime = this.#v, this.#h(this.#v), this.#g(this.#v), this.#Ft(), this.#d());
+  #Ie = () => {
+    !this.#L || this.#h || (this.#K(), this.#T(), this.#yt(), this.#h = !0, this.#e.classList.add("is-scrubbing"), this.#x = this.#nt(this.#Hs, !0), this.#ht && this.#t.pause(), this.#t.currentTime = this.#x, this.#p(this.#x), this.#E(this.#x), this.#Xt(), this.#f());
   };
-  #Vs(t) {
+  #Qs(t) {
     t !== null && this.#i.hasPointerCapture(t) && this.#i.releasePointerCapture(t);
   }
-  async #pe(t, s, e) {
-    if (!this.#k && !this.#l) return;
-    const i = this.#l;
-    this.#lt(), this.#k = !1, this.#l = !1, this.#y = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#c = null, this.#s.classList.remove("is-scrubbing"), this.#St(), this.#Vs(s), e && t !== null && (this.#q(), this.#v = this.#j(t, i), this.#D = !0, this.#ct = this.#Q, this.#t.currentTime = this.#v, this.#h(this.#v)), this.#g(this.#v), i && this.#Q && await this.#t.play(), this.#H();
+  async #De(t, s, e) {
+    if (!this.#L && !this.#h) return;
+    const i = this.#h;
+    this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#d = null, this.#e.classList.remove("is-scrubbing"), this.#Ot(), this.#Qs(s), e && t !== null && (this.#K(), this.#x = this.#nt(t, i), this.#X = !0, this.#xt = this.#ht, this.#t.currentTime = this.#x, this.#p(this.#x)), this.#E(this.#x), i && this.#ht && await this.#t.play(), this.#B();
   }
-  #zs(t) {
-    !this.#k && !this.#l || (this.#lt(), this.#k = !1, this.#l = !1, this.#y = !1, this.#s.classList.remove("is-progress-hovering"), this.#s.style.setProperty("--sp-hover-fill-inset", "100%"), this.#c = null, this.#s.classList.remove("is-scrubbing"), this.#St(), this.#Vs(t), this.#h(), this.#g(), this.#Q && this.#t.play(), this.#H());
+  #te(t) {
+    !this.#L && !this.#h || (this.#yt(), this.#L = !1, this.#h = !1, this.#P = !1, this.#e.classList.remove("is-progress-hovering"), this.#e.style.setProperty("--sp-hover-fill-inset", "100%"), this.#d = null, this.#e.classList.remove("is-scrubbing"), this.#Ot(), this.#Qs(t), this.#p(), this.#E(), this.#ht && this.#t.play(), this.#B());
   }
-  #Is(t) {
-    if (!this.#ks) return a(t);
+  #se(t) {
+    if (!this.#Rt) return l(t);
     const s = Number.isFinite(this.#t.duration) ? this.#t.duration : 0;
-    return s <= 0 ? a(t) : `-${a(Math.max(0, s - t))}`;
+    return s <= 0 ? l(t) : `-${l(Math.max(0, s - t))}`;
   }
-  #ai() {
-    this.#wt && (window.clearTimeout(this.#wt), this.#wt = 0);
+  #qi() {
+    this.#It && (window.clearTimeout(this.#It), this.#It = 0);
   }
-  #li() {
-    this.#ai(), this.#p.classList.remove("is-time-animating"), this.#p.offsetWidth, this.#p.classList.add("is-time-animating"), this.#wt = window.setTimeout(() => {
-      this.#wt = 0, this.#p.classList.remove("is-time-animating");
+  #Bi() {
+    this.#qi(), this.#c.classList.remove("is-time-animating"), this.#c.offsetWidth, this.#c.classList.add("is-time-animating"), this.#It = window.setTimeout(() => {
+      this.#It = 0, this.#c.classList.remove("is-time-animating");
     }, 240);
   }
-  #hi = (t) => {
-    t.stopPropagation(), this.#ks = !this.#ks, this.#li(), this.#u() || this.#y ? this.#p && (this.#p.textContent = this.#Is(this.#v), this.#Qt()) : this.#Lt(this.#W());
+  #$i = (t) => {
+    t.stopPropagation(), this.#Rt = !this.#Rt, this.#c.setAttribute("aria-pressed", `${this.#Rt}`), this.#c.setAttribute(
+      "aria-label",
+      this.#Rt ? "Show elapsed time" : "Show remaining time"
+    ), this.#Bi(), this.#m() || this.#P ? this.#c && (this.#c.textContent = this.#se(this.#x), this.#gs()) : this.#Nt(this.#rt());
   };
-  #It = async () => {
-    if (performance.now() < this.#qs)
+  #Zt = async () => {
+    if (performance.now() < this.#he)
       return;
-    this.#te();
-    const t = this.#b ? this.#b !== "playing" : this.#t.paused || this.#t.ended, s = !t || this.#Xe();
-    this.#M(), s && (this.#b = t ? "playing" : "paused", this.#d()), t ? (this.#q(), await this.#O(), await this.#t.play().catch(() => {
-      this.#b = null;
-    })) : (this.#_e(), this.#t.pause()), this.#d(), this.#H();
+    this.#Ee();
+    const t = this.#k ? this.#k !== "playing" : this.#t.paused || this.#t.ended, s = !t || this.#xi();
+    this.#A(), s && (this.#k = t ? "playing" : "paused", this.#f()), t ? (this.#K(), await this.#it(), await this.#t.play().catch(() => {
+      this.#k = null;
+    })) : (this.#Ti(), this.#t.pause()), this.#f(), this.#B();
   };
-  #ci = (t) => {
-    this.#dt = t instanceof PointerEvent && t.pointerType === "mouse" && t.button === 0 && this.pauseOnOverlayClick && !this.#n(), this.#Yt = this.#dt && (!this.#s.classList.contains("is-pointer-active") || performance.now() - this.#Xt < this.#Ns);
+  #Yi = (t) => {
+    this.#Tt = t instanceof PointerEvent && t.pointerType === "mouse" && t.button === 0 && this.pauseOnOverlayClick && !this.#o(), this.#ls = this.#Tt && (!this.#e.classList.contains("is-pointer-active") || performance.now() - this.#hs < this.#de);
   };
-  #ds = () => {
-    this.#dt = !1, this.#Yt = !1;
+  #Vs = () => {
+    this.#Tt = !1, this.#ls = !1;
   };
-  #pi = (t) => {
-    const s = this.#Yt, e = t instanceof PointerEvent && t.pointerType === "mouse" && t.button === 0 && this.#dt;
-    this.#ds(), e && (s && (this.#Ot = performance.now() + this.#Ns, this.#Et()), this.#ls(), this.#It());
+  #Ui = (t) => {
+    const s = this.#ls, e = t instanceof PointerEvent && t.pointerType === "mouse" && t.button === 0 && this.#Tt;
+    this.#Vs(), e && (s && (this.#ps = performance.now() + this.#de, this.#$t()), this.#As(), this.#Zt());
   };
-  #ui = (t) => {
-    if (!(t instanceof KeyboardEvent) || t.target !== this.#s || t.repeat) return;
+  #Ni = (t) => {
+    if (!(t instanceof KeyboardEvent) || t.target !== this.#e || t.repeat) return;
     const s = t.key.toLowerCase(), e = s === " " || s === "spacebar" || s === "enter" || s === "k" || s === "mediaplaypause", i = s === "mediaplay", r = s === "mediapause";
-    !e && !i && !r || (t.preventDefault(), t.stopPropagation(), !(i && !this.#t.paused && !this.#t.ended) && (r && (this.#t.paused || this.#t.ended) || (this.#ls(), this.#It())));
+    !e && !i && !r || (t.preventDefault(), t.stopPropagation(), !(i && !this.#t.paused && !this.#t.ended) && (r && (this.#t.paused || this.#t.ended) || (this.#As(), this.#Zt())));
   };
-  #di = (t) => {
+  #Oi = (t) => {
     if (!(t instanceof PointerEvent)) return;
-    const s = this.#A.getBoundingClientRect(), e = t.clientX >= s.left && t.clientX <= s.right && t.clientY >= s.top && t.clientY <= s.bottom, i = this.#I.getBoundingClientRect(), r = t.clientX >= i.left && t.clientX <= i.right && t.clientY >= i.top && t.clientY <= i.bottom, n = this.#i.getBoundingClientRect(), l = t.clientX >= n.left && t.clientX <= n.right && t.clientY >= n.top && t.clientY <= n.bottom, c = this.#M();
-    c && e && (this.#qs = performance.now() + 260), c && (r || l) && (this.#bs = performance.now() + 260), this.#O();
+    const s = this.#z.getBoundingClientRect(), e = t.clientX >= s.left && t.clientX <= s.right && t.clientY >= s.top && t.clientY <= s.bottom, i = this.#U.getBoundingClientRect(), r = t.clientX >= i.left && t.clientX <= i.right && t.clientY >= i.top && t.clientY <= i.bottom, n = this.#i.getBoundingClientRect(), a = t.clientX >= n.left && t.clientX <= n.right && t.clientY >= n.top && t.clientY <= n.bottom, p = this.#A();
+    p && e && (this.#he = performance.now() + 260), p && (r || a) && (this.#Bs = performance.now() + 260), this.#it();
   };
-  #mi = (t) => {
+  #Xi = (t) => {
     t.stopPropagation();
   };
-  #Rt() {
-    this.#vt && (window.clearTimeout(this.#vt), this.#vt = 0);
+  #Kt() {
+    this.#At && (window.clearTimeout(this.#At), this.#At = 0);
   }
-  #ue() {
-    if (!this.#V() || !this.volumeSliderEnabled) {
-      this.#z();
+  #ee() {
+    if (!this.#$() || !this.volumeSliderEnabled) {
+      this.#Y();
       return;
     }
-    this.#Rt(), this.#a.classList.add("is-volume-open");
+    this.#G(), this.#Kt(), this.#R.classList.add("is-volume-open"), this.#n.setAttribute("aria-expanded", "true"), this.#y.removeAttribute("inert");
   }
-  #Rs = () => {
-    this.#vt = 0, !(this.#Y || this.#F) && this.#a.classList.remove("is-volume-open");
+  #Gt = () => {
+    this.#At = 0, !(this.#W || this.#q) && (this.#R.classList.remove("is-volume-open"), this.#n.setAttribute("aria-expanded", "false"), this.#y.setAttribute("inert", ""));
   };
-  #de(t = 150) {
-    this.#Rt(), this.#vt = window.setTimeout(this.#Rs, t);
+  #Wi = () => {
+    this.#ee();
+  };
+  #_i = (t) => {
+    const s = t instanceof FocusEvent ? t.relatedTarget : null;
+    s instanceof Node && this.#R.contains(s) || this.#ie(0);
+  };
+  #ie(t = 150) {
+    this.#Kt(), this.#At = window.setTimeout(this.#Gt, t);
   }
-  #me = () => {
-    if (!this.#n()) {
-      if (!this.#V() || !this.volumeSliderEnabled) {
-        this.#z();
+  #He = () => {
+    if (!this.#o()) {
+      if (!this.#$() || !this.volumeSliderEnabled) {
+        this.#Y();
         return;
       }
-      this.#Y = !0, this.#ue();
+      this.#W = !0, this.#ee();
     }
   };
-  #fe = () => {
-    if (!this.#n()) {
-      if (!this.#V() || !this.volumeSliderEnabled) {
-        this.#z();
+  #qe = () => {
+    if (!this.#o()) {
+      if (!this.#$() || !this.volumeSliderEnabled) {
+        this.#Y();
         return;
       }
-      this.#Y = !1, this.#de();
+      this.#W = !1, this.#ie();
     }
   };
-  #fi = (t) => {
-    if (t.preventDefault(), t.stopPropagation(), !this.#V()) {
-      this.#z();
+  #ji = (t) => {
+    if (t.preventDefault(), t.stopPropagation(), !this.#$()) {
+      this.#Y();
       return;
     }
-    !this.#At() || this.#es() || (this.#M(), this.#Rs(), this.#t.muted || this.#t.volume <= 0 ? (this.#t.volume <= 0 && (this.#t.volume = 0.7), this.#t.muted = !1) : this.#t.muted = !0, this.#f(), this.#H());
+    !this.#bt() || this.#Yt() || (this.#A(), this.#Gt(), this.#t.muted || this.#t.volume <= 0 ? (this.#t.volume <= 0 && (this.#t.volume = 0.7), this.#t.muted = !1) : this.#t.muted = !0, this.#g(), this.#B());
   };
-  #vi = (t) => {
+  #Zi = (t) => {
     if (t instanceof PointerEvent) {
-      if (t.preventDefault(), t.stopPropagation(), !this.#V() || !this.volumeSliderEnabled || this.#n()) {
-        this.#z();
+      if (t.preventDefault(), t.stopPropagation(), !this.#$() || !this.volumeSliderEnabled || this.#o()) {
+        this.#Y();
         return;
       }
-      this.#M(), this.#P(), this.#ue(), this.#F = !0, this.#o = t.pointerId, this.#R.classList.add("is-scrubbing-volume"), this.#m.setPointerCapture(t.pointerId), this.#le(t.clientY);
+      this.#A(), this.#T(), this.#ee(), this.#q = !0, this.#l = t.pointerId, this.#y.classList.add("is-scrubbing-volume"), this.#b.setPointerCapture(t.pointerId), this.#ze(t.clientY);
     }
   };
-  #bi = (t) => {
-    t instanceof PointerEvent && this.#F && (this.#o !== null && t.pointerId !== this.#o || (t.preventDefault(), t.stopPropagation(), this.#le(t.clientY)));
+  #Ki = (t) => {
+    t instanceof PointerEvent && this.#q && (this.#l !== null && t.pointerId !== this.#l || (t.preventDefault(), t.stopPropagation(), this.#ze(t.clientY)));
   };
-  #yi = (t) => {
-    t instanceof PointerEvent && (this.#o !== null && t.pointerId !== this.#o || (t.stopPropagation(), this.#Mt(t.pointerId), this.#H()));
+  #Gi = (t) => {
+    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Wt(t.pointerId), this.#B()));
   };
-  #gi = (t) => {
-    t instanceof PointerEvent && (this.#o !== null && t.pointerId !== this.#o || (t.stopPropagation(), this.#Mt(t.pointerId)));
+  #Ji = (t) => {
+    t instanceof PointerEvent && (this.#l !== null && t.pointerId !== this.#l || (t.stopPropagation(), this.#Wt(t.pointerId)));
   };
-  #wi = (t) => {
+  #Be = (t) => {
     if (!(t instanceof KeyboardEvent)) return;
-    if (!this.#V()) {
-      t.preventDefault(), t.stopPropagation(), this.#z();
+    if (t.key === "Escape") {
+      t.preventDefault(), t.stopPropagation(), this.#W = !1, this.#n.focus(), this.#Gt();
+      return;
+    }
+    if (!this.#$()) {
+      t.preventDefault(), t.stopPropagation(), this.#Y();
       return;
     }
     if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(t.key)) return;
     t.preventDefault(), t.stopPropagation();
     const s = t.shiftKey ? 0.1 : 0.05, e = t.key === "Home" ? 0 : t.key === "End" ? 1 : this.#t.volume + (t.key === "ArrowUp" ? s : -s);
-    this.#t.volume = Math.min(1, Math.max(0, e)), this.#t.muted = this.#t.volume <= 0, this.#f();
+    this.#t.volume = Math.min(1, Math.max(0, e)), this.#t.muted = this.#t.volume <= 0, this.#g();
   };
-  #ki = async () => {
-    const t = this.#t;
-    if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !t.requestPictureInPicture) && !(!this.#At() || this.#es())) {
-      this.#M();
-      try {
-        await this.#O(), document.pictureInPictureElement === this.#t ? await document.exitPictureInPicture() : await t.requestPictureInPicture();
-      } catch {
-      } finally {
-        this.#Vt(), this.#H();
-      }
-    }
+  #Qi(t) {
+    return `${Number(t.toFixed(2))}x`;
+  }
+  #re = () => {
+    if (!this.#t || !this.#a) return;
+    const t = Number.isFinite(this.#t.playbackRate) ? Math.min(4, Math.max(0.25, this.#t.playbackRate)) : 1, s = this.#Qi(t), e = t >= 1 ? 50 + (t - 1) / 3 * 50 : (t - 0.25) / 0.75 * 50, i = this.#N.textContent;
+    this.#N.textContent = s, i && i !== s && (this.#_ || this.#a.classList.contains("is-speed-open")) && this.#tr(), this.#a.setAttribute("aria-label", `Playback speed: ${s}`), this.#v.setAttribute("aria-valuenow", `${t}`), this.#v.setAttribute("aria-valuetext", s), this.#e.style.setProperty("--sp-speed-position", `${e}%`);
   };
-  #xi = async (t) => {
-    if (this.#he() && (t.preventDefault(), t.stopPropagation(), !(!this.#At() || this.#es()))) {
-      this.#X(t), this.#M();
-      try {
-        const s = this.#Ms();
-        s === this.#s || s === this ? await this.#oi() : (await this.#O(), w(this.#s) ? await this.#ii() : this.#ri());
-      } catch {
-      } finally {
-        this.#us(), this.#H();
-      }
-    }
+  #$e(t) {
+    const s = Math.round(Math.min(4, Math.max(0.25, t)) * 20) / 20;
+    this.#t.playbackRate = s, this.#re(), this.#Ue(), this.#Ne();
+  }
+  #zs(t) {
+    const s = this.#v.getBoundingClientRect(), e = Math.min(1, Math.max(0, 1 - (t - s.top) / s.height)), i = e >= 0.5 ? 1 + (e - 0.5) / 0.5 * 3 : 0.25 + e / 0.5 * 0.75;
+    this.#$e(i);
+  }
+  #Jt() {
+    this.#St && (window.clearTimeout(this.#St), this.#St = 0);
+  }
+  #Rs() {
+    this.#Lt && (window.clearTimeout(this.#Lt), this.#Lt = 0);
+  }
+  #Ye() {
+    this.#Ft && (window.clearTimeout(this.#Ft), this.#Ft = 0);
+  }
+  #tr() {
+    this.#N.classList.contains("is-speed-value-animating") || (this.#N.classList.add("is-speed-value-animating"), this.#Ft = window.setTimeout(() => {
+      this.#Ft = 0, this.#N.classList.remove("is-speed-value-animating");
+    }, 180));
+  }
+  #Ue() {
+    this.#Rs(), this.#w.classList.add("is-speed-value-visible");
+  }
+  #Ne(t = 700) {
+    this.#Rs(), this.#Lt = window.setTimeout(() => {
+      this.#Lt = 0, !this.#_ && this.#w.classList.remove("is-speed-value-visible");
+    }, t);
+  }
+  #Is() {
+    this.speedEnabled && (this.#Jt(), this.#a.classList.add("is-speed-open"), this.#a.setAttribute("aria-expanded", "true"), this.#w.removeAttribute("inert"), this.#T());
+  }
+  #G = () => {
+    this.#a && (this.#Jt(), this.#Rs(), this.#Ye(), this.#a.classList.remove("is-speed-open"), this.#a.setAttribute("aria-expanded", "false"), this.#w.classList.remove("is-scrubbing-speed"), this.#w.classList.remove("is-speed-value-visible"), this.#N.classList.remove("is-speed-value-animating"), this.#w?.setAttribute("inert", ""));
   };
-  #ve = (t) => {
-    this.#n() || this.#u() || !(t instanceof PointerEvent) && !(t instanceof MouseEvent) || (this.#y = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t.clientX, !1, !1));
+  #oe(t = 150) {
+    this.#Jt(), this.#St = window.setTimeout(() => {
+      this.#St = 0, !(this.#ft || this.#_) && this.#G();
+    }, t);
+  }
+  #Oe = () => {
+    this.#o() || (this.#ft = !0, this.#Is());
   };
-  #be = () => {
-    this.#u() || this.#Os();
+  #Xe = () => {
+    this.#o() || (this.#ft = !1, this.#oe());
   };
-  #Pi = (t) => {
-    if (t instanceof PointerEvent) {
-      if (t.preventDefault(), !this.#At() || this.#es()) {
-        this.#M(), this.#n() && (this.#bs = performance.now() + 260);
-        return;
-      }
-      this.#M(), this.#P(), this.#se(), this.#D = !1, this.#ct = !1, this.#Ge(this.#W()), this.#k = !0, this.#c = t.pointerId, this.#fs = t.clientX, this.#Q = !this.#t.paused && !this.#t.ended, this.#i.setPointerCapture(t.pointerId), this.#v = this.#j(t.clientX, !1), this.#lt(), this.#Nt = window.setTimeout(this.#ce, this.#xe);
-    }
+  #sr = () => {
+    this.#Is();
   };
-  #Ti = (t) => {
-    if (!(t instanceof KeyboardEvent) || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(t.key)) return;
-    t.preventDefault(), t.stopPropagation(), this.#js();
-    const s = this.#W(), e = t.shiftKey ? 10 : 5, i = Math.max(10, this.#t.duration * 0.1), r = t.key === "Home" ? 0 : t.key === "End" ? this.#t.duration : t.key === "PageUp" ? s + i : t.key === "PageDown" ? s - i : s + (t.key === "ArrowRight" ? e : -e);
-    this.#t.currentTime = Math.min(this.#t.duration, Math.max(0, r)), this.#h(this.#t.currentTime), this.#g(this.#t.currentTime);
+  #er = (t) => {
+    const s = t instanceof FocusEvent ? t.relatedTarget : null;
+    s instanceof Node && this.#rs.contains(s) || this.#oe(0);
   };
-  #Ei = (t) => {
-    if (t instanceof PointerEvent) {
-      if (!this.#k) {
-        this.#n() || (this.#y = !0, this.#s.classList.add("is-progress-hovering"), this.#j(t.clientX, !1, !1));
-        return;
-      }
-      this.#c !== null && t.pointerId !== this.#c || (!this.#l && Math.abs(t.clientX - this.#fs) >= this.#ge && this.#ce(), this.#l && (this.#v = this.#j(t.clientX)));
-    }
+  #ir = (t) => {
+    if (t.preventDefault(), t.stopPropagation(), !this.speedEnabled || !this.#bt() || this.#Yt()) return;
+    this.#A();
+    const s = !this.#a.classList.contains("is-speed-open");
+    this.#Gt(), this.#o() && !s ? this.#G() : this.#Is();
   };
-  #Ai = (t) => {
-    t instanceof PointerEvent && (this.#c !== null && t.pointerId !== this.#c || this.#pe(t.clientX, t.pointerId, !0));
+  #rr = (t) => {
+    t.stopPropagation();
   };
-  #Ci = (t) => {
-    t instanceof PointerEvent && (this.#c !== null && t.pointerId !== this.#c || this.#zs(t.pointerId));
+  #ne(t) {
+    t !== null && this.#v.hasPointerCapture(t) && this.#v.releasePointerCapture(t);
+  }
+  #Qt(t) {
+    this.#_ = !1, this.#u = null, this.#w.classList.remove("is-scrubbing-speed"), this.#Ue(), this.#Ne(), this.#v.blur(), this.#ne(t), this.#oe(850), this.#B();
+  }
+  #or = (t) => {
+    t instanceof PointerEvent && (t.preventDefault(), t.stopPropagation(), this.speedEnabled && (this.#A(), this.#T(), this.#Is(), this.#_ = !0, this.#u = t.pointerId, this.#w.classList.add("is-scrubbing-speed"), this.#v.setPointerCapture(t.pointerId), this.#zs(t.clientY)));
   };
-  #Li = (t) => {
-    if (t instanceof PointerEvent) {
-      if (this.#ds(), this.#o !== null && t.pointerId === this.#o) {
-        this.#Mt(t.pointerId);
-        return;
-      }
-      this.#c === null || t.pointerId !== this.#c || this.#pe(t.clientX, t.pointerId, !0);
-    }
+  #nr = (t) => {
+    !(t instanceof PointerEvent) || !this.#_ || this.#u !== null && t.pointerId !== this.#u || (t.preventDefault(), t.stopPropagation(), this.#zs(t.clientY));
   };
-  #Si = (t) => {
-    if (t instanceof PointerEvent) {
-      if (this.#ds(), this.#o !== null && t.pointerId === this.#o) {
-        this.#Mt(t.pointerId);
-        return;
-      }
-      this.#c === null || t.pointerId !== this.#c || this.#zs(t.pointerId);
-    }
+  #ar = (t) => {
+    t instanceof PointerEvent && (this.#u !== null && t.pointerId !== this.#u || (t.stopPropagation(), this.#zs(t.clientY), this.#Qt(t.pointerId)));
   };
-  #Fi = () => {
-    this.#Mt(this.#o), this.#zs(this.#c);
+  #lr = (t) => {
+    t instanceof PointerEvent && (this.#u !== null && t.pointerId !== this.#u || (t.stopPropagation(), this.#Qt(t.pointerId)));
   };
-  #Mi = () => {
-    this.#Ms() || this.#Et();
-  };
-  #Vi = () => {
-    this.#te(), this.#b = null, this.#q(), this.#u() || this.#h(), this.#d(), this.#at();
-  };
-  #zi = () => {
-    this.#b = null, this.#u() || this.#ae(), this.#w(), this.#d(), this.#at();
-  };
-  #Ii = () => {
-    this.#b = null, this.#q(), this.#u() || this.#h(), this.#d(), this.#at();
-  };
-  #Ri = () => {
-    this.#Ct(!0, !0);
-  };
-  #Ds = () => {
-    this.#Ct(!0);
-  };
-  #Di = () => {
-    this.#q(), this.#f(), this.#u() || this.#h(), this.#w(), this.#g();
-  };
-  #Hi = () => {
-    const t = this.#hs();
-    this.#f(), t && !this.#u() && this.#h(), this.#d();
-  };
-  #qi = () => {
-    if (this.#q(), this.#w(), this.#D && (!this.#ct || this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
-      this.#re(), this.#d();
+  #We = (t) => {
+    if (!(t instanceof KeyboardEvent)) return;
+    if (t.key === "Escape") {
+      t.preventDefault(), t.stopPropagation(), this.#ft = !1, this.#a.focus(), this.#G();
       return;
     }
-    this.#u() || this.#h(), this.#g();
+    if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(t.key)) return;
+    t.preventDefault(), t.stopPropagation();
+    const s = t.shiftKey ? 0.25 : 0.05, e = t.key === "Home" ? 0.25 : t.key === "End" ? 4 : this.#t.playbackRate + (t.key === "ArrowUp" ? s : -s);
+    this.#$e(e);
   };
-  #Bi = () => {
-    this.#b = null, this.#C = !1, this.#L = !1, this.#B = !1, this.#U = !1, this.#$ += 1, this.#s.classList.remove("has-visible-frame"), this.#Ct(!0, !0), this.#d(), this.#Oe();
+  #hr = (t) => {
+    if (!this.#a?.classList.contains("is-speed-open")) return;
+    const s = t.composedPath();
+    s.includes(this.#a) || s.includes(this.#w) || this.#G();
   };
-  #Ui = () => {
-    this.#f(), this.#g();
+  #pr = async () => {
+    const t = this.#t;
+    if (!(!this.pictureInPictureEnabled || !document.pictureInPictureEnabled || !t.requestPictureInPicture) && !(!this.#bt() || this.#Yt())) {
+      this.#A();
+      try {
+        await this.#it(), document.pictureInPictureElement === this.#t ? await document.exitPictureInPicture() : await t.requestPictureInPicture();
+      } catch {
+      } finally {
+        this.#_t(), this.#B();
+      }
+    }
   };
-  #$i = () => {
-    this.#f();
+  #cr = async (t) => {
+    if (this.#Re() && (t.preventDefault(), t.stopPropagation(), !(!this.#bt() || this.#Yt()))) {
+      this.#et(t), this.#A();
+      try {
+        const s = this.#Js();
+        s === this.#e || s === this ? await this.#Di() : (await this.#it(), w(this.#e) ? await this.#Ri() : this.#Ii());
+      } catch {
+      } finally {
+        this.#Ms(), this.#B();
+      }
+    }
   };
-  #n() {
+  #_e = (t) => {
+    this.#o() || this.#m() || !(t instanceof PointerEvent) && !(t instanceof MouseEvent) || (this.#P = !0, this.#e.classList.add("is-progress-hovering"), this.#nt(t.clientX, !1, !1));
+  };
+  #je = () => {
+    this.#m() || this.#be();
+  };
+  #ur = (t) => {
+    if (t instanceof PointerEvent) {
+      if (t.preventDefault(), !this.#bt() || this.#Yt()) {
+        this.#A(), this.#o() && (this.#Bs = performance.now() + 260);
+        return;
+      }
+      this.#A(), this.#T(), this.#Ce(), this.#X = !1, this.#xt = !1, this.#Si(this.#rt()), this.#L = !0, this.#d = t.pointerId, this.#Hs = t.clientX, this.#ht = !this.#t.paused && !this.#t.ended, this.#i.setPointerCapture(t.pointerId), this.#x = this.#nt(t.clientX, !1), this.#yt(), this.#as = window.setTimeout(this.#Ie, this.#Je);
+    }
+  };
+  #dr = (t) => {
+    if (!(t instanceof KeyboardEvent) || !Number.isFinite(this.#t.duration) || this.#t.duration <= 0 || !["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(t.key)) return;
+    t.preventDefault(), t.stopPropagation(), this.#ge();
+    const s = this.#rt(), e = t.shiftKey ? 10 : 5, i = Math.max(10, this.#t.duration * 0.1), r = t.key === "Home" ? 0 : t.key === "End" ? this.#t.duration : t.key === "PageUp" ? s + i : t.key === "PageDown" ? s - i : s + (t.key === "ArrowRight" ? e : -e);
+    this.#t.currentTime = Math.min(this.#t.duration, Math.max(0, r)), this.#p(this.#t.currentTime), this.#E(this.#t.currentTime);
+  };
+  #mr = (t) => {
+    if (t instanceof PointerEvent) {
+      if (!this.#L) {
+        this.#o() || (this.#P = !0, this.#e.classList.add("is-progress-hovering"), this.#nt(t.clientX, !1, !1));
+        return;
+      }
+      this.#d !== null && t.pointerId !== this.#d || (!this.#h && Math.abs(t.clientX - this.#Hs) >= this.#Ze && this.#Ie(), this.#h && (this.#x = this.#nt(t.clientX)));
+    }
+  };
+  #fr = (t) => {
+    t instanceof PointerEvent && (this.#d !== null && t.pointerId !== this.#d || this.#De(t.clientX, t.pointerId, !0));
+  };
+  #br = (t) => {
+    t instanceof PointerEvent && (this.#d !== null && t.pointerId !== this.#d || this.#te(t.pointerId));
+  };
+  #vr = (t) => {
+    if (t instanceof PointerEvent) {
+      if (this.#Vs(), this.#l !== null && t.pointerId === this.#l) {
+        this.#Wt(t.pointerId);
+        return;
+      }
+      if (this.#u !== null && t.pointerId === this.#u) {
+        this.#zs(t.clientY), this.#Qt(t.pointerId);
+        return;
+      }
+      this.#d === null || t.pointerId !== this.#d || this.#De(t.clientX, t.pointerId, !0);
+    }
+  };
+  #yr = (t) => {
+    if (t instanceof PointerEvent) {
+      if (this.#Vs(), this.#l !== null && t.pointerId === this.#l) {
+        this.#Wt(t.pointerId);
+        return;
+      }
+      if (this.#u !== null && t.pointerId === this.#u) {
+        this.#Qt(t.pointerId);
+        return;
+      }
+      this.#d === null || t.pointerId !== this.#d || this.#te(t.pointerId);
+    }
+  };
+  #gr = () => {
+    this.#Wt(this.#l), this.#Qt(this.#u), this.#te(this.#d);
+  };
+  #wr = () => {
+    this.#Js() || this.#$t();
+  };
+  #xr = () => {
+    this.#Ee(), this.#k = null, this.#K(), this.#m() || this.#p(), this.#f(), this.#vt();
+  };
+  #kr = () => {
+    this.#k = null, this.#m() || this.#Ve(), this.#S(), this.#f(), this.#vt();
+  };
+  #Pr = () => {
+    this.#k = null, this.#K(), this.#m() || this.#p(), this.#f(), this.#vt();
+  };
+  #Tr = () => {
+    this.#Ut(!0, !0);
+  };
+  #ae = () => {
+    this.#Ut(!0);
+  };
+  #Er = () => {
+    this.#K(), this.#g(), this.#m() || this.#p(), this.#S(), this.#E();
+  };
+  #Cr = () => {
+    const t = this.#Ss();
+    this.#g(), t && !this.#m() && this.#p(), this.#f();
+  };
+  #Ar = () => {
+    if (this.#K(), this.#S(), this.#X && (!this.#xt || this.#t.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA)) {
+      this.#Le(), this.#f();
+      return;
+    }
+    this.#m() || this.#p(), this.#E();
+  };
+  #Sr = () => {
+    this.#k = null, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#e.classList.remove("has-visible-frame"), this.#Ut(!0, !0), this.#f(), this.#ki();
+  };
+  #Lr = () => {
+    this.#g(), this.#E();
+  };
+  #Fr = () => {
+    this.#g();
+  };
+  #o() {
     return window.matchMedia("(max-width: 768px)").matches && window.matchMedia("(hover: none), (pointer: coarse)").matches;
   }
-  #Ni() {
-    this.#t && (this.#T?.disconnect(), this.#T = null, this.#ns(), this.#Fs(), this.#E = !1, this.#vs = 0, this.#C = !1, this.#L = !1, this.#B = !1, this.#U = !1, this.#$ += 1, this.#mt = !1, this.#ft = 0, this.#q(), this.#rt = !1, this.#S = !1, this.#xt(), this.#z(), this.#D = !1, this.#ct = !1, this.#b = null, this.#s.classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), this.#t.dataset.src = this.src, this.#t.pause(), this.#t.removeAttribute("src"), this.#t.preload = "none", this.#Jt(), this.#t.load(), this.#_(0), this.#f(), this.#w(), this.#d());
+  #Mr() {
+    this.#t && (this.#M?.disconnect(), this.#M = null, this.#Es(), this.#Gs(), this.#V = !1, this.#qs = 0, this.#I = !1, this.#D = !1, this.#J = !1, this.#Q = !1, this.#tt += 1, this.#Et = !1, this.#Ct = 0, this.#K(), this.#mt = !1, this.#H = !1, this.#Ht(), this.#Y(), this.#X = !1, this.#xt = !1, this.#k = null, this.#e.classList.remove("has-loaded-once", "has-visible-frame", "is-progress-settling"), this.#t.dataset.src = this.src, this.#t.pause(), this.#t.removeAttribute("src"), this.#t.preload = "none", this.#ys(), this.#t.load(), this.#ot(0), this.#g(), this.#S(), this.#f());
   }
 }
 customElements.get("simple-player") || customElements.define("simple-player", h);

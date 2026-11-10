@@ -11,6 +11,8 @@ export const OBSERVED_ATTRIBUTES = [
   'enable-volume',
   'disable-volume',
   'disable-volume-slider',
+  'enable-speed',
+  'disable-speed',
   'enable-picture-in-picture',
   'disable-picture-in-picture',
   'enable-fullscreen',
@@ -19,6 +21,7 @@ export const OBSERVED_ATTRIBUTES = [
   'no-autoplay',
   'no-volume',
   'no-volume-slider',
+  'no-speed',
   'no-picture-in-picture',
   'no-fullscreen',
 ] as const;
